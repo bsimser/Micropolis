@@ -27,6 +27,7 @@
         /// <returns></returns>
         public long tickCount()
         {
+            return 0;
         }
 
         public void doPlayNewCity()
@@ -121,6 +122,7 @@
         /// <returns>Value of the map at the given position.</returns>
         public int getTile(int x, int y)
         {
+            return 0;
         }
 
         /// <summary>
