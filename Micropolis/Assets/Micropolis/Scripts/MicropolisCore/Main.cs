@@ -1,4 +1,6 @@
-﻿namespace Micropolis.MicropolisCore
+﻿using UnityEngine;
+
+namespace Micropolis.MicropolisCore
 {
     public partial class Micropolis
     {
@@ -21,7 +23,7 @@
         {
             setEnableSound(true);
             mustUpdateOptions = true;
-            // scenario = SC_NONE;
+            //scenario = SC_NONE;
             startingYear = 1900;
             simPasses = 1;
             simPass = 0;
@@ -46,8 +48,8 @@
             clearMap();
             initWillStuff();
             setFunds(5000);
-            // setGameLevelFunds(LEVEL_EASY);
-            setSpeed(0);
+            //setGameLevelFunds(LEVEL_EASY);
+            //setSpeed(0);
             setPasses(1);
         }
 
@@ -72,6 +74,8 @@
 
         public void simLoop(bool doSim)
         {
+            Debug.Log(string.Format("in simLoop heatSteps:{0} doSim:{1}", heatSteps, doSim));
+
             if (heatSteps != 0)
             {
                 for (int j = 0; j < heatSteps; j++)

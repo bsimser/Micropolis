@@ -70,7 +70,7 @@ namespace Micropolis.MicropolisCore
             simPass = 0;
             simPasses = 1;
             heatSteps = 0; // Disable cellular automata machine.
-            setSpeed(0);
+            //setSpeed(0);
         }
 
         /// <summary>

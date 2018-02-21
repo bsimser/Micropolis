@@ -1,4 +1,6 @@
-﻿namespace Micropolis
+﻿using UnityEngine;
+
+namespace Micropolis
 {
     public class MicropolisUnityEngine : MicropolisGenericEngine
     {

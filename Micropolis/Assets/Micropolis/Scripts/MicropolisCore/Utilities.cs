@@ -13,7 +13,7 @@ namespace Micropolis.MicropolisCore
             if (!simPaused)
             {
                 simPausedSpeed = simSpeedMeta;
-                setSpeed(0);
+                //setSpeed(0);
                 simPaused = true;
             }
 

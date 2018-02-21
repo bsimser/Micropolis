@@ -820,7 +820,7 @@
         //private GameLevel gameLevel;
         private short initSimLoad;
         //private Scenario scenario;
-        private short simSpeed;
+        protected short simSpeed;
 
         private short simSpeedMeta;
 
@@ -1022,7 +1022,7 @@
             autoBudget = true;
 
             initSimLoad = 0;
-            simSpeed = 0;
+            //simSpeed = 0;
             simSpeedMeta = 0;
             enableSound = false;
             enableDisasters = true;
