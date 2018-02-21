@@ -6,6 +6,11 @@
         // list of notices to show to user
         // list of scenarios the user can choose from
 
+        public MicropolisUnityEngine()
+        {
+            initGameUnity();
+        }
+
         public static MicropolisUnityEngine CreateUnityEngine()
         {
             var engine = new MicropolisUnityEngine();
@@ -15,8 +20,12 @@
         public void tickEngine()
         {
             simTick();
-            // TODO animateTiles();
+            // if(doAnimation && !tilesAnimated)
+            //   animateTiles();
             simUpdate();
+            // sendUpdate('tick')
+            // sendUpdate('editor')
+            // sendUpdate('map')
         }
     }
 }

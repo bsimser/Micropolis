@@ -2,8 +2,12 @@
 {
     public partial class Micropolis
     {
+        /// <summary>
+        /// Simualtor constructor.
+        /// </summary>
         public Micropolis()
         {
+            // TODO initialize all objects like pouplationDensityMap, crimeRateMap, powerGridMap, etc.
             init();
         }
 
