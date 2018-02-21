@@ -55,6 +55,12 @@
         /// </summary>
         public void initGame()
         {
+            // simPaused = false;
+            // simPausedSpeed = 0;
+            // simPass = 0;
+            // simPasses = 1;
+            // heatSteps = 0;
+            // setSpeed(0);
         }
 
         /// <summary>

@@ -23,6 +23,10 @@
 
         public void simUpdate()
         {
+            // doUpdateHeads();
+            // graphDoer();
+            // updateBudget();
+            // scoreDoer();
         }
 
         public void simHeat()
@@ -35,6 +39,16 @@
 
         public void simTick()
         {
+            /*
+            if (simSpeed)
+            {
+                for (simPass = 0; simPass < simPasses; simPass++)
+                {
+                    simLoop(true);
+                }
+            }
+            */
+            simUpdate();
         }
 
         public void simRobots()
