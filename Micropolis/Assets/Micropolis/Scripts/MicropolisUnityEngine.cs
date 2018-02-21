@@ -20,8 +20,10 @@
         public void tickEngine()
         {
             simTick();
-            // if(doAnimation && !tilesAnimated)
-            //   animateTiles();
+            if (doAnimation && !tilesAnimated)
+            {
+                animateTiles();
+            }
             simUpdate();
             // sendUpdate('tick')
             // sendUpdate('editor')

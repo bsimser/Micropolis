@@ -1,4 +1,6 @@
-﻿namespace Micropolis.MicropolisCore
+﻿using System.Diagnostics;
+
+namespace Micropolis.MicropolisCore
 {
     public partial class Micropolis
     {
@@ -8,22 +10,63 @@
 
         public void pause()
         {
+            if (!simPaused)
+            {
+                simPausedSpeed = simSpeedMeta;
+                setSpeed(0);
+                simPaused = true;
+            }
+
+            // Call back even if the state did not change.
+            callback("update", "s", "paused");
         }
 
         public void resume()
         {
+            if (simPaused)
+            {
+                simPaused = false;
+                setSpeed((short) simPausedSpeed);
+            }
+
+            // Call back even if the state did not change.
+            callback("update", "s", "paused");
         }
 
         public void setSpeed(short speed)
         {
+            if (speed < 0)
+            {
+                speed = 0;
+            }
+            else if (speed > 3)
+            {
+                speed = 3;
+            }
+
+            simSpeedMeta = speed;
+
+            if (simPaused)
+            {
+                simPausedSpeed = simSpeedMeta;
+                speed = 0;
+            }
+
+            simSpeed = speed;
+
+            callback("update", "s", "speed");
         }
 
         public void setPasses(int passes)
         {
+            simPasses = passes;
+            simPass = 0;
+            callback("update", "s", "passes");
         }
 
         public void updateGameLevel()
         {
+            callback("update", "s", "gameLevel");
         }
 
         public void setCityName(string name)
@@ -36,10 +79,22 @@
         /// <param name="name">New name of the city</param>
         public void setCleanCityName(string name)
         {
+            cityName = name;
+
+            callback("update", "s", "cityName");
         }
 
         public void setYear(int year)
         {
+            // Must prevent year from going negative, since it screws up the non-floored modulo arithmetic.
+            if (year < startingYear)
+            {
+                year = startingYear;
+            }
+
+            year = (int) ((year - startingYear) - cityTime / 48);
+            cityTime += year * 48;
+            doTimeStuff();
         }
 
         /// <summary>
@@ -48,7 +103,7 @@
         /// <returns>The current game year</returns>
         public int currentYear()
         {
-            return 0;
+            return (int) (cityTime / 48 + startingYear);
         }
 
         /// <summary>
@@ -56,6 +111,7 @@
         /// </summary>
         public void doNewGame()
         {
+            callback("newGame", "");
         }
 
         /// <summary>
@@ -65,6 +121,8 @@
         /// <param name="value">New setting for enableDisasters</param>
         public void setEnableDisasters(bool value)
         {
+            enableDisasters = value;
+            mustUpdateOptions = true;
         }
 
         /// <summary>
@@ -73,6 +131,8 @@
         /// <param name="value">New value for the auto-budget setting</param>
         public void setAutoBudget(bool value)
         {
+            autoBudget = value;
+            mustUpdateOptions = true;
         }
 
         /// <summary>
@@ -83,6 +143,8 @@
         /// <param name="value">The value to set autoBulldoze to</param>
         public void setAutoBulldoze(bool value)
         {
+            autoBulldoze = value;
+            mustUpdateOptions = true;
         }
 
         /// <summary>
@@ -93,6 +155,8 @@
         /// <param name="value">The value to set autoGoto to</param>
         public void setAutoGoto(bool value)
         {
+            autoGoto = value;
+            mustUpdateOptions = true;
         }
 
         /// <summary>
@@ -103,6 +167,8 @@
         /// <param name="value">The value to set enableSound to</param>
         public void setEnableSound(bool value)
         {
+            enableSound = value;
+            mustUpdateOptions = true;
         }
 
         /// <summary>
@@ -113,6 +179,8 @@
         /// <param name="value">The value to set doAnimation to</param>
         public void setDoAnimation(bool value)
         {
+            doAnimation = value;
+            mustUpdateOptions = true;
         }
 
         /// <summary>
@@ -123,6 +191,8 @@
         /// <param name="value">The value to set doMessages to</param>
         public void setDoMessages(bool value)
         {
+            doMessages = value;
+            mustUpdateOptions = true;
         }
 
         /// <summary>
@@ -133,6 +203,8 @@
         /// <param name="value">The value to set doNotices to</param>
         public void setDoNotices(bool value)
         {
+            doNotices = value;
+            mustUpdateOptions = true;
         }
 
         /// <summary>

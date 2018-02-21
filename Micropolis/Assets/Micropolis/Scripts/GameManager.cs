@@ -10,7 +10,7 @@ namespace Micropolis
         {
             _engine = MicropolisUnityEngine.CreateUnityEngine();
 
-            //_engine.cityTax = 10;
+            _engine.cityTax = 10;
             _engine.setPasses(200);
             // setTile = _engine.setTile;
             

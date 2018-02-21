@@ -1,4 +1,7 @@
-﻿namespace Micropolis.MicropolisCore
+﻿using System;
+using UnityEngine;
+
+namespace Micropolis.MicropolisCore
 {
     public partial class Micropolis
     {
@@ -8,6 +11,7 @@
         /// <param name="dollars">Amount of money spent.</param>
         public void spend(int dollars)
         {
+            setFunds((int) (totalFunds - dollars));
         }
 
         /// <summary>
@@ -19,6 +23,8 @@
         /// <param name="dollars">New value for the player funds.</param>
         public void setFunds(int dollars)
         {
+            totalFunds = dollars;
+            updateFunds();
         }
 
         /// <summary>
@@ -27,19 +33,22 @@
         /// <returns></returns>
         public long tickCount()
         {
-            return 0;
+            return DateTime.Now.Ticks;
         }
 
         public void doPlayNewCity()
         {
+            callback("playNewCity", "");
         }
 
         public void doReallyStartGame()
         {
+            callback("reallyStartGame", "");
         }
 
         public void doStartLoad()
         {
+            callback("startLoad", "");
         }
 
         /// <summary>
@@ -48,6 +57,7 @@
         /// <param name="scenario">The scenario being started.</param>
         public void doStartScenario(int scenario)
         {
+            callback("startScenario", "d", scenario.ToString());
         }
 
         /// <summary>
@@ -55,12 +65,12 @@
         /// </summary>
         public void initGame()
         {
-            // simPaused = false;
-            // simPausedSpeed = 0;
-            // simPass = 0;
-            // simPasses = 1;
-            // heatSteps = 0;
-            // setSpeed(0);
+            simPaused = false; // Simulation is running
+            simPausedSpeed = 0;
+            simPass = 0;
+            simPasses = 1;
+            heatSteps = 0; // Disable cellular automata machine.
+            setSpeed(0);
         }
 
         /// <summary>
@@ -86,6 +96,7 @@
         /// <param name="args">Parameters of the callback.</param>
         public void callback(string name, params string[] args)
         {
+            Debug.Log(string.Format("callback:{0} arg:{1}", name, string.Join(", ", args)));
         }
 
         /// <summary>
@@ -95,6 +106,9 @@
         /// <param name="strength"></param>
         public void doEarthquake(int strength)
         {
+            //makeSound("city", "ExplosionLow"); // Make the sound all over.
+
+            callback("startEarthquake", "d", strength.ToString());
         }
 
         /// <summary>
@@ -102,6 +116,8 @@
         /// </summary>
         public void invalidateMaps()
         {
+            mapSerial++;
+            callback("update", "s", "map"); // new
         }
 
         /// <summary>
@@ -118,6 +134,10 @@
         /// <param name="y">Tile Y position of sound, 0 to WORLD_H, or -1 for everywhere.</param>
         public void makeSound(string channel, string sound, int x, int y)
         {
+            if (enableSound)
+            {
+                //callback("makeSound", "ssdd", channel, sound, x, y);
+            }
         }
 
         /// <summary>

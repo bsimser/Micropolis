@@ -19,24 +19,24 @@
         /// </summary>
         public void simInit()
         {
-            // setEnableSound(true);
-            // mustUpdateOptions = true;
+            setEnableSound(true);
+            mustUpdateOptions = true;
             // scenario = SC_NONE;
-            // startingYear = 1900;
-            // simPasses = 1;
-            // simPass = 0;
+            startingYear = 1900;
+            simPasses = 1;
+            simPass = 0;
             setAutoGoto(true);
             setCityTax(7);
-            // cityTime = 50;
+            cityTime = 50;
             setEnableDisasters(true);
             setAutoBulldoze(true);
             setAutoBudget(true);
-            // blinkFlag = 1;
-            // simSpeed = 3;
+            blinkFlag = 1;
+            simSpeed = 3;
             changeEval();
-            // simPaused = false; // Simulation is running
-            // simLoops = 0;
-            // initSimLoad = 2;
+            simPaused = false; // Simulation is running
+            simLoops = 0;
+            initSimLoad = 2;
 
             initMapArrays();
             initGraphs();
@@ -53,10 +53,12 @@
 
         public void simUpdate()
         {
-            // blinkFlag = ((tickCount() % 60) < 30) ? 1 : -1;
+            blinkFlag = (short) (tickCount() % 60 < 30 ? 1 : -1);
 
-            // if(simSpeed && !heatSteps)
-            //   tilesAnimated = false;
+            if (simSpeed != 0 && heatSteps != 0)
+            {
+                tilesAnimated = false;
+            }
 
             doUpdateHeads();
             graphDoer();
@@ -70,34 +72,47 @@
 
         public void simLoop(bool doSim)
         {
-            // if(heatSteps)
-            // simHeat()
-            // moveObjects()
-            // simRobots()
-            // else
-            // if(doSim)
-            // simFrame()
-            // moveObjects()
-            // simRobots();
-            // simLoops++;
+            if (heatSteps != 0)
+            {
+                for (int j = 0; j < heatSteps; j++)
+                {
+                    simHeat();
+                }
+
+                moveObjects();
+                simRobots();
+
+                newMap = 1;
+            }
+            else
+            {
+                if (doSim)
+                {
+                    simFrame();
+                }
+
+                moveObjects();
+                simRobots();
+            }
+
+            simLoops++;
         }
 
         public void simTick()
         {
-            /*
-            if (simSpeed)
+            if (simSpeed != 0)
             {
                 for (simPass = 0; simPass < simPasses; simPass++)
                 {
                     simLoop(true);
                 }
             }
-            */
             simUpdate();
         }
 
         public void simRobots()
         {
+            callback("simRobots", "");
         }
     }
 }

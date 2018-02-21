@@ -285,7 +285,7 @@
         /// <summary>
         /// City tax rate.
         /// </summary>
-        private short cityTax;
+        public short cityTax;
 
         /// <summary>
         /// Tax port flag.
@@ -612,8 +612,8 @@
         private bool simPaused;
 
         private int simPausedSpeed;
-        private bool tilesAnimated;
-        private bool doAnimation;
+        protected bool tilesAnimated;
+        protected bool doAnimation;
         private bool doMessages;
         private bool doNotices;
 
@@ -977,7 +977,67 @@
             autoGoto = false;
             powerStackPointer = 0;
 
-            // more, more, more to come
+            nextRandom = 1;
+            homeDir = "";
+            resourceDir = "";
+
+            newMap = 0;
+
+            cityCenterX = 0;
+            cityCenterY = 0;
+            pollutionMaxX = 0;
+            pollutionMaxY = 0;
+            crimeMaxX = 0;
+            crimeMaxY = 0;
+            donDither = 0;
+
+            valveFlag = false;
+            crimeRamp = 0;
+            pollutionRamp = 0;
+
+            resCap = false; // Do not block residential growth
+            comCap = false; // Do not block commercial growth
+            indCap = false; // Do not block industrial growth
+
+            cashFlow = 0;
+            disasterWait = 0;
+            scoreWait = 0;
+            poweredZoneCount = 0;
+            unpoweredZoneCount = 0;
+            newPower = false;
+            cityTaxAverage = 0;
+            simCycle = 0;
+            phaseCycle = 0;
+            speedCycle = 0;
+            doInitialEval = false;
+            mapSerial = 1;
+            resValve = 0;
+            comValve = 0;
+            indValve = 0;
+
+            absDist = 0;
+            spriteCycle = 0;
+            totalFunds = 0;
+            autoBulldoze = true;
+            autoBudget = true;
+
+            initSimLoad = 0;
+            simSpeed = 0;
+            simSpeedMeta = 0;
+            enableSound = false;
+            enableDisasters = true;
+            evalChanged = false;
+            blinkFlag = 0;
+
+            mustUpdateFunds = false;
+            mustUpdateOptions = false;
+            cityTimeLast = 0;
+            cityYearLast = 0;
+            cityMonthLast = 0;
+            totalFundsLast = 0;
+            resLast = 0;
+            comLast = 0;
+            indLast = 0;
 
             simInit();
         }
