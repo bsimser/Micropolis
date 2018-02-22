@@ -70,7 +70,7 @@
         /// <summary>
         /// The number of simulator passes per #cityTime unit.
         /// </summary>
-        private const int PASSES_PER_CITYTIME = 16;
+        public const int PASSES_PER_CITYTIME = 16;
 
         /// <summary>
         /// The number of #cityTime units per month.
@@ -293,7 +293,7 @@
         /// 
         /// Four units per month, so one unit is about a week(7.6 days).
         /// </summary>
-        private long cityTime;
+        public long cityTime;
 
         /// <summary>
         /// City month, 4 time units per month.

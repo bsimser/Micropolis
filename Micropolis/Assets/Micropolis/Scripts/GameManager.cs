@@ -26,11 +26,25 @@ namespace Micropolis
             // resize the panel
             // move the panel
             // show the panel
+
+            // TODO until we get a MicropolisPannedWindow let's kick off the engine here
+            //_engine.title = "New City";
+            //_engine.description = "A randomly generated city.";
+            _engine.generateSomeCity(UnityEngine.Random.Range(int.MinValue, int.MaxValue));
+            //sendUpdate("load");
+            _engine.setSpeed(2);
+            _engine.setCityTax(9);
+            _engine.setEnableDisasters(false);
+            //_engine.setGameMode('start');
         }
 
         private void Update()
         {
-            _engine.tickEngine();
+            var tick = (int) (Time.time * 1000 % _engine.cityTime) == 0;
+            if (tick)
+            {
+                _engine.tickEngine();
+            }
         }
     }
 }
