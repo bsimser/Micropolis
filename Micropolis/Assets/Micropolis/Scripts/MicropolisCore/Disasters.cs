@@ -7,6 +7,30 @@
         /// </summary>
         public void doDisasters()
         {
+            // Chance of disasters at lev 0 1 2
+            short[] DisChance =
+            {
+                10 * 48,    // Game level 0
+                5 * 48,     // Game level 1
+                60          // Game level 2
+            };
+            // assert(LEVEL_COUNT == LENGTH_OF(DisChance));
+
+            if (floodCount != 0)
+            {
+                floodCount--;
+            }
+
+            // TODO scenarioDisaster()
+
+            if (!enableDisasters)
+            {
+                return;
+            }
+
+            // TODO var x = gameLevel;
+
+            // TODO if(!getRandom(DisChance[x]))
         }
 
         /// <summary>
@@ -14,6 +38,7 @@
         /// </summary>
         public void scenarioDisaster()
         {
+            // TODO
         }
 
         /// <summary>
@@ -22,6 +47,7 @@
         /// </summary>
         public void makeMeltdown()
         {
+            // TODO
         }
 
         /// <summary>
@@ -29,6 +55,7 @@
         /// </summary>
         public void fireBomb()
         {
+            // TODO
         }
 
         /// <summary>
@@ -36,6 +63,13 @@
         /// </summary>
         public void makeFireBombs()
         {
+            int count = 2 + (getRandom16() & 1);
+
+            while (count > 0)
+            {
+                fireBomb();
+                count--;
+            }
         }
 
         /// <summary>
@@ -43,6 +77,7 @@
         /// </summary>
         public void makeEarthquake()
         {
+            // TODO
         }
 
         /// <summary>
@@ -50,6 +85,7 @@
         /// </summary>
         public void setFire()
         {
+            // TODO
         }
 
         /// <summary>
@@ -57,6 +93,7 @@
         /// </summary>
         public void makeFire()
         {
+            // TODO
         }
 
         /// <summary>
@@ -66,6 +103,7 @@
         /// <returns>Function returns true if tile is vulnerable, and false if not</returns>
         public bool vulnerable(int tem)
         {
+            // TODO
             return false;
         }
 
@@ -75,6 +113,7 @@
         /// </summary>
         public void makeFlood()
         {
+            // TODO
         }
 
         /// <summary>
@@ -84,6 +123,7 @@
         /// <param name="pos">Position around which to flood further</param>
         public void doFlood(Position pos)
         {
+            // TODO
         }
     }
 }

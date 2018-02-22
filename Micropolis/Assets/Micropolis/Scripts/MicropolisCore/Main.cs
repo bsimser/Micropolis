@@ -14,6 +14,7 @@ namespace Micropolis.MicropolisCore
         /// </summary>
         public void environmentInit()
         {
+            // TODO
         }
 
         /// <summary>
@@ -21,18 +22,18 @@ namespace Micropolis.MicropolisCore
         /// </summary>
         public void simInit()
         {
-            setEnableSound(true);
-            mustUpdateOptions = true;
-            //scenario = SC_NONE;
+            setEnableSound(true); // Enable sound
+            mustUpdateOptions = true; // Update options displayed at user
+            // TODO scenario = SC_NONE;
             startingYear = 1900;
             simPasses = 1;
             simPass = 0;
             setAutoGoto(true);
             setCityTax(7);
             cityTime = 50;
-            setEnableDisasters(true);
-            setAutoBulldoze(true);
-            setAutoBudget(true);
+            setEnableDisasters(true); // Enable disasters
+            setAutoBulldoze(true); // Enable auto bulldoze
+            setAutoBudget(true); // Enable auto-budget
             blinkFlag = 1;
             simSpeed = 3;
             changeEval();
@@ -48,8 +49,8 @@ namespace Micropolis.MicropolisCore
             clearMap();
             initWillStuff();
             setFunds(5000);
-            //setGameLevelFunds(LEVEL_EASY);
-            //setSpeed(0);
+            // TODO setGameLevelFunds(LEVEL_EASY);
+            setSpeed(0);
             setPasses(1);
         }
 
@@ -70,12 +71,11 @@ namespace Micropolis.MicropolisCore
 
         public void simHeat()
         {
+            // TODO
         }
 
         public void simLoop(bool doSim)
         {
-            Debug.Log(string.Format("in simLoop heatSteps:{0} doSim:{1}", heatSteps, doSim));
-
             if (heatSteps != 0)
             {
                 for (int j = 0; j < heatSteps; j++)
@@ -102,6 +102,9 @@ namespace Micropolis.MicropolisCore
             simLoops++;
         }
 
+        /// <summary>
+        /// Move simulation forward.
+        /// </summary>
         public void simTick()
         {
             if (simSpeed != 0)

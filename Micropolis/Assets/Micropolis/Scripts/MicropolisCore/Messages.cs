@@ -48,6 +48,7 @@
         /// <param name="msg">Message</param>
         public void doAutoGoto(short x, short y, string msg)
         {
+            callback("autoGoto", "dd", x.ToString(), y.ToString());
         }
 
         /// <summary>
@@ -55,6 +56,7 @@
         /// </summary>
         public void doLoseGame()
         {
+            callback("loseGame", "");
         }
 
         /// <summary>
@@ -62,6 +64,7 @@
         /// </summary>
         public void doWinGame()
         {
+            callback("winGame", "");
         }
     }
 }

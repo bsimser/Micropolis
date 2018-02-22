@@ -1,4 +1,6 @@
-﻿namespace Micropolis.MicropolisCore
+﻿using System;
+
+namespace Micropolis.MicropolisCore
 {
     public partial class Micropolis
     {
@@ -8,6 +10,7 @@
         /// </summary>
         public void cityEvaluation()
         {
+            // TODO
         }
 
         /// <summary>
@@ -15,6 +18,7 @@
         /// </summary>
         public void evalInit()
         {
+            // TODO
         }
 
         /// <summary>
@@ -23,6 +27,20 @@
         /// </summary>
         public void getAssessedValue()
         {
+            long z;
+
+            z = roadTotal * 5;
+            z += railTotal * 10;
+            z += policeStationPop * 1000;
+            z += fireStationPop * 1000;
+            z += hospitalPop * 400;
+            z += stadiumPop * 3000;
+            z += seaportPop * 5000;
+            z += airportPop * 10000;
+            z += coalPowerPop * 3000;
+            z += nuclearPowerPop * 6000;
+
+            cityAssessedValue = z * 1000;
         }
 
         /// <summary>
@@ -30,6 +48,17 @@
         /// </summary>
         public void doPopNum()
         {
+            // TODO
+        }
+
+        /// <summary>
+        /// Compute city population.
+        /// </summary>
+        /// <returns></returns>
+        public long getPopulation()
+        {
+            long pop = (resPop + (comPop + indPop) * 8L) * 20L;
+            return pop;
         }
 
         /// <summary>
@@ -38,6 +67,7 @@
         /// <returns>Value representing how large the traffic problem is.</returns>
         public short getTrafficAverage()
         {
+            // TODO
             return 0;
         }
 
@@ -47,7 +77,18 @@
         /// <returns>Value representing the severity of unemployment problems</returns>
         public short getUnemployment()
         {
-            return 0;
+            short b = (short) ((comPop + indPop) * 8);
+
+            if (b == 0)
+            {
+                return 0;
+            }
+
+            // Ratio total people / working. At least 1.
+            float r = ((float)resPop) / b;
+
+            b = (short)((r - 1) * 255); // (r - 1) is the fraction unemployed people
+            return Math.Min(b, (short)255);
         }
 
         /// <summary>
@@ -56,7 +97,7 @@
         /// <returns>Value representing the severity of fire problems</returns>
         public short getFireSeverity()
         {
-            return 0;
+            return (short) Math.Min(firePop * 5, 255);
         }
 
         /// <summary>
@@ -64,6 +105,17 @@
         /// </summary>
         public void doVotes()
         {
+            int z;
+
+            cityYes = 0;
+
+            for (z = 0; z < 100; z++)
+            {
+                if (getRandom(1000) < cityScore)
+                {
+                    cityYes++;
+                }
+            }
         }
 
         /// <summary>
@@ -71,6 +123,7 @@
         /// </summary>
         public void doScoreCard()
         {
+            callback("update", "s", "evaluation");
         }
 
         /// <summary>
@@ -78,6 +131,7 @@
         /// </summary>
         public void changeEval()
         {
+            evalChanged = true;
         }
 
         /// <summary>
@@ -85,6 +139,11 @@
         /// </summary>
         public void scoreDoer()
         {
+            if (evalChanged)
+            {
+                doScoreCard();
+                evalChanged = false;
+            }
         }
 
         /// <summary>
@@ -93,6 +152,7 @@
         /// <returns>Number of problems.</returns>
         public int countProblems()
         {
+            // TODO
             return 0;
         }
 
@@ -106,6 +166,7 @@
         /// </returns>
         public int getProblemNumber(int i)
         {
+            // TODO
             return 0;
         }
 
@@ -119,6 +180,7 @@
         /// </returns>
         public int getProblemVotes(int i)
         {
+            // TODO
             return 0;
         }
     }

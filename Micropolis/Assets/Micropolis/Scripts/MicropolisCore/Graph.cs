@@ -10,6 +10,13 @@
         /// <param name="scale">Scale factor.</param>
         public void drawMonth(byte[] hist, byte[] s, float scale)
         {
+            int val, x;
+
+            for (x = 0; x < 120; x++)
+            {
+                val = (int) (hist[x] * scale);
+                s[119 - x] = clamp<byte>((byte) val, 0, 255);
+            }
         }
 
         /// <summary>
@@ -17,6 +24,7 @@
         /// </summary>
         public void changeCensus()
         {
+            censusChanged = true;
         }
 
         /// <summary>
@@ -25,6 +33,11 @@
         /// </summary>
         public void graphDoer()
         {
+            if (censusChanged)
+            {
+                callback("update", "s", "history");
+                censusChanged = false;
+            }
         }
 
         /// <summary>
@@ -32,6 +45,10 @@
         /// </summary>
         public void initGraphs()
         {
+            if (!historyInitialized)
+            {
+                historyInitialized = true;
+            }
         }
 
         /// <summary>
@@ -39,6 +56,7 @@
         /// </summary>
         public void initGraphMax()
         {
+            // TODO
         }
 
         /// <summary>
@@ -50,6 +68,7 @@
         /// <param name="maxValResult">Pointer to variable to write maximal value to.</param>
         public void getHistoryRange(int historyType, int historyScale, out short minValResult, out short maxValResult)
         {
+            // TODO
             minValResult = 0;
             maxValResult = 0;
         }
@@ -63,6 +82,7 @@
         /// <returns>Historic data value of the requested graph</returns>
         public short getHistory(int historyType, int historyScale, int historyIndex)
         {
+            // TODO
             return 0;
         }
 
@@ -75,6 +95,7 @@
         /// <param name="historyValue">Index in the value to store</param>
         public void setHistory(int hisotryType, int historyScale, int historyIndex, short historyValue)
         {
+            // TODO
         }
     }
 }

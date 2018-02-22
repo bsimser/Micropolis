@@ -7,6 +7,7 @@
         /// </summary>
         public void generateMap()
         {
+            generateSomeCity(getRandom16());
         }
 
         /// <summary>
@@ -15,6 +16,7 @@
         /// <param name="seed">Random number generator initializing seed</param>
         public void generateSomeCity(int seed)
         {
+            // TODO
         }
 
         /// <summary>
@@ -23,6 +25,7 @@
         /// <param name="seed">Initialization seed for the random generator.</param>
         public void generateMap(int seed)
         {
+            // TODO
         }
 
         /// <summary>
@@ -30,6 +33,7 @@
         /// </summary>
         public void clearMap()
         {
+            // TODO
         }
 
         /// <summary>
@@ -37,6 +41,7 @@
         /// </summary>
         public void clearUnnatural()
         {
+            // TODO
         }
 
         /// <summary>
@@ -44,6 +49,7 @@
         /// </summary>
         public void makeNakedIsland()
         {
+            // TODO
         }
 
         /// <summary>
@@ -51,6 +57,9 @@
         /// </summary>
         public void makeIsland()
         {
+            makeNakedIsland();
+            smoothRiver();
+            doTrees();
         }
 
         /// <summary>
@@ -58,6 +67,7 @@
         /// </summary>
         public void makeLakes()
         {
+            // TODO
         }
 
         /// <summary>
@@ -66,6 +76,7 @@
         /// <param name="pos">Rough position of the lake.</param>
         public void makeSingleLake(Position pos)
         {
+            // TODO
         }
 
         /// <summary>
@@ -78,6 +89,7 @@
         /// <param name="yloc">Vertical position of starting point for splashing trees.</param>
         public void treeSplash(short xloc, short yloc)
         {
+            // TODO
         }
 
         /// <summary>
@@ -85,14 +97,17 @@
         /// </summary>
         public void doTrees()
         {
+            // TODO
         }
 
         public void smoothRiver()
         {
+            // TODO
         }
 
         public void smoothTrees()
         {
+            // TODO
         }
 
         /// <summary>
@@ -103,6 +118,7 @@
         /// <param name="preserve"></param>
         public void smoothTreesAt(int x, int y, bool preserve)
         {
+            // TODO
         }
 
         /// <summary>
@@ -111,6 +127,7 @@
         /// <param name="terrainPos">Coordinate to start making a river.</param>
         public void doRivers(Position terrainPos)
         {
+            // TODO
         }
 
         /// <summary>
@@ -122,6 +139,7 @@
         /// <returns>Last used local terrain direction.</returns>
         public Direction2 doBRiver(Position riverPos, Direction2 riverDir, Direction2 terrainDir)
         {
+            // TODO
             return terrainDir;
         }
 
@@ -134,6 +152,7 @@
         /// <returns>Last used local terrain direction.</returns>
         public Direction2 doSRiver(Position riverPos, Direction2 riverDir, Direction2 terrainDir)
         {
+            // TODO
             return terrainDir;
         }
 
@@ -143,6 +162,7 @@
         /// <param name="pos">Base coordinate of the blob (top-left position).</param>
         public void plopBRiver(Position pos)
         {
+            // TODO
         }
 
         /// <summary>
@@ -151,10 +171,12 @@
         /// <param name="pos">Base coordinate of the blob (top-left position).</param>
         public void plopSRiver(Position pos)
         {
+            // TODO
         }
 
         public void smoothWater()
         {
+            // TODO
         }
     }
 }

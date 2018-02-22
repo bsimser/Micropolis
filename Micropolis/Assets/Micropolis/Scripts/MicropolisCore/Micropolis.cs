@@ -7,6 +7,137 @@
     public partial class Micropolis
     {
         /// <summary>
+        /// Size of the world in horizontal direction.
+        /// </summary>
+        private const int WORLD_W = 120;
+
+        /// <summary>
+        /// Size of the world in vertical direction.
+        /// </summary>
+        private const int WORLD_H = 100;
+
+        /// <summary>
+        /// The number of bits per tile.
+        /// </summary>
+        private const int BITS_PER_TILE = 16;
+
+        /// <summary>
+        /// The number of bytes per tile.
+        /// </summary>
+        private const int BYTES_PER_TILE = 2;
+
+        /// <summary>
+        /// Horizontal size of the world for a map that stores a value for every 2x2
+        /// square.
+        /// </summary>
+        private const int WORLD_W_2 = WORLD_W / 2;
+
+        /// <summary>
+        /// Vertical size of the world for a map that stores a value for every 2x2
+        /// square.
+        /// </summary>
+        private const int WORLD_H_2 = WORLD_H / 2;
+
+        /// <summary>
+        /// Horizontal size of the world for a map that stores a value for every 4x4
+        /// square.
+        /// </summary>
+        private const int WORLD_W_4 = WORLD_W / 4;
+
+        /// <summary>
+        /// Vertical size of the world for a map that stores a value for every 4x4
+        /// square.
+        /// </summary>
+        private const int WORLD_H_4 = WORLD_H / 4;
+
+        /// <summary>
+        /// Horizontal size of the world for a map that stores a value for every 8x8
+        /// square.
+        /// </summary>
+        private const int WORLD_W_8 = WORLD_W / 8;
+
+        /// <summary>
+        /// Vertical size of the world for a map that stores a value for every 8x8
+        /// square.
+        /// </summary>
+        private const int WORLD_H_8 = (WORLD_H + 7) / 8;
+
+        /// <summary>
+        /// The size of the editor view tiles, in pixels.
+        /// </summary>
+        private const int EDITOR_TILE_SIZE = 16;
+
+        /// <summary>
+        /// The number of simulator passes per #cityTime unit.
+        /// </summary>
+        private const int PASSES_PER_CITYTIME = 16;
+
+        /// <summary>
+        /// The number of #cityTime units per month.
+        /// </summary>
+        private const int CITYTIMES_PER_MONTH = 4;
+
+        /// <summary>
+        /// The number of #cityTime units per year.
+        /// </summary>
+        private const int CITYTIMES_PER_YEAR = CITYTIMES_PER_MONTH * 12;
+
+        /// <summary>
+        /// The number of history entries.
+        /// </summary>
+        private const int HISTORY_LENGTH = 480;
+
+        /// <summary>
+        /// The number of miscellaneous history entries.
+        /// </summary>
+        private const int MISC_HISTORY_LENGTH = 240;
+
+        /// <summary>
+        /// Length of the history tables.
+        /// </summary>
+        private const int HISTORY_COUNT = 120;
+
+        /// <summary>
+        /// The size of the power stack.
+        /// </summary>
+        private const int POWER_STACK_SIZE = (WORLD_W * WORLD_H) / 4;
+
+        /// <summary>
+        /// A constant used in place of an x or y position to indicate
+        /// "nowhere".
+        /// </summary>
+        private const int NOWHERE = -1;
+
+        /// <summary>
+        /// Maximal number of map tiles to drive, looking for a destination
+        /// </summary>
+        private const int MAX_TRAFFIC_DISTANCE = 30;
+
+        /// <summary>
+        /// Maximal value of roadEffect
+        /// </summary>
+        private const int MAX_ROAD_EFFECT = 32;
+
+        /// <summary>
+        /// Maximal value of policeEffect
+        /// </summary>
+        private const int MAX_POLICE_STATION_EFFECT = 1000;
+
+        /// <summary>
+        /// Maximal value of fireEffect
+        /// </summary>
+        private const int MAX_FIRE_STATION_EFFECT = 1000;
+
+        private const int RES_VALVE_RANGE = 2000;
+        private const int COM_VALVE_RANGE = 1500;
+        private const int IND_VALVE_RANGE = 1500;
+
+        /// <summary>
+        /// The default radius of an island, used by the terrain generator.
+        /// </summary>
+        private const int ISLAND_RADIUS = 18;
+
+        /// <summary>
         /// Number of road tiles in the game.
         /// 
         /// Bridges count as 4 tiles, and high density traffic counts as
@@ -1022,7 +1153,7 @@
             autoBudget = true;
 
             initSimLoad = 0;
-            //simSpeed = 0;
+            simSpeed = 0;
             simSpeedMeta = 0;
             enableSound = false;
             enableDisasters = true;
