@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Micropolis.MicropolisCore
+﻿namespace MicropolisCore
 {
     public partial class Micropolis
     {

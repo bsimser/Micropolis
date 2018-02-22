@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using MicropolisEngine;
+using UnityEngine;
 
-namespace Micropolis
+namespace MicropolisGame
 {
     public class GameManager : MonoBehaviour
     {
@@ -40,6 +41,8 @@ namespace Micropolis
 
         private void Update()
         {
+            // fire the core engine every 50ms
+            // TODO this timing is wrong but works for now
             var tick = (int) (Time.time * 1000 % _engine.cityTime) == 0;
             if (tick)
             {

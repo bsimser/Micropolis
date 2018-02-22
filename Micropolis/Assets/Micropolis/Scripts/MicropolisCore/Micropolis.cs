@@ -1,4 +1,4 @@
-﻿namespace Micropolis.MicropolisCore
+﻿namespace MicropolisCore
 {
     /// <summary>
     /// Main definition for the Micropolis class that everything drives off of.

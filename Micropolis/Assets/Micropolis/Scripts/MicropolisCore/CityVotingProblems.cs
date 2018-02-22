@@ -1,4 +1,4 @@
-﻿namespace Micropolis.MicropolisCore
+﻿namespace MicropolisCore
 {
     /// <summary>
     /// Problems in the city where citizens vote on

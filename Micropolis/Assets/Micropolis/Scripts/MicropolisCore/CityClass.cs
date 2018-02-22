@@ -1,4 +1,4 @@
-﻿namespace Micropolis.MicropolisCore
+﻿namespace MicropolisCore
 {
     /// <summary>
     /// Available classes of cities

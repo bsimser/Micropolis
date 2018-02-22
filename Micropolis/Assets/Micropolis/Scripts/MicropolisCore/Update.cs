@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Micropolis.MicropolisCore
+﻿namespace MicropolisCore
 {
     public partial class Micropolis
     {
@@ -66,14 +64,7 @@ namespace Micropolis.MicropolisCore
                 cityYearLast = cityYear;
                 cityMonthLast = cityMonth;
 
-                //callback("update", "s", "date");
-                Debug.Log(string.Format(
-                    "cityTime:{0} startingYear:{1} year:{2} month:{3}",
-                    cityTime,
-                    startingYear,
-                    cityTime/48+startingYear,
-                    (cityTime%48)>>2
-                    ));
+                callback("update", "s", "date");
             }
         }
 

@@ -1,4 +1,4 @@
-﻿namespace Micropolis.MicropolisCore
+﻿namespace MicropolisCore
 {
     public class MapShort8 : Map<short>
     {

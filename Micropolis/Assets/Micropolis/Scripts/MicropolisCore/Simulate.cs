@@ -1,7 +1,6 @@
 ﻿using System;
-using UnityEngine;
 
-namespace Micropolis.MicropolisCore
+namespace MicropolisCore
 {
     public partial class Micropolis
     {
@@ -70,8 +69,6 @@ namespace Micropolis.MicropolisCore
             {
                 phaseCycle &= 15;
             }
-
-            Debug.Log(string.Format("simCycle:{0} phaseCycle:{1}", simCycle, phaseCycle));
 
             switch (phaseCycle)
             {

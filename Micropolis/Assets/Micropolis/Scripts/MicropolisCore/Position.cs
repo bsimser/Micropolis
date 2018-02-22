@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace Micropolis.MicropolisCore
+﻿namespace MicropolisCore
 {
     /// <summary>
     /// X/Y position.

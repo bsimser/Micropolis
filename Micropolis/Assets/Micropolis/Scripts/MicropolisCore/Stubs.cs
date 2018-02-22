@@ -1,7 +1,6 @@
 ﻿using System;
-using UnityEngine;
 
-namespace Micropolis.MicropolisCore
+namespace MicropolisCore
 {
     public partial class Micropolis
     {
@@ -70,7 +69,7 @@ namespace Micropolis.MicropolisCore
             simPass = 0;
             simPasses = 1;
             heatSteps = 0; // Disable cellular automata machine.
-            //setSpeed(0);
+            setSpeed(0);
         }
 
         /// <summary>
@@ -96,7 +95,7 @@ namespace Micropolis.MicropolisCore
         /// <param name="args">Parameters of the callback.</param>
         public void callback(string name, params string[] args)
         {
-            Debug.Log(string.Format("callback:{0} arg:{1}", name, string.Join(", ", args)));
+            //Debug.Log(string.Format("callback:{0} arg:{1}", name, string.Join(", ", args)));
         }
 
         /// <summary>
