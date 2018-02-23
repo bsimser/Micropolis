@@ -6,6 +6,16 @@
     /// </summary>
     public partial class Micropolis
     {
+        public delegate void UpdateDateHandler();
+        public event UpdateDateHandler OnDateUpdated;
+        private void CallbackUpdateDate()
+        {
+            if (OnDateUpdated != null)
+            {
+                OnDateUpdated();
+            }
+        }
+
         /// <summary>
         /// Size of the world in horizontal direction.
         /// </summary>
@@ -298,17 +308,17 @@
         /// <summary>
         /// City month, 4 time units per month.
         /// </summary>
-        private long cityMonth;
+        public long cityMonth;
 
         /// <summary>
         /// City year, (cityTime / 48) + startingYear.
         /// </summary>
-        private long cityYear;
+        public long cityYear;
 
         /// <summary>
         /// City starting year.
         /// </summary>
-        private short startingYear;
+        public short startingYear;
 
         /// <summary>
         /// Two-dimensional array of map tiles.
@@ -636,7 +646,7 @@
         /// 
         /// Percentage of people who think the mayor is doing a good job.
         /// </summary>
-        private short cityYes;
+        public short cityYes;
 
         // short problemVotes[PROBNUM];
         // short probelmOrder[CVP_PROBLEM_COMPLAINTS];
@@ -646,14 +656,14 @@
         /// 
         /// Depends of ResPop, ComPop and IndPop.
         /// </summary>
-        private long cityPop;
+        public long cityPop;
 
         /// <summary>
         /// Change in the city population.
         /// 
         /// Depends on last cityPop.
         /// </summary>
-        private long cityPopDelta;
+        public long cityPopDelta;
 
         /// <summary>
         /// City assessed value.
@@ -663,7 +673,7 @@
         /// airportPop, coalPowerPop, and nuclearPowerPop, and their
         /// respective values.
         /// </summary>
-        private long cityAssessedValue;
+        public long cityAssessedValue;
 
         //private CityClass cityClass;
 
@@ -730,7 +740,7 @@
         /// <summary>
         /// The number of passes through the simulator loop to take each tick.
         /// </summary>
-        private int simPasses;
+        public int simPasses;
 
         /// <summary>
         /// The count of the current pass through the simulator loop.
@@ -931,7 +941,7 @@
         /// <summary>
         /// Funds of the player
         /// </summary>
-        private long totalFunds;
+        public long totalFunds;
 
         /// <summary>
         /// Enable auto-bulldoze
@@ -951,8 +961,7 @@
         //private GameLevel gameLevel;
         private short initSimLoad;
         //private Scenario scenario;
-        protected short simSpeed;
-
+        public short simSpeed;
         private short simSpeedMeta;
 
         /// <summary>
@@ -984,8 +993,8 @@
         private bool mustUpdateOptions;
 
         private long cityTimeLast;
-        private long cityYearLast;
-        private long cityMonthLast;
+        public long cityYearLast;
+        public long cityMonthLast;
         private long totalFundsLast;
         private long resLast;
         private long comLast;

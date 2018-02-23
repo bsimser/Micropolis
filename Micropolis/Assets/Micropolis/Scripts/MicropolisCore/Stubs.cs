@@ -95,6 +95,17 @@ namespace MicropolisCore
         /// <param name="args">Parameters of the callback.</param>
         public void callback(string name, params string[] args)
         {
+            switch (name)
+            {
+                case "update":
+                    // TODO if "date" then
+                    // if(OnDateUpdated != null) { OnDateUpdated() }
+                    // sendUpdate(args[0]);
+                    break;
+
+                default:
+                    break;
+            }
             //Debug.Log(string.Format("callback:{0} arg:{1}", name, string.Join(", ", args)));
         }
 

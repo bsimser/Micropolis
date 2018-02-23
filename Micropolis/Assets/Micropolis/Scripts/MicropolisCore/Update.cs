@@ -65,6 +65,7 @@
                 cityMonthLast = cityMonth;
 
                 callback("update", "s", "date");
+                CallbackUpdateDate();
             }
         }
 
