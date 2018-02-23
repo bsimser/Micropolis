@@ -4,4 +4,7 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Micropolis/Scenes/GameScene.unity
+    guid: 22eb5044020919e409c8f694ee76bb71

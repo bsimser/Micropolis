@@ -56,7 +56,7 @@
         {
             blinkFlag = (short) (tickCount() % 60 < 30 ? 1 : -1);
 
-            if (simSpeed != 0 && heatSteps != 0)
+            if (simSpeed != 0 && heatSteps == 0)
             {
                 tilesAnimated = false;
             }
