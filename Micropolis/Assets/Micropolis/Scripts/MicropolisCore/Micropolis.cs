@@ -6,16 +6,6 @@
     /// </summary>
     public partial class Micropolis
     {
-        public delegate void UpdateDateHandler();
-        public event UpdateDateHandler OnDateUpdated;
-        private void CallbackUpdateDate()
-        {
-            if (OnDateUpdated != null)
-            {
-                OnDateUpdated();
-            }
-        }
-
         /// <summary>
         /// Size of the world in horizontal direction.
         /// </summary>
@@ -766,7 +756,7 @@
         /// <summary>
         /// Name of the city.
         /// </summary>
-        private string cityName;
+        public string cityName;
 
         private int heatSteps;
         private int heatFlow;

@@ -69,6 +69,21 @@
 
         public void setCityName(string name)
         {
+            string cleanName = string.Empty;
+
+            int i;
+            int n = name.Length;
+            for (i = 0; i < n; i++)
+            {
+                char ch = name[i];
+                if (!char.IsLetterOrDigit(ch))
+                {
+                    ch = '_';
+                }
+                cleanName += ch;
+            }
+
+            setCleanCityName(cleanName);
         }
 
         /// <summary>

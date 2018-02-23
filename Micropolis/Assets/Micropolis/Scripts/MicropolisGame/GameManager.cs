@@ -1,5 +1,4 @@
 ﻿using System;
-using MicropolisCore;
 using MicropolisEngine;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,7 +24,9 @@ namespace MicropolisGame
             _engine = MicropolisUnityEngine.CreateUnityEngine();
 
             // subscribe to event handlers in the engine
-            _engine.OnDateUpdated += UpdateDate;
+            _engine.OnUpdateDate += DoUpdateDate;
+            _engine.OnUpdateFunds += DoUpdateFunds;
+            _engine.OnUpdateCityName += DoUpdateCityName;
 
             _engine.cityTax = 10;
             _engine.setPasses(200);
@@ -45,7 +46,7 @@ namespace MicropolisGame
             // show the panel
 
             // TODO until we get a MicropolisPannedWindow let's kick off the engine here
-            //_engine.title = "New City";
+            _engine.setCityName("New City");
             //_engine.description = "A randomly generated city.";
             _engine.generateSomeCity(UnityEngine.Random.Range(int.MinValue, int.MaxValue));
             //sendUpdate("load");
@@ -74,7 +75,17 @@ namespace MicropolisGame
             //_engine.setGameMode('start');
         }
 
-        private void UpdateDate()
+        private void DoUpdateCityName()
+        {
+            Debug.Log(_engine.cityName);
+        }
+
+        private void DoUpdateFunds()
+        {
+            _fundsText.text = string.Format("Funds: {0:C0}", _engine.totalFunds);
+        }
+
+        private void DoUpdateDate()
         {
             var cityTime = _engine.cityTime;
             var startingYear = _engine.startingYear;
@@ -90,6 +101,7 @@ namespace MicropolisGame
         private void Update()
         {
             // orginal game called tickEngine every 50 microseconds
+            // or did it? argh!
 
             // TODO can't get speed right
             // original DOS version slow = 1 month = 20 seconds
@@ -100,7 +112,9 @@ namespace MicropolisGame
             var microseconds = Math.Floor((DateTime.Now.Ticks % TimeSpan.TicksPerMillisecond) / (double) TicksPerMicrosecond);
             var simDelay = microseconds * 50; // * Micropolis.PASSES_PER_CITYTIME;
 
-            //Debug.Log("ms=" + microseconds + " lasttick=" + _lastTick);
+            // problem: if we call tickEngine every frame the simulator runs too fast
+            // but if we don't call it the frames won't update for animation for example
+            // need to find a way to keep the simulator running in normal speed but update the UI
             if (Time.time > _nextActionTime)
             {
                 _nextActionTime += _period;
@@ -116,9 +130,6 @@ namespace MicropolisGame
             {
                 _lastTick += microseconds;
             }
-
-            // TODO setup event when funds change
-            _fundsText.text = string.Format("Funds: {0:C0}", _engine.totalFunds);
         }
 
         private string GetMonthName(long month)
