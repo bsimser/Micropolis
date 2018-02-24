@@ -32,5 +32,15 @@
         {
             return ((dir - Direction2.DIR2_NORTH + count) & 7) + Direction2.DIR2_NORTH;
         }
+
+        public static Direction2 increment90(Direction2 dir)
+        {
+            return increment45(dir, 2);
+        }
+
+        public static Direction2 increment45(Direction2 dir, int count = 1)
+        {
+            return dir + count;
+        }
     }
 }

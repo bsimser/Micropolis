@@ -89,6 +89,8 @@
             {
                 doTrees();
             }
+
+            smoothWater();
         }
 
         /// <summary>
@@ -179,6 +181,7 @@
             makeNakedIsland();
             smoothRiver();
             doTrees();
+            smoothWater();
         }
 
         /// <summary>
@@ -360,7 +363,7 @@
             return false;
         }
 
-        public void smoothTrees()
+        private void smoothTrees()
         {
             short x, y;
             for (x = 0; x < WORLD_W; x++)
@@ -381,7 +384,7 @@
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="preserve"></param>
-        public void smoothTreesAt(int x, int y, bool preserve)
+        private void smoothTreesAt(int x, int y, bool preserve)
         {
             var effects = new ToolEffects(this);
 
@@ -396,7 +399,7 @@
         /// <param name="y"></param>
         /// <param name="preserve"></param>
         /// <param name="effects"></param>
-        public void smoothTreesAt(int x, int y, bool preserve, ToolEffects effects)
+        private void smoothTreesAt(int x, int y, bool preserve, ToolEffects effects)
         {
             short[] dx = { -1, 0, 1, 0 };
             short[] dy = { 0, 1, 0, -1 };
@@ -451,7 +454,7 @@
         /// Construct rivers.
         /// </summary>
         /// <param name="terrainPos">Coordinate to start making a river.</param>
-        public void doRivers(Position terrainPos)
+        private void doRivers(Position terrainPos)
         {
             Direction2 riverDir;   // Global direction of the river
             Direction2 terrainDir; // Local direction of the river
@@ -473,7 +476,7 @@
         /// <param name="riverDir">Global direction of the river.</param>
         /// <param name="terrainDir">Local direction of the terrain.</param>
         /// <returns>Last used local terrain direction.</returns>
-        public Direction2 doBRiver(Position riverPos, Direction2 riverDir, Direction2 terrainDir)
+        private Direction2 doBRiver(Position riverPos, Direction2 riverDir, Direction2 terrainDir)
         {
             int rate1, rate2;
 
@@ -521,7 +524,7 @@
         /// <param name="riverDir">Global direction of the river.</param>
         /// <param name="terrainDir">Local direction of the terrain.</param>
         /// <returns>Last used local terrain direction.</returns>
-        public Direction2 doSRiver(Position riverPos, Direction2 riverDir, Direction2 terrainDir)
+        private Direction2 doSRiver(Position riverPos, Direction2 riverDir, Direction2 terrainDir)
         {
             int rate1, rate2;
 
@@ -567,7 +570,7 @@
         /// Put down a big river diamond-like shape.
         /// </summary>
         /// <param name="pos">Base coordinate of the blob (top-left position).</param>
-        public void plopBRiver(Position pos)
+        private void plopBRiver(Position pos)
         {
             short x, y;
             ushort[,] BRMatrix =
@@ -636,6 +639,12 @@
             }
         }
 
+        /// <summary>
+        /// Put mChar onto the map at position xLoc, yLoc if possible.
+        /// </summary>
+        /// <param name="mChar">Map value to put ont the map.</param>
+        /// <param name="xLoc">Horizontal position at the map to put mChar</param>
+        /// <param name="yLoc">Vertical position at the map to put mChar</param>
         private void putOnMap(ushort mChar, short xLoc, short yLoc)
         {
             if (mChar == 0)
@@ -738,108 +747,107 @@
 
         public void smoothWater()
         {
-//            int x, y;
-//            MapTile tile;
-//            Direction2 dir;
-//
-//            for (x = 0; x < WORLD_W; x++)
-//            {
-//                for (y = 0; y < WORLD_H; y++)
-//                {
-//
-//                    tile = map[x][y] & LOMASK;
-//
-//                    /* If (x, y) is water: */
-//                    if (tile >= WATER_LOW && tile <= WATER_HIGH)
-//                    {
-//
-//                        const Position pos(x, y);
-//                        for (dir = DIR2_BEGIN; dir < DIR2_END; dir = increment90(dir))
-//                        {
-//
-//                            /* If getting a tile off-map, condition below fails. */
-//                            // @note I think this may have been a bug, since it always uses DIR2_WEST instead of dir.
-//                            //tile = getTileFromMap(pos, DIR2_WEST, WATER_LOW);
-//                            tile = getTileFromMap(pos, dir, WATER_LOW);
-//
-//                            /* If nearest object is not water: */
-//                            if (tile < WATER_LOW || tile > WATER_HIGH)
-//                            {
-//                                map[x][y] = REDGE; /* set river edge */
-//                                break; // Continue with next tile
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//
-//            for (x = 0; x < WORLD_W; x++)
-//            {
-//                for (y = 0; y < WORLD_H; y++)
-//                {
-//
-//                    tile = map[x][y] & LOMASK;
-//
-//                    /* If water which is not a channel: */
-//                    if (tile != CHANNEL && tile >= WATER_LOW && tile <= WATER_HIGH)
-//                    {
-//
-//                        bool makeRiver = true; // make (x, y) a river
-//
-//                        const Position pos(x, y);
-//                        for (dir = DIR2_BEGIN; dir < DIR2_END; dir = increment90(dir))
-//                        {
-//
-//                            /* If getting a tile off-map, condition below fails. */
-//                            // @note I think this may have been a bug, since it always uses DIR2_WEST instead of dir.
-//                            //tile = getTileFromMap(pos, DIR2_WEST, WATER_LOW);
-//                            tile = getTileFromMap(pos, dir, WATER_LOW);
-//
-//                            /* If nearest object is not water: */
-//                            if (tile < WATER_LOW || tile > WATER_HIGH)
-//                            {
-//                                makeRiver = false;
-//                                break;
-//                            }
-//                        }
-//
-//                        if (makeRiver)
-//                        {
-//                            map[x][y] = RIVER; /* make it a river */
-//                        }
-//                    }
-//                }
-//            }
-//
-//            for (x = 0; x < WORLD_W; x++)
-//            {
-//                for (y = 0; y < WORLD_H; y++)
-//                {
-//
-//                    tile = map[x][y] & LOMASK;
-//
-//                    /* If woods: */
-//                    if (tile >= WOODS_LOW && tile <= WOODS_HIGH)
-//                    {
-//
-//                        const Position pos(x, y);
-//                        for (dir = DIR2_BEGIN; dir < DIR2_END; dir = increment90(dir))
-//                        {
-//
-//                            /* If getting a tile off-map, condition below fails. */
-//                            // @note I think this may have been a bug, since it always uses DIR2_WEST instead of dir.
-//                            //tile = getTileFromMap(pos, DIR2_WEST, WATER_LOW);
-//                            tile = getTileFromMap(pos, dir, TILE_INVALID);
-//
-//                            if (tile == RIVER || tile == CHANNEL)
-//                            {
-//                                map[x][y] = REDGE; /* make it water's edge */
-//                                break;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
+            int x, y;
+            ushort tile;
+            Direction2 dir;
+
+            for (x = 0; x < WORLD_W; x++)
+            {
+                for (y = 0; y < WORLD_H; y++)
+                {
+
+                    tile = (ushort)(map[x,y] & (ushort)MapTileBits.LOMASK);
+
+                    /* If (x, y) is water: */
+                    if (tile >= (ushort)MapTileCharacters.WATER_LOW && tile <= (ushort)MapTileCharacters.WATER_HIGH)
+                    {
+
+                        var pos = new Position(x, y);
+                        for (dir = Direction2.DIR2_BEGIN; dir < Direction2.DIR2_END; dir = DirectionUtils.increment90(dir))
+                        {
+                            /* If getting a tile off-map, condition below fails. */
+                            // @note I think this may have been a bug, since it always uses DIR2_WEST instead of dir.
+                            //tile = getTileFromMap(pos, DIR2_WEST, WATER_LOW);
+                            tile = getTileFromMap(pos, dir, (ushort) MapTileCharacters.WATER_LOW);
+
+                            /* If nearest object is not water: */
+                            if (tile < (ushort)MapTileCharacters.WATER_LOW || tile > (ushort)MapTileCharacters.WATER_HIGH)
+                            {
+                                map[x,y] = (short) MapTileCharacters.REDGE; /* set river edge */
+                                break; // Continue with next tile
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (x = 0; x < WORLD_W; x++)
+            {
+                for (y = 0; y < WORLD_H; y++)
+                {
+
+                    tile = (ushort)(map[x,y] & (ushort)MapTileBits.LOMASK);
+
+                    /* If water which is not a channel: */
+                    if (tile != (ushort)MapTileCharacters.CHANNEL && tile >= (ushort)MapTileCharacters.WATER_LOW && tile <= (ushort)MapTileCharacters.WATER_HIGH)
+                    {
+
+                        bool makeRiver = true; // make (x, y) a river
+
+                        Position pos = new Position(x, y);
+                        for (dir = Direction2.DIR2_BEGIN; dir < Direction2.DIR2_END; dir = DirectionUtils.increment90(dir))
+                        {
+
+                            /* If getting a tile off-map, condition below fails. */
+                            // @note I think this may have been a bug, since it always uses DIR2_WEST instead of dir.
+                            //tile = getTileFromMap(pos, DIR2_WEST, WATER_LOW);
+                            tile = getTileFromMap(pos, dir, (ushort)MapTileCharacters.WATER_LOW);
+
+                            /* If nearest object is not water: */
+                            if (tile < (ushort)MapTileCharacters.WATER_LOW || tile > (ushort)MapTileCharacters.WATER_HIGH)
+                            {
+                                makeRiver = false;
+                                break;
+                            }
+                        }
+
+                        if (makeRiver)
+                        {
+                            map[x,y] = (short) MapTileCharacters.RIVER; /* make it a river */
+                        }
+                    }
+                }
+            }
+
+            for (x = 0; x < WORLD_W; x++)
+            {
+                for (y = 0; y < WORLD_H; y++)
+                {
+
+                    tile = (ushort)(map[x,y] & (ushort)MapTileBits.LOMASK);
+
+                    /* If woods: */
+                    if (tile >= (ushort)MapTileCharacters.WOODS_LOW && tile <= (ushort)MapTileCharacters.WOODS_HIGH)
+                    {
+
+                        Position pos = new Position(x, y);
+                        for (dir = Direction2.DIR2_BEGIN; dir < Direction2.DIR2_END; dir = DirectionUtils.increment90(dir))
+                        {
+
+                            /* If getting a tile off-map, condition below fails. */
+                            // @note I think this may have been a bug, since it always uses DIR2_WEST instead of dir.
+                            //tile = getTileFromMap(pos, DIR2_WEST, WATER_LOW);
+                            tile = getTileFromMap(pos, dir, unchecked((ushort)MapTileCharacters.TILE_INVALID));
+
+                            if (tile == (ushort)MapTileCharacters.RIVER || tile == (ushort)MapTileCharacters.CHANNEL)
+                            {
+                                map[x,y] = (short) MapTileCharacters.REDGE; /* make it water's edge */
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
