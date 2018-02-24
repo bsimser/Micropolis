@@ -9,12 +9,12 @@
         /// <summary>
         /// Size of the world in horizontal direction.
         /// </summary>
-        private const int WORLD_W = 120;
+        public const int WORLD_W = 120;
 
         /// <summary>
         /// Size of the world in vertical direction.
         /// </summary>
-        private const int WORLD_H = 100;
+        public const int WORLD_H = 100;
 
         /// <summary>
         /// The number of bits per tile.
@@ -315,37 +315,37 @@
         /// 
         /// Map[120][100]
         /// </summary>
-        //private short map[WORLD_W];
+        public short[,] map;
 
         /// <summary>
         /// 10 year residential history maximum value.
         /// </summary>
-        private short resHist10Max;
+        private short[] resHist10Max;
 
         /// <summary>
         /// 120 year residential history maximum value.
         /// </summary>
-        private short resHist120Max;
+        private short[] resHist120Max;
 
         /// <summary>
         /// 10 year commercial history maximum value.
         /// </summary>
-        private short comHist10Max;
+        private short[] comHist10Max;
 
         /// <summary>
         /// 120 year commercial history maximum value.
         /// </summary>
-        private short comHist120Max;
+        private short[] comHist120Max;
 
         /// <summary>
         /// 10 year industrial history maximum value.
         /// </summary>
-        private short indHist10Max;
+        private short[] indHist10Max;
 
         /// <summary>
         /// 120 year industrial history maximum value.
         /// </summary>
-        private short indHist120Max;
+        private short[] indHist120Max;
 
         /// <summary>
         /// Census changed flag.
@@ -665,7 +665,7 @@
         /// </summary>
         public long cityAssessedValue;
 
-        //private CityClass cityClass;
+        private CityClass cityClass;
 
         /// <summary>
         /// City score.
@@ -923,7 +923,7 @@
         /// </summary>
         private SimSprite[] freeSprites;
 
-        //private SimSprite[] globalSprites[SPRITE_COUNT];
+        // TODO private SimSprite[] globalSprites[SPRITE_COUNT];
 
         private int absDist;
         private short spriteCycle;
@@ -1035,12 +1035,12 @@
             cityMonth = 0;
             cityYear = 0;
             startingYear = 0;
-            resHist10Max = 0;
-            resHist120Max = 0;
-            comHist10Max = 0;
-            comHist120Max = 0;
-            indHist10Max = 0;
-            indHist120Max = 0;
+            //resHist10Max = 0;
+            //resHist120Max = 0;
+            //comHist10Max = 0;
+            //comHist120Max = 0;
+            //indHist10Max = 0;
+            //indHist120Max = 0;
             censusChanged = false;
             roadSpend = 0;
             policeSpend = 0;

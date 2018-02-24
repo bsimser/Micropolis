@@ -20,4 +20,17 @@
         DIR2_BEGIN = DIR2_NORTH,        // First valid direction.
         DIR2_END = DIR2_NORTH_WEST + 1, // End-condition for directions  
     }
+
+    public class DirectionUtils
+    {
+        public static Direction2 rotate180(Direction2 dir)
+        {
+            return rotate45(dir, 4);
+        }
+
+        public static Direction2 rotate45(Direction2 dir, int count = 1)
+        {
+            return ((dir - Direction2.DIR2_NORTH + count) & 7) + Direction2.DIR2_NORTH;
+        }
+    }
 }

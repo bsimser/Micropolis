@@ -3,7 +3,7 @@
     /// <summary>
     /// Available scenarios
     /// </summary>
-    public enum Scenario
+    public enum ScenarioType
     {
         SC_NONE,           // No scenario (free playing)
 
@@ -17,5 +17,12 @@
         SC_RIO,            // Rio (flooding)
 
         SC_COUNT,          // Number of scenarios  
+    }
+
+    public class Scenario
+    {
+        public ScenarioType id;
+        public string title;
+        public string description;
     }
 }

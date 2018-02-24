@@ -7,6 +7,7 @@
         /// </summary>
         public void initMapArrays()
         {
+            map = new short[WORLD_W, WORLD_H];
         }
 
         /// <summary>

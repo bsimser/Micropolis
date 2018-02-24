@@ -1,4 +1,6 @@
-﻿namespace MicropolisCore
+﻿using System;
+
+namespace MicropolisCore
 {
     public partial class Micropolis
     {
@@ -9,7 +11,8 @@
         /// <returns>Unsigned 16 bit random number</returns>
         public int simRandom()
         {
-            return 0;
+            nextRandom = nextRandom * 1103515245 + 12345;
+            return (int) ((nextRandom & 0xffff00) >> 8);
         }
 
         /// <summary>
@@ -19,7 +22,18 @@
         /// <returns>Random number between 0 and range (inclusive)</returns>
         public short getRandom(short range)
         {
-            return 0;
+            int maxMultiple, rnum;
+
+            range++; /// @bug Increment may cause range overflow.
+            maxMultiple = 0xffff / range;
+            maxMultiple *= range;
+
+            do
+            {
+                rnum = getRandom16();
+            } while (rnum >= maxMultiple);
+
+            return (short) (rnum % range);
         }
 
         /// <summary>
@@ -28,7 +42,7 @@
         /// <returns>Unsigned 16 bit random number</returns>
         public int getRandom16()
         {
-            return 0;
+            return simRandom() & 0x0000ffff;
         }
 
         /// <summary>
@@ -37,7 +51,14 @@
         /// <returns></returns>
         public int getRandom16Signed()
         {
-            return 0;
+            int i = getRandom16();
+
+            if (i > 0x7fff)
+            {
+                i = 0x7fff - i;
+            }
+
+            return i;
         }
 
         /// <summary>
@@ -48,7 +69,10 @@
         /// <returns>Random number between 0 and limit (inclusive)</returns>
         public short getERandom(short limit)
         {
-            return 0;
+            short z = getRandom(limit);
+            short x = getRandom(limit);
+
+            return Math.Min(z, x);
         }
 
         /// <summary>
@@ -56,6 +80,7 @@
         /// </summary>
         public void randomlySeedRandom()
         {
+            seedRandom(new Random().Next());
         }
 
         /// <summary>
@@ -64,6 +89,7 @@
         /// <param name="seed">New seed</param>
         public void seedRandom(int seed)
         {
+            nextRandom = seed;
         }
     }
 }

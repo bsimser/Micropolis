@@ -1,4 +1,6 @@
-﻿namespace MicropolisCore
+﻿using System;
+
+namespace MicropolisCore
 {
     /// <summary>
     /// X/Y position.
@@ -69,16 +71,123 @@
         /// <returns>Position moved in the indicated direction</returns>
         public bool move(Direction2 dir)
         {
-            return true;
+            switch (dir)
+            {
+                case Direction2.DIR2_INVALID:
+                    return true;
+
+                case Direction2.DIR2_NORTH:
+                    if (posY > 0)
+                    {
+                        posY--;
+                        return true;
+                    }
+                    break;
+
+                case Direction2.DIR2_NORTH_EAST:
+                    if (posX < Micropolis.WORLD_W - 1 && posY > 0)
+                    {
+                        posX++;
+                        posY--;
+                        return true;
+                    }
+                    break;
+
+                case Direction2.DIR2_EAST:
+                    if (posX < Micropolis.WORLD_W - 1)
+                    {
+                        posX++;
+                        return true;
+                    }
+                    break;
+
+                case Direction2.DIR2_SOUTH_EAST:
+                    if (posX < Micropolis.WORLD_W - 1 && posY < Micropolis.WORLD_H - 1)
+                    {
+                        posX++;
+                        posY++;
+                        return true;
+                    }
+                    break;
+
+                case Direction2.DIR2_SOUTH:
+                    if (posY < Micropolis.WORLD_H - 1)
+                    {
+                        posY++;
+                        return true;
+                    }
+                    break;
+
+                // possible bug?
+                case Direction2.DIR2_SOUTH_WEST:
+                    posX--;
+                    posY--;
+                    break;
+                    if (posX > 0 && posY < Micropolis.WORLD_H - 1)
+                    {
+                        posX--;
+                        posY--;
+                        return true;
+                    }
+                    break;
+
+                case Direction2.DIR2_WEST:
+                    if (posX > 0)
+                    {
+                        posX++;
+                        return true;
+                    }
+                    break;
+
+                case Direction2.DIR2_NORTH_WEST:
+                    if (posX > 0 && posY > 0)
+                    {
+                        posX--;
+                        posY--;
+                        return true;
+                    }
+                    break;
+
+                case Direction2.DIR2_END:
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException("dir", dir, null);
+            }
+
+            // Movement was not possible, silently repair the position
+            if (posX < 0)
+            {
+                posX = 0;
+            }
+            if (posX >= Micropolis.WORLD_W)
+            {
+                posX = Micropolis.WORLD_W - 1;
+            }
+            if (posY < 0)
+            {
+                posY = 0;
+            }
+            if (posY >= Micropolis.WORLD_H)
+            {
+                posY = Micropolis.WORLD_H - 1;
+            }
+            return false;
+        }
+
+        public bool testBounds()
+        {
+            return testBounds((short) posX, (short) posY);
         }
 
         /// <summary>
         /// Test whether the position is on-map.
         /// </summary>
         /// <returns>Position is on-map</returns>
-        public bool testBounds()
+        public static bool testBounds(short x, short y)
         {
-            return true;
+            return x >= 0 && x < Micropolis.WORLD_W
+                   && y >= 0 && y < Micropolis.WORLD_H;
         }
     }
 }
