@@ -25,9 +25,10 @@ namespace MicropolisGame
 
             // TODO until we get a front end let's kick off the engine here with hard coded values
             // generate a random city
-            //_engine.generateMap();
-            // load a specific city
-            _engine.loadFile("cities" + Path.DirectorySeparatorChar + "haight.cty");
+            _engine.generateMap();
+            // load a sample city for testing
+            _engine.loadFile("cities" + Path.DirectorySeparatorChar + "deadwood.cty");
+            // other engine stuff
             _engine.setSpeed(1);
             _engine.setCityTax(9);
             _engine.setEnableDisasters(false);

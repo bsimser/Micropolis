@@ -31,8 +31,17 @@ namespace MicropolisGame
             {
                 for (int y = 0; y < Micropolis.WORLD_H; y++)
                 {
-                    var tileId = _engine.map[x, y] & 1023;
-                    _mapLayer.SetTile(new Vector3Int(x, y, 0), _tileEngine.GetTile(tileId));
+                    var tile = _engine.map[x, y];
+                    var tileId = tile & (ushort)MapTileBits.LOMASK;
+                    var hasPower = tile & unchecked((ushort) MapTileBits.PWRBIT);
+                    var isAnimated = tile & (ushort) MapTileBits.ANIMBIT;
+
+                    // map is defined from top to bottom but Tilemap works from bottom to top so invert 
+                    // the y value here and offset by 1 so we start at 0, -1 instead of 0, 0 in the grid
+                    _mapLayer.SetTile(new Vector3Int(x, -y - 1, 0), _tileEngine.GetTile(tileId));
+
+                    // TODO handle animated lightning bolt for tiles without power
+                    // TODO handle animated tiles like drawbridges, traffic, etc.
                 }
             }
         }
