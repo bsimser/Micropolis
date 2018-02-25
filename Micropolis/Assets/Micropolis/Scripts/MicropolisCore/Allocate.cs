@@ -5,7 +5,7 @@
         /// <summary>
         /// Allocate and initialize arrays for the maps.
         /// </summary>
-        public void initMapArrays()
+        private void initMapArrays()
         {
             map = new ushort[WORLD_W, WORLD_H];
 
@@ -21,8 +21,15 @@
         /// <summary>
         /// Free all map arrays.
         /// </summary>
-        public void destroyMapArrays()
+        private void destroyMapArrays()
         {
+            // TODO clear the map
+
+            // TODO clear density maps
+
+            // TODO clear temp maps
+
+            // TODO free histories
         }
     }
 }

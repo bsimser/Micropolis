@@ -2,7 +2,7 @@
 {
     public class MapByte1 : Map<byte>
     {
-        public MapByte1() : base(1)
+        public MapByte1(byte defaultValue) : base(defaultValue, 1)
         {
         }
     }

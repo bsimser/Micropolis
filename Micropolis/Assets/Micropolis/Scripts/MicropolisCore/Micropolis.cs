@@ -322,32 +322,32 @@ namespace MicropolisCore
         /// <summary>
         /// 10 year residential history maximum value.
         /// </summary>
-        private short[] resHist10Max;
+        private short resHist10Max;
 
         /// <summary>
         /// 120 year residential history maximum value.
         /// </summary>
-        private short[] resHist120Max;
+        private short resHist120Max;
 
         /// <summary>
         /// 10 year commercial history maximum value.
         /// </summary>
-        private short[] comHist10Max;
+        private short comHist10Max;
 
         /// <summary>
         /// 120 year commercial history maximum value.
         /// </summary>
-        private short[] comHist120Max;
+        private short comHist120Max;
 
         /// <summary>
         /// 10 year industrial history maximum value.
         /// </summary>
-        private short[] indHist10Max;
+        private short indHist10Max;
 
         /// <summary>
         /// 120 year industrial history maximum value.
         /// </summary>
-        private short[] indHist120Max;
+        private short indHist120Max;
 
         /// <summary>
         /// Census changed flag.
@@ -462,7 +462,7 @@ namespace MicropolisCore
         /// 
         /// Used to smooth population density, pollution.
         /// </summary>
-        private MapByte4 tempMap1;
+        private MapByte2 tempMap1;
 
         /// <summary>
         /// Temporary map 2.
@@ -1000,7 +1000,22 @@ namespace MicropolisCore
         /// </summary>
         public Micropolis()
         {
-            // TODO initialize all objects like pouplationDensityMap, crimeRateMap, powerGridMap, etc.
+            populationDensityMap = new MapByte2(0);
+            trafficDensityMap = new MapByte2(0);
+            populationDensityMap = new MapByte2(0);
+            landValueMap = new MapByte2(0);
+            crimeRateMap = new MapByte2(0);
+            terrainDensityMap = new MapByte4(0);
+            tempMap1 = new MapByte2(0);
+            tempMap2 = new MapByte2(0);
+            tempMap3 = new MapByte4(0);
+            powerGridMap = new MapByte1(0);
+            rateOfGrowthMap = new MapShort8(0);
+            fireStationMap = new MapShort8(0);
+            fireStationEffectMap = new MapShort8(0);
+            policeStationMap = new MapShort8(0);
+            policeStationEffectMap = new MapShort8(0);
+            comRateMap = new MapShort8(0);
             init();
         }
 
@@ -1040,12 +1055,12 @@ namespace MicropolisCore
             cityMonth = 0;
             cityYear = 0;
             startingYear = 0;
-            //resHist10Max = 0;
-            //resHist120Max = 0;
-            //comHist10Max = 0;
-            //comHist120Max = 0;
-            //indHist10Max = 0;
-            //indHist120Max = 0;
+            resHist10Max = 0;
+            resHist120Max = 0;
+            comHist10Max = 0;
+            comHist120Max = 0;
+            indHist10Max = 0;
+            indHist120Max = 0;
             censusChanged = false;
             roadSpend = 0;
             policeSpend = 0;
@@ -1059,16 +1074,27 @@ namespace MicropolisCore
             taxFund = 0;
             cityTax = 0;
             taxFlag = false;
-            // populationDensityMap.clear();
-            // etc
+            populationDensityMap.clear();
+            trafficDensityMap.clear();
+            populationDensityMap.clear();
+            landValueMap.clear();
+            crimeRateMap.clear();
+            powerGridMap.clear();
+            terrainDensityMap.clear();
+            rateOfGrowthMap.clear();
+            fireStationMap.clear();
+            fireStationEffectMap.clear();
+            policeStationMap.clear();
+            policeStationEffectMap.clear();
+            comRateMap.clear();
             // mapBase
-            // resHist
-            // comHist
-            // indHist
-            // moneyHist
-            // pollutionHist
-            // crimeHist
-            // miscHist
+            resHist = new short[HISTORY_LENGTH];
+            comHist = new short[HISTORY_LENGTH];
+            indHist = new short[HISTORY_LENGTH];
+            crimeHist = new short[HISTORY_LENGTH];
+            pollutionHist = new short[HISTORY_LENGTH];
+            moneyHist = new short[HISTORY_LENGTH];
+            miscHist = new short[HISTORY_LENGTH];
             roadPercent = 0.0f;
             policePercent = 0.0f;
             firePercent = 0.0f;
@@ -1081,7 +1107,7 @@ namespace MicropolisCore
             cityPop = 0;
             cityPopDelta = 0;
             cityAssessedValue = 0;
-            // cityClass = CC_VILLAGE;
+            cityClass = CityClass.CC_VILLAGE;
             cityScore = 0;
             cityScoreDelta = 0;
             trafficAverage = 0;

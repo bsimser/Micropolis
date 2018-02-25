@@ -52,8 +52,8 @@
                 policeValue = policeInt;
                 roadValue = roadInt;
 
-                /// @todo Why are we not subtracting from yumDuckets what we
-                /// spend, like the code below is doing?
+                // todo Why are we not subtracting from yumDuckets what we
+                // spend, like the code below is doing?
 
             }
             else if (total > 0)
