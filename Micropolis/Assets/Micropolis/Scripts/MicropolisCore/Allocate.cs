@@ -7,7 +7,7 @@
         /// </summary>
         public void initMapArrays()
         {
-            map = new short[WORLD_W, WORLD_H];
+            map = new ushort[WORLD_W, WORLD_H];
 
             resHist = new short[HISTORY_LENGTH];
             comHist = new short[HISTORY_LENGTH];

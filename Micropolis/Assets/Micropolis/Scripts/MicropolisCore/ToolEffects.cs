@@ -31,7 +31,7 @@ namespace MicropolisCore
             // Modify the world
             foreach (var entry in modifications)
             {
-                sim.map[entry.Key.posX, entry.Key.posY] = (short) entry.Value;
+                sim.map[entry.Key.posX, entry.Key.posY] = (ushort) entry.Value;
             }
 
             // And finally send the messages

@@ -41,9 +41,9 @@ namespace MicropolisCore
                 {
                     for (int y = 0; y < WORLD_H; y++)
                     {
-                        var temp = map[x, y];
+                        var temp = (short) map[x, y];
                         result = result && load_short(ref temp, reader);
-                        map[x, y] = temp;
+                        map[x, y] = (ushort) temp;
                     }
                 }
             }
@@ -104,12 +104,86 @@ namespace MicropolisCore
         /// <returns>Load was succesfull.</returns>
         public bool loadFile(string filename)
         {
+            int n;
+
             if (!loadFileDir(filename, null))
             {
                 return false;
             }
 
-            return false;
+            /* total funds is a long.....    miscHist is array of shorts */
+            /* total funds is being put in the 50th & 51th word of miscHist */
+            /* find the address, cast the ptr to a longPtr, take contents */
+
+            n = half_swap_longs(miscHist, 50);
+            setFunds(n);
+
+            n = half_swap_longs(miscHist, 8);
+            cityTime = n;
+
+            /* yayaya */
+
+            setAutoBulldoze(miscHist[52] != 0); // flag for autoBulldoze
+            setAutoBudget(miscHist[53] != 0);   // flag for autoBudget
+            setAutoGoto(miscHist[54] != 0);     // flag for auto-goto
+            setEnableSound(miscHist[55] != 0);  // flag for the sound on/off
+            setCityTax(miscHist[56]);
+            setSpeed(miscHist[57]);
+            changeCensus();
+            mustUpdateOptions = true;
+
+            policePercent = half_swap_longs(miscHist, 58) / 65536.0f;
+            firePercent = half_swap_longs(miscHist, 60) / 65536.0f;
+            roadPercent = half_swap_longs(miscHist, 62) / 65536.0f;
+
+            cityTime = Math.Max(0, cityTime);
+
+            // If the tax is nonsensical, set it to a reasonable value
+            if (cityTax > 20 || cityTax < 0)
+            {
+                setCityTax(7);
+            }
+
+            // If the speed is nonsensical, set it to a reasonable value
+            if (simSpeed < 0 || simSpeed > 3)
+            {
+                setSpeed(3);
+            }
+
+            setSpeed(simSpeed);
+            setPasses(1);
+            initFundingLevel();
+
+            // Set the scenario id to 0.
+            initWillStuff();
+            // scenario = SC_NONE;
+            initSimLoad = 1;
+            doInitialEval = false;
+            doSimInit();
+            invalidateMaps();
+
+            return true;
+        }
+
+        // this is called half_swap_longs but really does ints because in the current 
+        // 64-bit architecture an int (4 bytes) is what a long was back then
+        private int half_swap_longs(short[] shorts, int index)
+        {
+            var bytes = new byte[4];
+            bytes[0] = BitConverter.GetBytes(shorts[index])[0];
+            bytes[1] = BitConverter.GetBytes(shorts[index])[1];
+            index++;
+            bytes[2] = BitConverter.GetBytes(shorts[index])[0];
+            bytes[3] = BitConverter.GetBytes(shorts[index])[1];
+            if (BitConverter.IsLittleEndian)
+            {
+                bytes[2] = BitConverter.GetBytes(shorts[index])[0];
+                bytes[3] = BitConverter.GetBytes(shorts[index])[1];
+                index++;
+                bytes[0] = BitConverter.GetBytes(shorts[index])[0];
+                bytes[1] = BitConverter.GetBytes(shorts[index])[1];
+            }
+            return BitConverter.ToInt32(bytes, 0);
         }
 
         /// <summary>
@@ -119,6 +193,7 @@ namespace MicropolisCore
         /// <returns>The game was saved successfully.</returns>
         public bool saveFile(string filename)
         {
+            // TODO
             return false;
         }
 
@@ -127,6 +202,7 @@ namespace MicropolisCore
         /// </summary>
         public void didLoadScenario()
         {
+            callback("didLoadScenario", "");
         }
 
         /// <summary>
@@ -138,6 +214,7 @@ namespace MicropolisCore
         /// <returns>Game was loaded successfully.</returns>
         public bool loadCity(string filename)
         {
+            // TODO
             return false;
         }
 
@@ -146,6 +223,7 @@ namespace MicropolisCore
         /// </summary>
         public void didLoadCity()
         {
+            callback("didLoadCity", "");
         }
 
         /// <summary>
@@ -154,6 +232,7 @@ namespace MicropolisCore
         /// <param name="msg">File that attempted to load</param>
         public void didntLoadCity(string msg)
         {
+            callback("didntLoadCity", "s", msg);
         }
 
         /// <summary>
@@ -161,6 +240,7 @@ namespace MicropolisCore
         /// </summary>
         public void saveCity()
         {
+            // TODO
         }
 
         /// <summary>
@@ -168,6 +248,7 @@ namespace MicropolisCore
         /// </summary>
         public void doSaveCityAs()
         {
+            callback("saveCityAs", "");
         }
 
         /// <summary>
@@ -175,6 +256,7 @@ namespace MicropolisCore
         /// </summary>
         public void didSaveCity()
         {
+            callback("didSaveCity", "");
         }
 
         /// <summary>
@@ -183,6 +265,7 @@ namespace MicropolisCore
         /// <param name="msg">Name of the file used</param>
         public void didntSaveCity(string msg)
         {
+            callback("didntSaveCity", "s", msg);
         }
 
         /// <summary>
@@ -192,6 +275,7 @@ namespace MicropolisCore
         /// <param name="filename">Name of the file to use for storing the game.</param>
         public void saveCityAs(string filename)
         {
+            // TODO
         }
     }
 }

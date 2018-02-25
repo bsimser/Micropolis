@@ -32,10 +32,8 @@ namespace MicropolisGame
 
         private void DoUpdateDate()
         {
-            var cityTime = _engine.cityTime;
-            var startingYear = _engine.startingYear;
-            var year = cityTime / 48 + startingYear;
-            var month = cityTime % 48 >> 2;
+            var year = _engine.cityYear;
+            var month = _engine.cityMonth;
             _dateText.text = string.Format("{0} {1}", GetMonthName(month), year);
         }
 

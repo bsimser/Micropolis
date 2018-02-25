@@ -102,7 +102,7 @@
             {
                 for (var y = 0; y < WORLD_H; y++)
                 {
-                    map[x, y] = (short) MapTileCharacters.DIRT;
+                    map[x, y] = (ushort) MapTileCharacters.DIRT;
                 }
             }
         }
@@ -116,9 +116,9 @@
             {
                 for (var y = 0; y < WORLD_H; y++)
                 {
-                    if (map[x, y] > (short) MapTileCharacters.WOODS)
+                    if (map[x, y] > (ushort) MapTileCharacters.WOODS)
                     {
-                        map[x, y] = (short)MapTileCharacters.DIRT;
+                        map[x, y] = (ushort)MapTileCharacters.DIRT;
                     }
                 }
             }
@@ -139,11 +139,11 @@
                     if ((x < 5) || (x >= WORLD_W - 5) ||
                         (y < 5) || (y >= WORLD_H - 5))
                     {
-                        map[x,y] = (short) MapTileCharacters.RIVER;
+                        map[x,y] = (ushort) MapTileCharacters.RIVER;
                     }
                     else
                     {
-                        map[x,y] = (short) MapTileCharacters.DIRT;
+                        map[x,y] = (ushort) MapTileCharacters.DIRT;
                     }
                 }
             }
@@ -348,7 +348,7 @@
                             temp++;
                         }
 
-                        map[x,y] = temp;
+                        map[x,y] = (ushort) temp;
                     }
                 }
             }
@@ -657,7 +657,7 @@
                 return;
             }
 
-            ushort temp = (ushort) map[xLoc,yLoc];
+            ushort temp = map[xLoc,yLoc];
 
             if (temp != (ushort) MapTileCharacters.DIRT)
             {
@@ -674,7 +674,7 @@
                     return;
                 }
             }
-            map[xLoc,yLoc] = (short) mChar;
+            map[xLoc,yLoc] = mChar;
         }
 
         /// <summary>
@@ -773,7 +773,7 @@
                             /* If nearest object is not water: */
                             if (tile < (ushort)MapTileCharacters.WATER_LOW || tile > (ushort)MapTileCharacters.WATER_HIGH)
                             {
-                                map[x,y] = (short) MapTileCharacters.REDGE; /* set river edge */
+                                map[x,y] = (ushort) MapTileCharacters.REDGE; /* set river edge */
                                 break; // Continue with next tile
                             }
                         }
@@ -813,7 +813,7 @@
 
                         if (makeRiver)
                         {
-                            map[x,y] = (short) MapTileCharacters.RIVER; /* make it a river */
+                            map[x,y] = (ushort) MapTileCharacters.RIVER; /* make it a river */
                         }
                     }
                 }
@@ -841,7 +841,7 @@
 
                             if (tile == (ushort)MapTileCharacters.RIVER || tile == (ushort)MapTileCharacters.CHANNEL)
                             {
-                                map[x,y] = (short) MapTileCharacters.REDGE; /* make it water's edge */
+                                map[x,y] = (ushort) MapTileCharacters.REDGE; /* make it water's edge */
                                 break;
                             }
                         }

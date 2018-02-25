@@ -315,7 +315,7 @@
         /// 
         /// Map[120][100]
         /// </summary>
-        public short[,] map;
+        public ushort[,] map;
 
         /// <summary>
         /// 10 year residential history maximum value.
@@ -1175,6 +1175,15 @@
         public void destroy()
         {
             destroyMapArrays();
+        }
+
+        /// <summary>
+        /// Generate a random MapTileCharacters::RUBBLE tile
+        /// </summary>
+        /// <returns></returns>
+        private ushort randomRubble()
+        {
+            return(ushort)((ushort)((ushort)MapTileCharacters.RUBBLE + (getRandom16() & 3)) | (ushort) MapTileBits.BULLBIT);
         }
     }
 }

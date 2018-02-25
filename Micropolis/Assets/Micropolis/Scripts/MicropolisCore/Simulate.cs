@@ -105,7 +105,7 @@ namespace MicropolisCore
                 case 7:
                 case 8:
                     // Scan 1/8 of the map for each of the 8 phases 1..8:
-                    //mapScan((phaseCycle - 1) * WORLD_W / 8, phaseCycle * WORLD_W / 8);
+                    mapScan((phaseCycle - 1) * WORLD_W / 8, phaseCycle * WORLD_W / 8);
                     break;
 
                 case 9:
@@ -334,6 +334,152 @@ namespace MicropolisCore
 
         public void mapScan(int x1, int x2)
         {
+            for (int x = x1; x < x2; x++)
+            {
+                for (int y = 0; y < WORLD_H; y++)
+                {
+                    var mapVal = map[x, y];
+                    if (mapVal == (ushort) MapTileCharacters.DIRT)
+                    {
+                        continue;
+                    }
+
+                    ushort tile = (ushort)(mapVal & (ushort) MapTileBits.LOMASK); // Make off status bits
+
+                    if (tile < (ushort) MapTileCharacters.FLOOD)
+                    {
+                        continue;
+                    }
+
+                    // tile >= FLOOD
+
+                    var pos = new Position(x, y);
+
+                    if (tile < (ushort) MapTileCharacters.ROADBASE)
+                    {
+                        if (tile >= (ushort) MapTileCharacters.FIREBASE)
+                        {
+                            firePop++;
+                            if ((getRandom16() & 3) == 0)
+                            {
+                                doFire(pos); // 1 in 4 times
+                            }
+                            continue;
+                        }
+
+                        if (tile < (ushort) MapTileCharacters.RADTILE)
+                        {
+                            doFlood(pos);
+                        }
+                        else
+                        {
+                            doRadTile(pos);
+                        }
+
+                        continue;
+                    }
+
+                    if (newPower && (mapVal & (ushort) MapTileBits.CONDBIT) != 0)
+                    {
+                        // Copy PWRBIT from powerGridMap
+                        setZonePower(pos);
+                    }
+
+                    if (tile >= (ushort) MapTileCharacters.ROADBASE && tile < (ushort) MapTileCharacters.POWERBASE)
+                    {
+                        doRoad(pos);
+                        continue;
+                    }
+
+                    if ((mapVal & (ushort) MapTileBits.ZONEBIT) != 0)
+                    {
+                        doZone(pos);
+                        continue;
+                    }
+
+                    if (tile >= (ushort) MapTileCharacters.RAILBASE && tile < (ushort) MapTileCharacters.RESBASE)
+                    {
+                        doRail(pos);
+                        continue;
+                    }
+
+                    if (tile >= (ushort) MapTileCharacters.SOMETINYEXP &&
+                        tile <= (ushort) MapTileCharacters.LASTTINYEXP)
+                    {
+                        // clear AniRubble
+                        map[x, y] = randomRubble();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handle rail track.
+        /// Generate a train, and handle road deteriorating effects.
+        /// </summary>
+        /// <param name="pos">Position of the rail.</param>
+        private void doRail(Position pos)
+        {
+            railTotal++;
+
+            generateTrain(pos.posX, pos.posY);
+
+            if (roadEffect < (15 * MAX_ROAD_EFFECT / 16))
+            {
+                // roadEffect < 15/16 of max road, enable deteriorating rail
+                if ((getRandom16() & 511) == 0)
+                {
+
+                    ushort curValue = map[pos.posX,pos.posY];
+                    if ((curValue & (ushort) MapTileBits.CONDBIT) == 0)
+                    {
+                        // Otherwise the '(getRandom16() & 31)' makes no sense
+                        // assert(MAX_ROAD_EFFECT == 32);
+                        if (roadEffect < (getRandom16() & 31))
+                        {
+                            ushort tile = (ushort)(curValue & (ushort) MapTileBits.LOMASK);
+                            if (tile < (ushort) MapTileCharacters.RAILBASE + 2)
+                            {
+                                map[pos.posX,pos.posY] = (ushort) MapTileCharacters.RIVER;
+                            }
+                            else
+                            {
+                                map[pos.posX,pos.posY] = randomRubble();
+                            }
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handle decay of radio-active tile
+        /// </summary>
+        /// <param name="pos">Position of the radio-active tile.</param>
+        private void doRadTile(Position pos)
+        {
+            if ((getRandom16() & 4095) == 0)
+            {
+                map[pos.posX, pos.posY] = (ushort) MapTileCharacters.DIRT; // Radioactive decay
+            }
+        }
+
+        private void doRoad(Position pos)
+        {
+            // TODO
+        }
+
+        /// <summary>
+        /// Handle tile being on fire.
+        /// TODO Needs a notion of iterative neighbour tiles computing.
+        /// TODO Use a getFromMap()-like function here.
+        /// TODO Extract constants of fire station effectiveness from here.
+        /// </summary>
+        /// <param name="pos">Position of the fire.</param>
+        private void doFire(Position pos)
+        {
+            // TODO
         }
     }
 }
