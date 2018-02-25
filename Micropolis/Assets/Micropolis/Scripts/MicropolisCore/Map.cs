@@ -13,13 +13,16 @@
         private int BLKSIZE;
         private DATA _MAP_DEFAULT_VALUE; // Default value of a cluster
         private DATA[] _mapData;
-        private int MAP_W; // Number of clusters in horizontal direction.
-        private int MAP_H; // Number of clusters in vertical direction.
+        // Size of a cluster in number of world positions.
+        public int MAP_BLOCKSIZE;
+        public int MAP_W; // Number of clusters in horizontal direction.
+        public int MAP_H; // Number of clusters in vertical direction.
 
         public Map(DATA defaultValue, int blksize)
         {
             _MAP_DEFAULT_VALUE = defaultValue;
             BLKSIZE = blksize;
+            MAP_BLOCKSIZE = BLKSIZE;
             MAP_W = (Micropolis.WORLD_W + BLKSIZE - 1) / BLKSIZE;
             MAP_H = (Micropolis.WORLD_H + BLKSIZE - 1) / BLKSIZE;
             _mapData = new DATA[MAP_W * MAP_H];
@@ -74,6 +77,29 @@
                 y /= BLKSIZE;
                 _mapData[x * MAP_H + y] = value;
             }
+        }
+
+        public void set(int x, int y, DATA value)
+        {
+            if (onMap(x, y))
+            {
+                _mapData[x * MAP_H + y] = value;
+            }
+        }
+
+        public DATA get(int x, int y)
+        {
+            if (!onMap(x, y))
+            {
+                return _MAP_DEFAULT_VALUE;
+            }
+
+            return _mapData[x * MAP_H + y];
+        }
+
+        private bool onMap(int x, int y)
+        {
+            return x >= 0 && x < MAP_W && y >= 0 && y < MAP_H;
         }
 
         /// <summary>

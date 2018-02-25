@@ -130,7 +130,7 @@ namespace MicropolisCore
                     if (simCycle % speedPowerScan[speedIndex] == 0)
                     {
                         doPowerScan();
-                        //newMapFlags[MAP_TYPE_POWER] = 1;
+                        newMapFlags[(int) MapType.MAP_TYPE_POWER] = 1;
                         newPower = true;
                     }
                     break;
@@ -209,6 +209,19 @@ namespace MicropolisCore
         /// </summary>
         public void doNilPower()
         {
+            short x, y;
+
+            for (x = 0; x < WORLD_W; x++)
+            {
+                for (y = 0; y < WORLD_H; y++)
+                {
+                    ushort z = map[x, y];
+                    if ((z & (ushort) MapTileBits.ZONEBIT) != 0)
+                    {
+                        setZonePower(new Position(x, y));
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -219,6 +232,34 @@ namespace MicropolisCore
         /// </remarks>
         public void decTrafficMap()
         {
+            short x, y, z;
+
+            for (x = 0; x < WORLD_W; x += (short) trafficDensityMap.MAP_BLOCKSIZE)
+            {
+                for (y = 0; y < WORLD_H; y += (short) trafficDensityMap.MAP_BLOCKSIZE)
+                {
+                    z = trafficDensityMap.worldGet(x, y);
+                    if (z == 0)
+                    {
+                        continue;
+                    }
+
+                    if (z <= 24)
+                    {
+                        trafficDensityMap.worldSet(x, y, 0);
+                        continue;
+                    }
+
+                    if (z > 200)
+                    {
+                        trafficDensityMap.worldSet(x, y, (byte) (z - 34));
+                    }
+                    else
+                    {
+                        trafficDensityMap.worldSet(x, y, (byte)(z - 24));
+                    }
+                }                
+            }
         }
 
         /// <summary>
@@ -229,10 +270,70 @@ namespace MicropolisCore
         /// </remarks>
         public void decRateOfGrowthMap()
         {
+            short x, y, z;
+
+            for (x = 0; x < rateOfGrowthMap.MAP_W; x++)
+            {
+                for (y = 0; y < rateOfGrowthMap.MAP_H; y++)
+                {
+                    z = rateOfGrowthMap.get(x, y);
+                    if (z == 0)
+                    {
+                        continue;
+                    }
+
+                    if (z > 0)
+                    {
+                        z--;
+                        z = clamp(z, (short) -200, (short) 200);
+                        rateOfGrowthMap.set(x, y, z);
+                        continue;
+                    }
+
+                    if (z < 0)
+                    {
+                        z++;
+                        z = clamp(z, (short) -200, (short) 200);
+                        rateOfGrowthMap.set(x, y, z);
+                    }
+                }
+            }
         }
 
         public void initSimMemory()
         {
+            setCommonInits();
+
+            for (short x = 0; x < 240; x++)
+            {
+                resHist[x] = 0;
+                comHist[x] = 0;
+                indHist[x] = 0;
+                moneyHist[x] = 128;
+                crimeHist[x] = 0;
+                pollutionHist[x] = 0;
+            }
+
+            crimeRamp = 0;
+            pollutionRamp = 0;
+            totalPop = 0;
+            resValve = 0;
+            comValve = 0;
+            indValve = 0;
+            resCap = false; // Do not block residential growth
+            comCap = false; // Do not block commercial growth
+            indCap = false; // Do not block industrial growth
+
+            externalMarket = 6.0f;
+            // TODO disasterEvent = SC_NONE;
+            // TODO scoreType = SC_NONE;
+
+            /* This clears powermem */
+            powerStackPointer = 0;
+            doPowerScan();
+            newPower = true; /* post rel */
+
+            initSimLoad = 0;
         }
 
         public void simLoadInit()
@@ -256,23 +357,39 @@ namespace MicropolisCore
 
             // Load cityClass
 
+            resCap = false;
+            comCap = false;
+            indCap = false;
+
             cityTaxAverage = (short) (cityTime % 48 * 7);
+
+            // Set power map
+            // TODO What purpose does this server? Weird...
+            powerGridMap.fill(1);
 
             doNilPower();
 
+            // TODO
+
+            roadEffect = MAX_ROAD_EFFECT;
+            policeEffect = MAX_POLICE_STATION_EFFECT;
+            fireEffect = MAX_FIRE_STATION_EFFECT;
             initSimLoad = 0;
         }
 
         public void setCommonInits()
         {
             evalInit();
-            // TODO effects
+            roadEffect = MAX_ROAD_EFFECT;
+            policeEffect = MAX_POLICE_STATION_EFFECT;
+            fireEffect = MAX_FIRE_STATION_EFFECT;
             taxFlag = false;
             taxFund = 0;
         }
 
         public void setValves()
         {
+            // TODO
             valveFlag = true;
         }
 
@@ -300,7 +417,8 @@ namespace MicropolisCore
             airportPop = 0;
             powerStackPointer = 0; /* Reset before Mapscan */
 
-            // TODO clear maps
+            fireStationMap.clear();
+            policeStationMap.clear();
         }
 
         /// <summary>
@@ -311,10 +429,12 @@ namespace MicropolisCore
         /// </summary>
         public void take10Census()
         {
+            // TODO
         }
 
         public void take120Census()
         {
+            // TODO
         }
 
         /// <summary>
@@ -322,6 +442,7 @@ namespace MicropolisCore
         /// </summary>
         public void collectTax()
         {
+            // TODO
         }
 
         /// <summary>
@@ -330,6 +451,7 @@ namespace MicropolisCore
         /// </summary>
         public void updateFundEffects()
         {
+            // TODO
         }
 
         public void mapScan(int x1, int x2)

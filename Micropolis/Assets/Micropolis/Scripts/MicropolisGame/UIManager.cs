@@ -1,5 +1,4 @@
-﻿using System;
-using MicropolisEngine;
+﻿using MicropolisEngine;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +9,7 @@ namespace MicropolisGame
         private readonly MicropolisUnityEngine _engine;
         private readonly Text _fundsText;
         private readonly Text _dateText;
+        private readonly Text _poplationText;
 
         public UIManager(MicropolisUnityEngine engine)
         {
@@ -19,6 +19,7 @@ namespace MicropolisGame
             // find our UI elements in the scene
             _fundsText = GameObject.Find("Funds").GetComponent<Text>();
             _dateText = GameObject.Find("Date").GetComponent<Text>();
+            _poplationText = GameObject.Find("Population").GetComponent<Text>();
 
             // subscribe to event handlers in the engine
             _engine.OnUpdateDate += DoUpdateDate;
@@ -44,6 +45,9 @@ namespace MicropolisGame
             var year = _engine.cityYear;
             var month = _engine.cityMonth;
             _dateText.text = string.Format("{0} {1}", GetMonthName(month), year);
+
+            // temporary until we find the message that triggers population update
+            _poplationText.text = string.Format("Population: {0}", _engine.cityPop);
         }
 
         private void DoUpdateCityName()

@@ -824,8 +824,7 @@ namespace MicropolisCore
         //StringTable *stringTables
 
         private short newMap;
-
-        //private short newMapFlags[MAP_TYPE_COUNT];
+        private short[] newMapFlags;
 
         /// <summary>
         /// X coordinate of city center
@@ -1162,6 +1161,7 @@ namespace MicropolisCore
             resourceDir = "";
 
             newMap = 0;
+            newMapFlags = new short[(int) MapType.MAP_TYPE_COUNT];
 
             cityCenterX = 0;
             cityCenterY = 0;
