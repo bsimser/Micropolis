@@ -8,6 +8,14 @@
         public void initMapArrays()
         {
             map = new short[WORLD_W, WORLD_H];
+
+            resHist = new short[HISTORY_LENGTH];
+            comHist = new short[HISTORY_LENGTH];
+            indHist = new short[HISTORY_LENGTH];
+            crimeHist = new short[HISTORY_LENGTH];
+            pollutionHist = new short[HISTORY_LENGTH];
+            moneyHist = new short[HISTORY_LENGTH];
+            miscHist = new short[HISTORY_LENGTH];
         }
 
         /// <summary>

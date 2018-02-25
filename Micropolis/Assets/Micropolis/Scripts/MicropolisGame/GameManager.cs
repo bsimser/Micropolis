@@ -1,4 +1,5 @@
-﻿using MicropolisEngine;
+﻿using System.IO;
+using MicropolisEngine;
 using UnityEngine;
 
 namespace MicropolisGame
@@ -21,30 +22,15 @@ namespace MicropolisGame
             // set the default values for a new city
             _engine.cityTax = 10;
             _engine.setPasses(200);
-            // setTile = _engine.setTile;
-            
-            // addRobots
 
-            //x = 0;
-            //y = 0;
-            
-            //w = 800;
-            //h = 600;
-            
-            // find the panel that is our MicropolisPannedWindow and set the engine
-            // resize the panel
-            // move the panel
-            // show the panel
-
-            // TODO until we get a MicropolisPannedWindow let's kick off the engine here with hard coded values
-            //_engine.setCityName("New City");
-            _engine.generateMap();
+            // TODO until we get a front end let's kick off the engine here with hard coded values
+            // generate a random city
+            //_engine.generateMap();
+            // load a specific city
+            _engine.loadFile("cities" + Path.DirectorySeparatorChar + "haight.cty");
             _engine.setSpeed(1);
-            //_engine.doSimInit();
-            //_engine.simPasses = 1;
-            //_engine.setCityTax(9);
+            _engine.setCityTax(9);
             _engine.setEnableDisasters(false);
-            //_engine.setGameMode('start');
         }
 
         private void Update()
