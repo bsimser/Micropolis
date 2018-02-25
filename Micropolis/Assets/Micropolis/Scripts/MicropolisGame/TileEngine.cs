@@ -4,6 +4,9 @@ using UnityEngine.Tilemaps;
 
 namespace MicropolisGame
 {
+    /// <summary>
+    /// Keeps a cached copy of rendered Tiles and provides them for drawing onto a TileMap
+    /// </summary>
     public class TileEngine
     {
         private Dictionary<int, Tile> _tiles = new Dictionary<int, Tile>();
