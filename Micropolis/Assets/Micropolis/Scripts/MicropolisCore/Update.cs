@@ -43,7 +43,7 @@
             mustUpdateFunds = true;
         }
 
-        public void reallyUpdateFunds()
+        private void reallyUpdateFunds()
         {
             if (!mustUpdateFunds)
             {
@@ -60,12 +60,12 @@
             }
         }
 
-        public void doTimeStuff()
+        private void doTimeStuff()
         {
             updateDate();
         }
 
-        public void updateDate()
+        private void updateDate()
         {
             int megalinium = 1000000;
 
@@ -78,8 +78,8 @@
             {
                 setYear(startingYear);
                 cityYear = startingYear;
-                //BUG message is wrong
-                //sendMessage(MESSAGE_NOT_ENOUGH_POWER, NOWHERE, NOWHERE, true);
+                // BUG message is wrong
+                sendMessage((short) MessageNumber.MESSAGE_NOT_ENOUGH_POWER, NOWHERE, NOWHERE, true);
             }
 
             if (cityYearLast != cityYear ||
@@ -92,7 +92,7 @@
             }
         }
 
-        public void showValves()
+        private void showValves()
         {
             if (valveFlag)
             {
@@ -101,7 +101,7 @@
             }
         }
 
-        public void drawValve()
+        private void drawValve()
         {
             float r, c, i;
 

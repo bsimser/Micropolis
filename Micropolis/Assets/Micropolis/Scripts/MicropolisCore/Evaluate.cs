@@ -10,7 +10,22 @@ namespace MicropolisCore
         /// </summary>
         public void cityEvaluation()
         {
-            // TODO
+            if (totalPop > 0)
+            {
+                // TODO
+                getAssessedValue();
+                doPopNum();
+                // doProblems
+                // getScore
+                doVotes(); // How well is the mayor doing?
+                changeEval();
+            }
+            else
+            {
+                evalInit();
+                cityYes = 50; // No population => no voting. Let's say 50/50
+                changeEval();
+            }
         }
 
         /// <summary>
@@ -18,7 +33,15 @@ namespace MicropolisCore
         /// </summary>
         public void evalInit()
         {
-            // TODO
+            cityYes = 0;
+            cityPop = 0;
+            cityPopDelta = 0;
+            cityAssessedValue = 0;
+            cityClass = CityClass.CC_VILLAGE;
+            cityScore = 500;
+            cityScoreDelta = 0;
+            // TOOD problemVotes
+            // TODO problemOrder
         }
 
         /// <summary>
@@ -48,7 +71,17 @@ namespace MicropolisCore
         /// </summary>
         public void doPopNum()
         {
-            // TODO
+            long oldCityPop = cityPop;
+
+            cityPop = getPopulation();
+
+            if (oldCityPop == -1)
+            {
+                oldCityPop = cityPop;
+            }
+
+            cityPopDelta = cityPop - oldCityPop;
+            cityClass = getCityClass(cityPop);
         }
 
         /// <summary>
@@ -182,6 +215,39 @@ namespace MicropolisCore
         {
             // TODO
             return 0;
+        }
+
+        /// <summary>
+        /// Classify the city based on its population.
+        /// </summary>
+        /// <param name="cityPopulation">Number of people in the city.</param>
+        /// <returns>City classification.</returns>
+        private CityClass getCityClass(long cityPopulation)
+        {
+            CityClass cityClassification = CityClass.CC_VILLAGE;
+
+            if (cityPopulation > 2000)
+            {
+                cityClassification = CityClass.CC_TOWN;
+            }
+            if (cityPopulation > 10000)
+            {
+                cityClassification = CityClass.CC_CITY;
+            }
+            if (cityPopulation > 50000)
+            {
+                cityClassification = CityClass.CC_CAPITAL;
+            }
+            if (cityPopulation > 100000)
+            {
+                cityClassification = CityClass.CC_METROPOLIS;
+            }
+            if (cityPopulation > 500000)
+            {
+                cityClassification = CityClass.CC_MEGALOPOLIS;
+            }
+
+            return cityClassification;
         }
     }
 }

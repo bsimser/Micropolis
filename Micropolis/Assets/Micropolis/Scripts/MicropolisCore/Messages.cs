@@ -1,4 +1,6 @@
-﻿namespace MicropolisCore
+﻿using System;
+
+namespace MicropolisCore
 {
     public partial class Micropolis
     {
@@ -7,6 +9,174 @@
         /// </summary>
         public void sendMessages()
         {
+            short PowerPop;
+            float TM;
+
+            // Running a scenario, and waiting it to 'end' so we can give a score
+            // TODO
+
+            checkGrowth();
+
+            totalZonePop = (short)(resZonePop + comZonePop + indZonePop);
+            PowerPop = (short)(nuclearPowerPop + coalPowerPop);
+
+            switch (cityTime & 63)
+            {
+                case 1:
+                    if (totalZonePop / 4 >= resZonePop)
+                    {
+                        sendMessage((short) MessageNumber.MESSAGE_NEED_MORE_RESIDENTIAL);
+                    }
+                    break;
+
+                case 5:
+                    if (totalZonePop / 8 >= comZonePop)
+                    {
+                        sendMessage((short) MessageNumber.MESSAGE_NEED_MORE_COMMERCIAL);
+                    }
+                    break;
+
+                case 10:
+                    if (totalZonePop / 8 >= indZonePop)
+                    {
+                        sendMessage((short) MessageNumber.MESSAGE_NEED_MORE_INDUSTRIAL);
+                    }
+                    break;
+
+                case 14:
+                    if (totalZonePop > 10 && totalZonePop * 2 > roadTotal)
+                    {
+                        sendMessage((short) MessageNumber.MESSAGE_NEED_MORE_ROADS);
+                    }
+                    break;
+
+                case 18:
+                    if (totalZonePop > 50 && totalZonePop > railTotal)
+                    {
+                        sendMessage((short) MessageNumber.MESSAGE_NEED_MORE_RAILS);
+                    }
+                    break;
+
+                case 22:
+                    if (totalZonePop > 10 && PowerPop == 0)
+                    {
+                        sendMessage((short) MessageNumber.MESSAGE_NEED_ELECTRICITY);
+                    }
+                    break;
+
+                case 26:
+                    if (resPop > 500 && stadiumPop == 0)
+                    {
+                        sendMessage((short) MessageNumber.MESSAGE_NEED_STADIUM);
+                        resCap = true;
+                    }
+                    else
+                    {
+                        resCap = false;
+                    }
+                    break;
+
+                case 28:
+                    if (indPop > 70 && seaportPop == 0)
+                    {
+                        sendMessage((short)MessageNumber.MESSAGE_NEED_SEAPORT);
+                        indCap = true;
+                    }
+                    else
+                    {
+                        indCap = false;
+                    }
+                    break;
+
+                case 30:
+                    if (comPop > 100 && airportPop == 0)
+                    {
+                        sendMessage((short)MessageNumber.MESSAGE_NEED_AIRPORT);
+                        comCap = true;
+                    }
+                    else
+                    {
+                        comCap = false;
+                    }
+                    break;
+
+                case 32:
+                    TM = (float) (unpoweredZoneCount + poweredZoneCount); // dec score for unpowered zones;
+                    if (TM > 0)
+                    {
+                        if (poweredZoneCount / TM < 0.7f)
+                        {
+                            sendMessage((short) MessageNumber.MESSAGE_BLACKOUTS_REPORTED);
+                        }
+                    }
+                    break;
+
+                case 35:
+                    if (pollutionAverage > /* 80 */ 60)
+                    {
+                        sendMessage((short) MessageNumber.MESSAGE_HIGH_POLLUTION, -1, -1, true);
+                    }
+                    break;
+
+                case 42:
+                    if (crimeAverage > 100)
+                    {
+                        sendMessage((short)MessageNumber.MESSAGE_HIGH_CRIME, -1, -1, true);
+                    }
+                    break;
+
+                case 45:
+                    if (totalPop > 60 && fireStationPop == 0)
+                    {
+                        sendMessage((short)MessageNumber.MESSAGE_NEED_FIRE_STATION);
+                    }
+                    break;
+
+                case 48:
+                    if (totalPop > 60 && policeStationPop == 0)
+                    {
+                        sendMessage((short)MessageNumber.MESSAGE_NEED_POLICE_STATION);
+                    }
+                    break;
+
+                case 51:
+                    if (cityTax > 12)
+                    {
+                        sendMessage((short)MessageNumber.MESSAGE_TAX_TOO_HIGH);
+                    }
+                    break;
+
+                case 54:
+                    // If roadEffect < 5/8 of max effect
+                    if (roadEffect < (5 * MAX_ROAD_EFFECT / 8) && roadTotal > 30)
+                    {
+                        sendMessage((short)MessageNumber.MESSAGE_ROAD_NEEDS_FUNDING);
+                    }
+                    break;
+
+                case 57:
+                    // If fireEffect < 0.7 of max effect
+                    if (fireEffect < 7 * MAX_FIRE_STATION_EFFECT / 10 && totalPop > 20)
+                    {
+                        sendMessage((short)MessageNumber.MESSAGE_FIRE_STATION_NEEDS_FUNDING);
+                    }
+                    break;
+
+                case 60:
+                    // If policeEffect < 0.7 of max effect
+                    if (policeEffect < 7 * MAX_POLICE_STATION_EFFECT / 10)
+                    {
+                        sendMessage((short)MessageNumber.MESSAGE_POLICE_NEEDS_FUNDING);
+                    }
+                    break;
+
+                case 63:
+                    if (trafficAverage > 60)
+                    {
+                        sendMessage((short)MessageNumber.MESSAGE_TRAFFIC_JAMS, -1, -1, true);
+                    }
+                    break;
+            }
         }
 
         /// <summary>
@@ -15,19 +185,76 @@
         /// </summary>
         public void checkGrowth()
         {
+            if ((cityTime & 3) == 0)
+            {
+                short category = 0;
+                long thisCityPop = getPopulation();
+
+                if (cityPopLast > 0)
+                {
+                    CityClass lastClass = getCityClass(cityPopLast);
+                    CityClass newClass = getCityClass(thisCityPop);
+
+                    if (lastClass != newClass)
+                    {
+                        // Switched class, find appropiate message.
+                        switch (newClass)
+                        {
+                            case CityClass.CC_VILLAGE:
+                                // Don't mention it.
+                                break;
+
+                            case CityClass.CC_TOWN:
+                                category = (short) MessageNumber.MESSAGE_REACHED_TOWN;
+                                break;
+
+                            case CityClass.CC_CITY:
+                                category = (short)MessageNumber.MESSAGE_REACHED_CITY;
+                                break;
+
+                            case CityClass.CC_CAPITAL:
+                                category = (short)MessageNumber.MESSAGE_REACHED_CAPITAL;
+                                break;
+
+                            case CityClass.CC_METROPOLIS:
+                                category = (short)MessageNumber.MESSAGE_REACHED_METROPOLIS;
+                                break;
+
+                            case CityClass.CC_MEGALOPOLIS:
+                                category = (short)MessageNumber.MESSAGE_REACHED_MEGALOPOLIS;
+                                break;
+
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                    }
+                }
+
+                if (category > 0 && category != categoryLast)
+                {
+                    sendMessage(category, NOWHERE, NOWHERE, true);
+                    categoryLast = category;
+                }
+
+                cityPopLast = thisCityPop;
+            }
         }
 
         /// <summary>
         /// Send the user a message of an event that happens at a particular position
         /// in the city.
         /// </summary>
-        /// <param name="msgNum">Message number of the message to display.</param>
+        /// <param name="mesgNum">Message number of the message to display.</param>
         /// <param name="x">X coordinate of the position of the event.</param>
         /// <param name="y">Y coordinate of the position of the event.</param>
         /// <param name="picture">Flag that is true if a picture should be shown.</param>
         /// <param name="important">Flag that is true if the message is important.</param>
-        public void sendMessage(short msgNum, short x, short y, bool picture, bool important)
+        public void sendMessage(short mesgNum, short x = NOWHERE, short y = NOWHERE, bool picture = false, bool important = false)
         {
+            if (OnSendMessage != null)
+            {
+                OnSendMessage(mesgNum, x, y, picture, important);
+            }
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using MicropolisEngine;
+﻿using System;
+using MicropolisEngine;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,6 +24,14 @@ namespace MicropolisGame
             _engine.OnUpdateDate += DoUpdateDate;
             _engine.OnUpdateFunds += DoUpdateFunds;
             _engine.OnUpdateCityName += DoUpdateCityName;
+            _engine.OnSendMessage += DoSendMessage;
+        }
+
+        private void DoSendMessage(short mesgNum, short s, short s1, bool picture, bool important)
+        {
+            var message = _engine.messages[mesgNum];
+            Debug.Log(string.Format("mesgNum: {0} x: {1} y: {2} picture: {3} important: {4}", mesgNum, s, s1, picture, important));
+            Debug.Log(message);
         }
 
         private void DoUpdateFunds()

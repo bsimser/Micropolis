@@ -28,8 +28,12 @@
         /// <summary>
         /// Destroy all sprites by de-activating them all (setting their frame to 0).
         /// </summary>
-        public void destroyAllSprite()
+        private void destroyAllSprites()
         {
+            foreach (var sprite in spriteList)
+            {
+                sprite.frame = 0;
+            }
         }
 
         /// <summary>

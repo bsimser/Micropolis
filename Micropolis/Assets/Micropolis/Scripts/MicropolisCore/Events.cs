@@ -7,5 +7,7 @@
         public event UpdateFundsHandler OnUpdateFunds;
 
         public event UpdateCityName OnUpdateCityName;
+
+        public event SendMessage OnSendMessage;
     }
 }

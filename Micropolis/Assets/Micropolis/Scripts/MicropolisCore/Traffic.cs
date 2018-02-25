@@ -11,7 +11,17 @@
         /// <returns>1 if connection found, 0 if not found, -1 if no connection to road found.</returns>
         public short makeTrafficAt(int x, int y, ZoneType dest)
         {
-            return 0;
+            Position pos = new Position();
+            pos.posX = x;
+            pos.posY = y;
+
+            if (tryDrive(pos, dest)) // attempt to drive somewhere
+            {
+                addToTrafficDensityMap(); // if sucessful, inc trafdensity
+                return 1; // traffic paused
+            }
+
+            return 0; // traffic failed
         }
 
         /// <summary>
@@ -23,7 +33,38 @@
         /// <returns>1 if connection found, 0 if not found, -1 if no connection to road found.</returns>
         public short makeTraffic(int x, int y, ZoneType dest)
         {
-            return 0;
+            Position startPos = new Position();
+            startPos.posX = x;
+            startPos.posY = y;
+            return makeTraffic(startPos, dest);
+        }
+
+        /// <summary>
+        /// Find a connection over a road from a startPos to a specified zone type.
+        /// </summary>
+        /// <param name="startPos">Start position of the attempt.</param>
+        /// <param name="dest">Zone type to go to.</param>
+        /// <returns>1 if connection found, 0 if not found, -1 if no connection to road found.</returns>
+        short makeTraffic(Position startPos, ZoneType dest)
+        {
+            curMapStackPointer = 0; // Clear position stack
+
+            var pos = new Position(startPos);
+
+            if (findPerimeterRoad(pos))
+            {
+                if (tryDrive(pos, dest))
+                {
+                    addToTrafficDensityMap();
+                    return 1;
+                }
+
+                return 0;
+            }
+            else
+            {
+                return -1;
+            }
         }
 
         /// <summary>
@@ -31,6 +72,71 @@
         /// </summary>
         public void addToTrafficDensityMap()
         {
+            // TODO 
+        }
+
+        /// <summary>
+        /// Find a connection to a road at the perimeter.
+        /// TODO We could randomize the search
+        /// </summary>
+        /// <param name="pos">Starting position. Gets updated when a perimeter has been found.</param>
+        /// <returns>Indication that a connection has been found.</returns>
+        bool findPerimeterRoad(Position pos)
+        {
+            /* look for road on edges of zone */
+            short[] PerimX = { -1, 0, 1, 2, 2, 2, 1, 0, -1, -2, -2, -2 };
+            short[] PerimY = { -2, -2, -2, -1, 0, 1, 2, 2, 2, 1, 0, -1 };
+            short tx, ty;
+
+            for (short z = 0; z < 12; z++)
+            {
+
+                tx = (short)(pos.posX + PerimX[z]);
+                ty = (short)(pos.posY + PerimY[z]);
+
+                if (Position.testBounds(tx, ty))
+                {
+
+                    if (roadTest(map[tx,ty]))
+                    {
+
+                        pos.posX = tx;
+                        pos.posY = ty;
+
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Can the given tile be used as road?
+        /// </summary>
+        /// <param name="mv">Value from the map.</param>
+        /// <returns>Indication that you can drive on the given tile</returns>
+        bool roadTest(ushort mv)
+        {
+            ushort tile = (ushort) (mv & (ushort) MapTileBits.LOMASK);
+
+            if (tile < (ushort) MapTileCharacters.ROADBASE || tile > (ushort) MapTileCharacters.LASTRAIL)
+            {
+                return false;
+            }
+
+            if (tile >= (ushort) MapTileCharacters.POWERBASE && tile < (ushort) MapTileCharacters.LASTPOWER)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        bool tryDrive(Position startPos, ZoneType destZone)
+        {
+            // TODO
+            return false;
         }
 
         /// <summary>

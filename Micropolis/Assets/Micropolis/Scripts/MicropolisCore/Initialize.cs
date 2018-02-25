@@ -9,7 +9,7 @@
         {
             randomlySeedRandom();
             initGraphMax();
-            // TODO destroyAllSprites();
+            destroyAllSprites();
 
             roadEffect = MAX_ROAD_EFFECT;
             policeEffect = MAX_POLICE_STATION_EFFECT;
@@ -47,6 +47,8 @@
 
         /// <summary>
         /// Reset all maps in the simulator.
+        /// TODO Function is empty.
+        /// TODO What should be done with this empty function?
         /// </summary>
         public void resetMapState()
         {
@@ -54,6 +56,8 @@
 
         /// <summary>
         /// Reset all tools in the simulator editor.
+        /// TODO Function is empty.
+        /// TODO What should be done with this empty function?
         /// </summary>
         public void resetEditorState()
         {

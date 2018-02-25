@@ -1,4 +1,6 @@
-﻿namespace MicropolisCore
+﻿using System.Collections.Generic;
+
+namespace MicropolisCore
 {
     /// <summary>
     /// Main definition for the Micropolis class that everything drives off of.
@@ -916,7 +918,7 @@
         /// <summary>
         /// List of active sprites.
         /// </summary>
-        private SimSprite[] spriteList;
+        private List<SimSprite> spriteList = new List<SimSprite>();
 
         /// <summary>
         /// Pool of free SimSprite objects.
@@ -974,6 +976,9 @@
         // CallbackFunction callbackHook
         // void *callbackData
         // void *userData;
+
+        // Position stack top pointer, points to top position.
+        private short curMapStackPointer;
 
         private bool mustUpdateFunds;
 

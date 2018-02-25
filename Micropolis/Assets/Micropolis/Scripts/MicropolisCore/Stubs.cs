@@ -170,6 +170,7 @@ namespace MicropolisCore
         /// <returns>Value of the map at the given position.</returns>
         public int getTile(int x, int y)
         {
+            // TODO
             return 0;
         }
 
@@ -181,6 +182,7 @@ namespace MicropolisCore
         /// <param name="tile">the tile value to set.</param>
         public void setTile(int x, int y, int tile)
         {
+            // TODO
         }
 
         /// <summary>
@@ -189,6 +191,7 @@ namespace MicropolisCore
         /// </summary>
         public void getMapBuffer()
         {
+            // TODO
         }
 
         /// <summary>
@@ -202,6 +205,7 @@ namespace MicropolisCore
         /// <returns>Value of the power grid map at the given position.</returns>
         public int getPowerGrid(int x, int y)
         {
+            // TODO
             return 0;
         }
 
@@ -213,6 +217,7 @@ namespace MicropolisCore
         /// <param name="power">the value to set.</param>
         public void setPowerGrid(int x, int y, int power)
         {
+            // TODO
         }
 
         /// <summary>
@@ -222,6 +227,7 @@ namespace MicropolisCore
         /// </summary>
         public void getPowerGridMapBuffer()
         {
+            // TODO
         }
 
         /// <summary>
@@ -235,6 +241,7 @@ namespace MicropolisCore
         /// <returns>Value of the population density map at the given position.</returns>
         public int getPopulationDensity(int x, int y)
         {
+            // TODO
             return 0;
         }
 
@@ -246,6 +253,7 @@ namespace MicropolisCore
         /// <param name="density">the value to set.</param>
         public void setPopulationDensity(int x, int y, int density)
         {
+            // TODO
         }
 
         /// <summary>
@@ -255,6 +263,7 @@ namespace MicropolisCore
         /// </summary>
         public void getPopulationDensityMapBuffer()
         {
+            // TODO
         }
 
         /// <summary>
@@ -268,6 +277,7 @@ namespace MicropolisCore
         /// <returns>Value of the rate of growth map at the given position.</returns>
         public int getRateOfGrowth(int x, int y)
         {
+            // TODO
             return 0;
         }
 
@@ -279,6 +289,7 @@ namespace MicropolisCore
         /// <param name="rate">the value to set.</param>
         public void setRateOfGrowth(int x, int y, int rate)
         {
+            // TODO
         }
 
         /// <summary>
@@ -288,6 +299,7 @@ namespace MicropolisCore
         /// </summary>
         public void getRateOfGrowthMapBuffer()
         {
+            // TODO
         }
 
         /// <summary>
@@ -302,6 +314,7 @@ namespace MicropolisCore
         /// <returns>Value of the traffic density at the given position.</returns>
         public int getTrafficDensity(int x, int y)
         {
+            // TODO
             return 0;
         }
 
@@ -317,6 +330,7 @@ namespace MicropolisCore
         /// <param name="density">the value to set.</param>
         public void setTrafficDensity(int x, int y, int density)
         {
+            // TODO
         }
 
         /// <summary>
@@ -326,6 +340,7 @@ namespace MicropolisCore
         /// </summary>
         public void getTrafficDensityMapBuffer()
         {
+            // TODO
         }
 
         // TODO more of the same 3 functions get, set, getbuffer for the following
@@ -345,6 +360,7 @@ namespace MicropolisCore
         /// <returns>Value of the fir coverage map at the given position.</returns>
         public int getFireCoverage(int x, int y)
         {
+            // TODO
             return 0;
         }
 
@@ -360,6 +376,7 @@ namespace MicropolisCore
         /// <param name="coverage">the value to set.</param>
         public void setFireCoverage(int x, int y, int coverage)
         {
+            // TODO
         }
 
         /// <summary>
@@ -369,6 +386,7 @@ namespace MicropolisCore
         /// </summary>
         public void getFireCoverageMapBuffer()
         {
+            // TODO
         }
 
         /// <summary>
@@ -383,6 +401,7 @@ namespace MicropolisCore
         /// <returns>Value of the fir coverage map at the given position.</returns>
         public int getPoliceCoverage(int x, int y)
         {
+            // TODO
             return 0;
         }
 
@@ -398,6 +417,7 @@ namespace MicropolisCore
         /// <param name="coverage">the value to set.</param>
         public void setPoliceCoverage(int x, int y, int coverage)
         {
+            // TODO
         }
 
         /// <summary>
@@ -407,6 +427,7 @@ namespace MicropolisCore
         /// </summary>
         public void getPoliceCoverageMapBuffer()
         {
+            // TODO
         }
     }
 }
