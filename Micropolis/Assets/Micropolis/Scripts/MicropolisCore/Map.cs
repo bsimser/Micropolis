@@ -13,14 +13,16 @@
         private int BLKSIZE;
         private DATA _MAP_DEFAULT_VALUE; // Default value of a cluster
         private DATA[] _mapData;
+        private int MAP_W; // Number of clusters in horizontal direction.
+        private int MAP_H; // Number of clusters in vertical direction.
 
         public Map(DATA defaultValue, int blksize)
         {
             _MAP_DEFAULT_VALUE = defaultValue;
             BLKSIZE = blksize;
-            var width = (Micropolis.WORLD_W + BLKSIZE - 1) / BLKSIZE;
-            var height = (Micropolis.WORLD_H + BLKSIZE - 1) / BLKSIZE;
-            _mapData = new DATA[width * height];
+            MAP_W = (Micropolis.WORLD_W + BLKSIZE - 1) / BLKSIZE;
+            MAP_H = (Micropolis.WORLD_H + BLKSIZE - 1) / BLKSIZE;
+            _mapData = new DATA[MAP_W * MAP_H];
         }
 
         public void clear()
@@ -34,6 +36,55 @@
             {
                 _mapData[i] = value;
             }
+        }
+
+        /// <summary>
+        /// Return the value of a cluster.
+        /// 
+        /// If the coordinate is off the map, the _MAP_DEFAULT_VALUE is returned.
+        /// </summary>
+        /// <param name="x">X world position.</param>
+        /// <param name="y">Y world position.</param>
+        /// <returns>Value of the cluster.</returns>
+        public DATA worldGet(int x, int y)
+        {
+            if (!worldOnMap(x, y))
+            {
+                return _MAP_DEFAULT_VALUE;
+            }
+
+            x /= BLKSIZE;
+            y /= BLKSIZE;
+            return _mapData[x * MAP_H + y];
+        }
+
+        /// <summary>
+        /// Set the value of a cluster.
+        /// 
+        /// If the coordinate is off the map, the value is not stored.
+        /// </summary>
+        /// <param name="x">X world position.</param>
+        /// <param name="y">Y world position.</param>
+        /// <param name="value">Value to use.</param>
+        public void worldSet(int x, int y, DATA value)
+        {
+            if (worldOnMap(x, y))
+            {
+                x /= BLKSIZE;
+                y /= BLKSIZE;
+                _mapData[x * MAP_H + y] = value;
+            }
+        }
+
+        /// <summary>
+        /// Verify that world coordinates are within map boundaries.
+        /// </summary>
+        /// <param name="x">X world position.</param>
+        /// <param name="y">Y world position.</param>
+        /// <returns>Coordinate is within map boundaries.</returns>
+        private bool worldOnMap(int x, int y)
+        {
+            return (x >= 0 && x < Micropolis.WORLD_W) && (y >= 0 && y < Micropolis.WORLD_H);
         }
     }
 }

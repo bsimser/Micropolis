@@ -191,7 +191,7 @@ namespace MicropolisCore
 
             setValves();
             clearCensus();
-            // mapScan(0, WORLD_W);
+            mapScan(0, WORLD_W);
             doPowerScan();
             newPower = true;
             pollutionTerrainLandValueScan();

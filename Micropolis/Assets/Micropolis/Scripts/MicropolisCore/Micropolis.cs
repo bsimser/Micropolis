@@ -140,6 +140,16 @@ namespace MicropolisCore
         private const int ISLAND_RADIUS = 18;
 
         /// <summary>
+        /// Number of tiles that a coal power plant can supply power to.
+        /// </summary>
+        private const long COAL_POWER_STRENGTH = 700;
+
+        /// <summary>
+        /// Number of tiles that a nuclear power plant can supply power to.
+        /// </summary>
+        private const long NUCLEAR_POWER_STRENGTH = 2000;
+
+        /// <summary>
         /// Number of road tiles in the game.
         /// 
         /// Bridges count as 4 tiles, and high density traffic counts as
@@ -793,7 +803,10 @@ namespace MicropolisCore
         /// </summary>
         private int powerStackPointer;
 
-        //private Position powerStackXY[POWER_STACK_SIZE];
+        /// <summary>
+        /// Stack of X/Y positions for traversing setting the power grid.
+        /// </summary>
+        private Position[] powerStackXY;
 
         private long nextRandom;
 
@@ -1087,7 +1100,7 @@ namespace MicropolisCore
             policeStationMap.clear();
             policeStationEffectMap.clear();
             comRateMap.clear();
-            // mapBase
+            // TODO mapBase
             resHist = new short[HISTORY_LENGTH];
             comHist = new short[HISTORY_LENGTH];
             indHist = new short[HISTORY_LENGTH];
@@ -1131,12 +1144,18 @@ namespace MicropolisCore
             doAnimation = true;
             doMessages = true;
             doNotices = true;
-            // cellSrc
-            // cellDst
+            // TODO cellSrc
+            // TODO cellDst
             cityPopLast = 0;
             categoryLast = 0;
             autoGoto = false;
+
             powerStackPointer = 0;
+            powerStackXY = new Position[POWER_STACK_SIZE];
+            for (int i = 0; i < POWER_STACK_SIZE; i++)
+            {
+                powerStackXY[i] = new Position();
+            }
 
             nextRandom = 1;
             homeDir = "";
