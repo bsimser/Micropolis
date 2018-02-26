@@ -4,6 +4,8 @@
     {
         /// <summary>
         /// Create a new map for a city.
+        /// BUG We use a random number generator to draw a seed for initializing the
+        ///     random number generator?
         /// </summary>
         public void generateMap()
         {
@@ -19,7 +21,7 @@
             cityFileName = "";
 
             generateMap(seed);
-            // scenario = SC_NONE
+            scenario = ScenarioType.SC_NONE;
             cityTime = 0;
             initSimLoad = 2;
             doInitialEval = true;
@@ -49,7 +51,7 @@
             // Construct land.
             if (terrainCreateIsland < 0)
             {
-                if (getRandom(100) < 10)
+                if (getRandom(100) < 10) // chance that island is generated
                 {
                     makeIsland();
                     return;
@@ -89,8 +91,6 @@
             {
                 doTrees();
             }
-
-            smoothWater();
         }
 
         /// <summary>
@@ -181,7 +181,6 @@
             makeNakedIsland();
             smoothRiver();
             doTrees();
-            smoothWater();
         }
 
         /// <summary>

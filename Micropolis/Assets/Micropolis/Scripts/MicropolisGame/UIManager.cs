@@ -10,6 +10,7 @@ namespace MicropolisGame
         private readonly Text _fundsText;
         private readonly Text _dateText;
         private readonly Text _poplationText;
+        private readonly Text _messageText;
 
         public UIManager(MicropolisUnityEngine engine)
         {
@@ -20,6 +21,7 @@ namespace MicropolisGame
             _fundsText = GameObject.Find("Funds").GetComponent<Text>();
             _dateText = GameObject.Find("Date").GetComponent<Text>();
             _poplationText = GameObject.Find("Population").GetComponent<Text>();
+            _messageText = GameObject.Find("Message").GetComponent<Text>();
 
             // subscribe to event handlers in the engine
             _engine.OnUpdateDate += DoUpdateDate;
@@ -30,9 +32,11 @@ namespace MicropolisGame
 
         private void DoSendMessage(short mesgNum, short s, short s1, bool picture, bool important)
         {
+            //Debug.Log(string.Format("mesgNum: {0} x: {1} y: {2} picture: {3} important: {4}", mesgNum, s, s1, picture, important));
+            //TODO handle autoGoto on important messages
+            //TODO if there's a picture to show show it (how do we know what picture?)
             var message = _engine.messages[mesgNum];
-            Debug.Log(string.Format("mesgNum: {0} x: {1} y: {2} picture: {3} important: {4}", mesgNum, s, s1, picture, important));
-            Debug.Log(message);
+            _messageText.text = message;
         }
 
         private void DoUpdateFunds()

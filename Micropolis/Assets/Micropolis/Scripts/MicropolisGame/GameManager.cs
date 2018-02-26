@@ -29,7 +29,7 @@ namespace MicropolisGame
             _engine.setSpeed(1);
             _engine.setCityTax(9);
             // load a sample city for testing
-            _engine.loadFile("cities" + Path.DirectorySeparatorChar + "deadwood.cty");
+            _engine.loadFile("cities" + Path.DirectorySeparatorChar + "kyoto.cty");
             // other engine stuff
             _engine.setEnableDisasters(false);
         }

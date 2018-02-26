@@ -25,21 +25,21 @@
             policeFund = 0;
             fireFund = 0;
             valveFlag = true;
-            // TODO disasterEvent = SC_NONE;
+            disasterEvent = ScenarioType.SC_NONE;
             taxFlag = false;
 
-            //populationDensityMap.clear();
-            //trafficDensityMap.clear();
-            //pollutionDensityMap.clear();
-            //landValueMap.clear();
-            //crimeRateMap.clear();
-            //terrainDensityMap.clear();
-            //rateOfGrowthMap.clear();
-            //comRateMap.clear();
-            //policeStationMap.clear();
-            //policeStationEffectMap.clear();
-            //fireStationMap.clear();
-            //fireStationEffectMap.clear();
+            populationDensityMap.clear();
+            trafficDensityMap.clear();
+            pollutionDensityMap.clear();
+            landValueMap.clear();
+            crimeRateMap.clear();
+            terrainDensityMap.clear();
+            rateOfGrowthMap.clear();
+            comRateMap.clear();
+            policeStationMap.clear();
+            policeStationEffectMap.clear();
+            fireStationMap.clear();
+            fireStationEffectMap.clear();
 
             doNewGame();
             doUpdateHeads();

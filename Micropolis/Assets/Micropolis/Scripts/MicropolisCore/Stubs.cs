@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace MicropolisCore
 {
@@ -95,6 +96,8 @@ namespace MicropolisCore
         /// <param name="args">Parameters of the callback.</param>
         public void callback(string name, params string[] args)
         {
+            var temporaryLogMessage = false;
+
             if (name == "update")
             {
                 if (args[1] == "date")
@@ -118,6 +121,25 @@ namespace MicropolisCore
                         OnUpdateCityName();
                     }
                 }
+                else
+                {
+                    temporaryLogMessage = true;
+                }
+            }
+            else if (name == "simRobots")
+            {
+                // do nothing (for now)
+            }
+            else
+            {
+                temporaryLogMessage = true;
+            }
+
+            if (temporaryLogMessage)
+            {
+                // remove this later as we want to use events and delegates and not have 
+                // Unity code in the core engine but here we can see what's going on
+                Debug.Log(string.Format("callback: {0} event: {1}", name, string.Join(",", args)));
             }
         }
 

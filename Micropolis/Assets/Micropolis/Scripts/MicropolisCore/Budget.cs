@@ -265,7 +265,7 @@
 
                     setAutoBudget(false); /* force autobudget */
                     mustUpdateOptions = true;
-                    //sendMessage(MESSAGE_NO_MONEY, NOWHERE, NOWHERE, false, true);
+                    sendMessage((short) MessageNumber.MESSAGE_NO_MONEY, NOWHERE, NOWHERE, false, true);
                     noMoney(fromMenu, total, yumDuckets);
                 }
             }

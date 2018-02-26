@@ -2,6 +2,10 @@
 {
     public partial class Micropolis
     {
+        /// <summary>
+        /// Get version of Micropolis program.
+        /// </summary>
+        /// <returns></returns>
         public string getMicropolisVersion()
         {
             return "5.0";
@@ -22,7 +26,7 @@
         {
             setEnableSound(true); // Enable sound
             mustUpdateOptions = true; // Update options displayed at user
-            // TODO scenario = SC_NONE;
+            scenario = ScenarioType.SC_NONE;
             startingYear = 1900;
             simPasses = 1;
             simPass = 0;

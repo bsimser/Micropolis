@@ -883,14 +883,14 @@ namespace MicropolisCore
         private short cashFlow;
         private float externalMarket;
 
-        //private Scenario disasterEvent;
+        private ScenarioType disasterEvent;
 
         /// <summary>
         /// Count-down timer for the disaster
         /// </summary>
         private short disasterWait;
 
-        //private Scenario scoreType;
+        private ScenarioType scoreType;
 
         /// <summary>
         /// Time to wait before computing the score
@@ -964,7 +964,7 @@ namespace MicropolisCore
         private long messageTimeLast;
         //private GameLevel gameLevel;
         private short initSimLoad;
-        //private Scenario scenario;
+        private ScenarioType scenario;
         public short simSpeed;
         private short simSpeedMeta;
 
@@ -1014,7 +1014,7 @@ namespace MicropolisCore
         {
             populationDensityMap = new MapByte2(0);
             trafficDensityMap = new MapByte2(0);
-            populationDensityMap = new MapByte2(0);
+            pollutionDensityMap = new MapByte2(0);
             landValueMap = new MapByte2(0);
             crimeRateMap = new MapByte2(0);
             terrainDensityMap = new MapByte4(0);

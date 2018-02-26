@@ -12,9 +12,9 @@
             resHist = new short[HISTORY_LENGTH];
             comHist = new short[HISTORY_LENGTH];
             indHist = new short[HISTORY_LENGTH];
-            crimeHist = new short[HISTORY_LENGTH];
-            pollutionHist = new short[HISTORY_LENGTH];
             moneyHist = new short[HISTORY_LENGTH];
+            pollutionHist = new short[HISTORY_LENGTH];
+            crimeHist = new short[HISTORY_LENGTH];
             miscHist = new short[HISTORY_LENGTH];
         }
 
@@ -25,9 +25,17 @@
         {
             // TODO clear the map
 
-            // TODO clear density maps
+            populationDensityMap.clear();
+            trafficDensityMap.clear();
+            pollutionDensityMap.clear();
+            landValueMap.clear();
+            crimeRateMap.clear();
 
-            // TODO clear temp maps
+            tempMap1.clear();
+            tempMap2.clear();
+            tempMap3.clear();
+
+            terrainDensityMap.clear();
 
             // TODO free histories
         }
