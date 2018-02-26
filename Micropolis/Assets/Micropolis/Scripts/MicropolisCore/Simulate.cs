@@ -29,19 +29,6 @@ namespace MicropolisCore
             simulate();
         }
 
-        private T clamp<T>(T val, T lower, T upper) where T : IComparable
-        {
-            if (val.CompareTo(lower) < 0)
-            {
-                return lower;
-            }
-            if (val.CompareTo(upper) > 0)
-            {
-                return upper;
-            }
-            return val;
-        }
-
         private void simulate()
         {
             short[] speedPowerScan = 
@@ -109,7 +96,21 @@ namespace MicropolisCore
                     break;
 
                 case 9:
-                    // TODO census
+                    if (cityTime % CENSUS_FREQUENCY_10 == 0)
+                    {
+                        take10Census();
+                    }
+
+                    if (cityTime % CENSUS_FREQUENCY_120 == 0)
+                    {
+                        take120Census();
+                    }
+
+                    if (cityTime % TAX_FREQUENCY == 0)
+                    {
+                        collectTax();
+                        cityEvaluation();
+                    }
                     break;
 
                 case 10:
@@ -120,7 +121,13 @@ namespace MicropolisCore
 
                     decTrafficMap();
 
-                    // TODO newMapFlags
+                    newMapFlags[(int)MapType.MAP_TYPE_TRAFFIC_DENSITY] = 1;
+                    newMapFlags[(int)MapType.MAP_TYPE_ROAD] = 1;
+                    newMapFlags[(int)MapType.MAP_TYPE_ALL] = 1;
+                    newMapFlags[(int)MapType.MAP_TYPE_RES] = 1;
+                    newMapFlags[(int)MapType.MAP_TYPE_COM] = 1;
+                    newMapFlags[(int)MapType.MAP_TYPE_IND] = 1;
+                    newMapFlags[(int)MapType.MAP_TYPE_DYNAMIC] = 1;
 
                     sendMessages();
 
@@ -205,7 +212,7 @@ namespace MicropolisCore
         }
 
         /// <summary>
-        /// Copy bits from powerGridMap to the #PWRBIT in the map for all zones in the world.
+        /// Copy bits from powerGridMap to the PWRBIT in the map for all zones in the world.
         /// </summary>
         public void doNilPower()
         {
@@ -325,8 +332,8 @@ namespace MicropolisCore
             indCap = false; // Do not block industrial growth
 
             externalMarket = 6.0f;
-            // TODO disasterEvent = SC_NONE;
-            // TODO scoreType = SC_NONE;
+            disasterEvent = ScenarioType.SC_NONE;
+            scoreType = ScenarioType.SC_NONE;
 
             /* This clears powermem */
             powerStackPointer = 0;
@@ -338,24 +345,76 @@ namespace MicropolisCore
 
         public void simLoadInit()
         {
-            // TODO
+            // Disaster delay table for each scenario
+            short[] disasterWaitTable = {
+                0,          // No scenario (free playing)
+                2,          // Dullsville (boredom)
+                10,         // San francisco (earth quake)
+                4 * 10,     // Hamburg (fire bombs)
+                20,         // Bern (traffic)
+                3,          // Tokyo (scary monster)
+                5,          // Detroit (crime)
+                5,          // Boston (nuclear meltdown)
+                2 * 48,     // Rio (flooding)
+            };
+
+            // Time to wait before score calculation for each scenario
+            short[] scoreWaitTable = {
+                0,          // No scenario (free playing)
+                30 * 48,    // Dullsville (boredom)
+                5 * 48,     // San francisco (earth quake)
+                5 * 48,     // Hamburg (fire bombs)
+                10 * 48,    // Bern (traffic)
+                5 * 48,     // Tokyo (scary monster)
+                10 * 48,    // Detroit (crime)
+                5 * 48,     // Boston (nuclear meltdown)
+                10 * 48,    // Rio (flooding)
+            };
+
+            externalMarket = (float)miscHist[1];
+            resPop = miscHist[2];
+            comPop = miscHist[3];
+            indPop = miscHist[4];
+            resValve = miscHist[5];
+            comValve = miscHist[6];
+            indValve = miscHist[7];
+            crimeRamp = miscHist[10];
+            pollutionRamp = miscHist[11];
+            landValueAverage = miscHist[12];
+            crimeAverage = miscHist[13];
+            pollutionAverage = miscHist[14];
+            gameLevel = (GameLevel)miscHist[15];
 
             if (cityTime < 0)
             {
                 cityTime = 0;
             }
 
-            // TODO consider changing this to an int or do a different compare
-            if (externalMarket != 0)
+            if (!(externalMarket != 0))
             {
                 externalMarket = 4.0f;
             }
 
-            // TODO Set game level
+            // Set game level
+            if (gameLevel > GameLevel.LEVEL_LAST || gameLevel < GameLevel.LEVEL_FIRST)
+            {
+                gameLevel = GameLevel.LEVEL_FIRST;
+            }
+            setGameLevel(gameLevel);
 
             setCommonInits();
 
-            // Load cityClass
+            cityClass = (CityClass)(miscHist[16]);
+            if (cityClass > CityClass.CC_MEGALOPOLIS || cityClass < CityClass.CC_VILLAGE)
+            {
+                cityClass = CityClass.CC_VILLAGE;
+            }
+
+            cityScore = miscHist[17];
+            if (cityScore > 999 || cityScore < 1)
+            {
+                cityScore = 500;
+            }
 
             resCap = false;
             comCap = false;
@@ -369,7 +428,28 @@ namespace MicropolisCore
 
             doNilPower();
 
-            // TODO
+            if (scenario >= ScenarioType.SC_COUNT)
+            {
+                scenario = ScenarioType.SC_NONE;
+            }
+
+            if (scenario != ScenarioType.SC_NONE)
+            {
+                //assert(LENGTH_OF(disasterWaitTable) == SC_COUNT);
+                //assert(LENGTH_OF(scoreWaitTable) == SC_COUNT);
+
+                disasterEvent = scenario;
+                disasterWait = disasterWaitTable[(int) disasterEvent];
+                scoreType = disasterEvent;
+                scoreWait = scoreWaitTable[(int) disasterEvent];
+            }
+            else
+            {
+                disasterEvent = ScenarioType.SC_NONE;
+                disasterWait = 0;
+                scoreType = ScenarioType.SC_NONE;
+                scoreWait = 0;
+            }
 
             roadEffect = MAX_ROAD_EFFECT;
             policeEffect = MAX_POLICE_STATION_EFFECT;
@@ -389,7 +469,144 @@ namespace MicropolisCore
 
         public void setValves()
         {
-            // TODO
+            short[] taxTable = {
+                200, 150, 120, 100, 80, 50, 30, 0, -10, -40, -100,
+                -150, -200, -250, -300, -350, -400, -450, -500, -550, -600,
+            };
+            float[] extMarketParamTable = {
+                1.2f, 1.1f, 0.98f,
+            };
+            //assert(LEVEL_COUNT == LENGTH_OF(extMarketParamTable));
+
+            // TODO Make configurable parameters.
+            short resPopDenom = 8;
+            float birthRate = 0.02f;
+            float laborBaseMax = 1.3f;
+            float internalMarketDenom = 3.7f;
+            float projectedIndPopMin = 5.0f;
+            float resRatioDefault = 1.3f;
+            float resRatioMax = 2;
+            float comRatioMax = 2;
+            float indRatioMax = 2;
+            short taxMax = 20;
+            float taxTableScale = 600;
+
+            // TODO Break the interesting values out into public member
+            //      variables so the user interface can display them.
+            float employment, migration, births, laborBase, internalMarket;
+            float resRatio, comRatio, indRatio;
+            float normalizedResPop, projectedResPop, projectedComPop, projectedIndPop;
+
+            miscHist[1] = (short)externalMarket;
+            miscHist[2] = resPop;
+            miscHist[3] = comPop;
+            miscHist[4] = indPop;
+            miscHist[5] = resValve;
+            miscHist[6] = comValve;
+            miscHist[7] = indValve;
+            miscHist[10] = crimeRamp;
+            miscHist[11] = pollutionRamp;
+            miscHist[12] = landValueAverage;
+            miscHist[13] = crimeAverage;
+            miscHist[14] = pollutionAverage;
+            miscHist[15] = (short) gameLevel;
+            miscHist[16] = (short)cityClass;
+            miscHist[17] = cityScore;
+
+            normalizedResPop = (float)resPop / (float)resPopDenom;
+            totalPopLast = totalPop;
+            totalPop = (short)(normalizedResPop + comPop + indPop);
+
+            if (resPop > 0)
+            {
+                employment = (comHist[1] + indHist[1]) / normalizedResPop;
+            }
+            else
+            {
+                employment = 1;
+            }
+
+            migration = normalizedResPop * (employment - 1);
+            births = normalizedResPop * birthRate;
+            projectedResPop = normalizedResPop + migration + births;   // Projected res pop.
+
+            // Compute laborBase
+            float temp = comHist[1] + indHist[1];
+            if (temp > 0.0)
+            {
+                laborBase = (resHist[1] / temp);
+            }
+            else
+            {
+                laborBase = 1;
+            }
+            laborBase = clamp(laborBase, 0.0f, laborBaseMax);
+
+            internalMarket = (float)(normalizedResPop + comPop + indPop) / internalMarketDenom;
+
+            projectedComPop = internalMarket * laborBase;
+
+            //assert(gameLevel >= LEVEL_FIRST && gameLevel <= LEVEL_LAST);
+            projectedIndPop = indPop * laborBase * extMarketParamTable[(int) gameLevel];
+            projectedIndPop = Math.Max(projectedIndPop, projectedIndPopMin);
+
+            if (normalizedResPop > 0)
+            {
+                resRatio = (float)projectedResPop / (float)normalizedResPop; // projected -vs- actual.
+            }
+            else
+            {
+                resRatio = resRatioDefault;
+            }
+
+            if (comPop > 0)
+            {
+                comRatio = (float)projectedComPop / (float)comPop;
+            }
+            else
+            {
+                comRatio = (float)projectedComPop;
+            }
+
+            if (indPop > 0)
+            {
+                indRatio = (float)projectedIndPop / (float)indPop;
+            }
+            else
+            {
+                indRatio = (float)projectedIndPop;
+            }
+
+            resRatio = Math.Min(resRatio, resRatioMax);
+            comRatio = Math.Min(comRatio, comRatioMax);
+            resRatio = Math.Min(indRatio, indRatioMax);
+
+            // Global tax and game level effects.
+            short z = Math.Min((short)(cityTax + gameLevel), taxMax);
+            resRatio = (resRatio - 1) * taxTableScale + taxTable[z];
+            comRatio = (comRatio - 1) * taxTableScale + taxTable[z];
+            indRatio = (indRatio - 1) * taxTableScale + taxTable[z];
+
+            // Ratios are velocity changes to valves.
+            resValve = (short) clamp(resValve + (short)resRatio, -RES_VALVE_RANGE, RES_VALVE_RANGE);
+            comValve = (short) clamp(comValve + (short)comRatio, -COM_VALVE_RANGE, COM_VALVE_RANGE);
+            indValve = (short) clamp(indValve + (short)indRatio, -IND_VALVE_RANGE, IND_VALVE_RANGE);
+
+            if (resCap && resValve > 0)
+            {
+                resValve = 0; // Need a stadium, so cap resValve.
+            }
+
+            if (comCap && comValve > 0)
+            {
+                comValve = 0; // Need a airport, so cap comValve.
+            }
+
+            if (indCap && indValve > 0)
+            {
+                indValve = 0; // Need an seaport, so cap indValve.
+            }
+
             valveFlag = true;
         }
 
@@ -418,7 +635,9 @@ namespace MicropolisCore
             powerStackPointer = 0; /* Reset before Mapscan */
 
             fireStationMap.clear();
+            //fireStationEffectMap.clear(); // Added in rev293
             policeStationMap.clear();
+            //policeStationEffectMap.clear(); // Added in rev293
         }
 
         /// <summary>
@@ -429,29 +648,225 @@ namespace MicropolisCore
         /// </summary>
         public void take10Census()
         {
-            // TODO
+            // TODO: Make configurable parameters.
+            int resPopDenom = 8;
+
+            short x;
+
+            /* put census#s in Historical Graphs and scroll data  */
+            resHist10Max = 0;
+            comHist10Max = 0;
+            indHist10Max = 0;
+
+            for (x = 118; x >= 0; x--)
+            {
+
+                resHist10Max = Math.Max(resHist10Max, resHist[x]);
+                comHist10Max = Math.Max(comHist10Max, comHist[x]);
+                indHist10Max = Math.Max(indHist10Max, indHist[x]);
+
+                resHist[x + 1] = resHist[x];
+                comHist[x + 1] = comHist[x];
+                indHist[x + 1] = indHist[x];
+                crimeHist[x + 1] = crimeHist[x];
+                pollutionHist[x + 1] = pollutionHist[x];
+                moneyHist[x + 1] = moneyHist[x];
+
+            }
+
+            graph10Max = resHist10Max;
+            graph10Max = Math.Max(graph10Max, comHist10Max);
+            graph10Max = Math.Max(graph10Max, indHist10Max);
+
+            resHist[0] = (short) (resPop / resPopDenom);
+            comHist[0] = comPop;
+            indHist[0] = indPop;
+
+            crimeRamp += (short)((crimeAverage - crimeRamp) / 4);
+            crimeHist[0] = Math.Min(crimeRamp, (short)255);
+
+            pollutionRamp += (short)((pollutionAverage - pollutionRamp) / 4);
+            pollutionHist[0] = Math.Min(pollutionRamp, (short)255);
+
+            x = (short) ((cashFlow / 20) + 128);    /* scale to 0..255  */
+            moneyHist[0] = clamp(x, (short)0, (short)255);
+
+            changeCensus();
+
+            short resPopScaled = (short) (resPop >> 8);
+
+            if (hospitalPop < resPopScaled)
+            {
+                needHospital = 1;
+            }
+
+            if (hospitalPop > resPopScaled)
+            {
+                needHospital = -1;
+            }
+
+            if (hospitalPop == resPopScaled)
+            {
+                needHospital = 0;
+            }
+
+            int faithfulPop = resPopScaled + faith;
+
+            if (churchPop < faithfulPop)
+            {
+                needChurch = 1;
+            }
+
+            if (churchPop > faithfulPop)
+            {
+                needChurch = -1;
+            }
+
+            if (churchPop == faithfulPop)
+            {
+                needChurch = 0;
+            }
         }
 
         public void take120Census()
         {
-            // TODO
+            // TODO: Make configurable parameters.
+            int resPopDenom = 8;
+
+            /* Long Term Graphs */
+            short x;
+
+            resHist120Max = 0;
+            comHist120Max = 0;
+            indHist120Max = 0;
+
+            for (x = 238; x >= 120; x--)
+            {
+
+                resHist120Max = Math.Max(resHist120Max, resHist[x]);
+                comHist120Max = Math.Max(comHist120Max, comHist[x]);
+                indHist120Max = Math.Max(indHist120Max, indHist[x]);
+
+                resHist[x + 1] = resHist[x];
+                comHist[x + 1] = comHist[x];
+                indHist[x + 1] = indHist[x];
+                crimeHist[x + 1] = crimeHist[x];
+                pollutionHist[x + 1] = pollutionHist[x];
+                moneyHist[x + 1] = moneyHist[x];
+
+            }
+
+            graph120Max = resHist120Max;
+            graph120Max = Math.Max(graph120Max, comHist120Max);
+            graph120Max = Math.Max(graph120Max, indHist120Max);
+
+            resHist[120] = (short) (resPop / resPopDenom);
+            comHist[120] = comPop;
+            indHist[120] = indPop;
+            crimeHist[120] = crimeHist[0];
+            pollutionHist[120] = pollutionHist[0];
+            moneyHist[120] = moneyHist[0];
+            changeCensus();
         }
 
         /// <summary>
         /// Collect taxes
+        /// BUG Function seems to be doing different things depending on
+        ///     totalPop value. With an non-empty city it does fund
+        ///     calculations. For an empty city, it immediately sets effects of
+        ///     funding, which seems inconsistent at least, and may be wrong
+        /// BUG If taxFlag is set, no variable is touched which seems non-robust at least
         /// </summary>
         public void collectTax()
         {
-            // TODO
+            short z;
+
+            /**
+             * @todo Break out so the user interface can configure this.
+             */
+            float[] RLevels = { 0.7f, 0.9f, 1.2f };
+            float[] FLevels = { 1.4f, 1.2f, 0.8f };
+
+            //assert(LEVEL_COUNT == LENGTH_OF(RLevels));
+            //assert(LEVEL_COUNT == LENGTH_OF(FLevels));
+
+            cashFlow = 0;
+
+            /**
+             * @todo Apparently taxFlag is never set to true in MicropolisEngine
+             *       or the TCL code, so this always runs.
+             * @todo Check old Mac code to see if it's ever set, and why.
+             */
+
+            if (!taxFlag)
+            { 
+                // If the Tax Port is clear
+
+                // TODO Do something with z? Check old Mac code to see if it's used.
+                z = (short) (cityTaxAverage / 48);  // post release
+
+                cityTaxAverage = 0;
+
+                policeFund = (long)policeStationPop * 100;
+                fireFund = (long)fireStationPop * 100;
+                roadFund = (long)((roadTotal + (railTotal * 2)) * RLevels[(int) gameLevel]);
+                taxFund = (long)((((long)totalPop * landValueAverage) / 120) * cityTax * FLevels[(int) gameLevel]);
+
+                if (totalPop > 0)
+                {
+                    /* There are people to tax. */
+                    cashFlow = (short)(taxFund - (policeFund + fireFund + roadFund));
+                    doBudget();
+                }
+                else
+                {
+                    /* Nobody lives here. */
+                    roadEffect = MAX_ROAD_EFFECT;
+                    policeEffect = MAX_POLICE_STATION_EFFECT;
+                    fireEffect = MAX_FIRE_STATION_EFFECT;
+                }
+            }
         }
 
         /// <summary>
         /// Update effects of (possibly reduced) funding.
+        /// 
         /// It updates effects with respect to roads, police, and fire.
         /// </summary>
         public void updateFundEffects()
         {
-            // TODO
+            // Compute road effects of funding
+            roadEffect = MAX_ROAD_EFFECT;
+            if (roadFund > 0)
+            {
+                // Multiply with funding fraction
+                roadEffect = (short)((float)roadEffect * (float)roadSpend / (float)roadFund);
+            }
+
+            // Compute police station effects of funding
+            policeEffect = MAX_POLICE_STATION_EFFECT;
+            if (policeFund > 0)
+            {
+                // Multiply with funding fraction
+                policeEffect = (short)((float)policeEffect * (float)policeSpend / (float)policeFund);
+            }
+
+            // Compute fire station effects of funding
+            fireEffect = MAX_FIRE_STATION_EFFECT;
+            if (fireFund > 0)
+            {
+                // Multiply with funding fraction
+                fireEffect = (short)((float)fireEffect * (float)fireSpend / (float)fireFund);
+            }
+
+#if false
+            printf("========== updateFundEffects road %d %d %d fire %d %d %d police %d %d %d\n",
+                (int)roadEffect, (int)roadSpend, (int)roadFund,
+                (int)fireEffect, (int)fireSpend, (int)fireFund,
+                (int)policeEffect, (int)policeSpend, (int)policeFund);
+#endif
+
+            mustDrawBudget = 1;
         }
 
         public void mapScan(int x1, int x2)
@@ -587,9 +1002,267 @@ namespace MicropolisCore
             }
         }
 
+        /// <summary>
+        /// Handle road tile.
+        /// </summary>
+        /// <param name="pos">Position of the road.</param>
         private void doRoad(Position pos)
         {
-            // TODO
+            short tden, z;
+            short[] densityTable =
+            {
+                (short) MapTileCharacters.ROADBASE,
+                (short) MapTileCharacters.LTRFBASE,
+                (short) MapTileCharacters.HTRFBASE
+            };
+
+            roadTotal++;
+
+            ushort mapValue = map[pos.posX,pos.posY];
+            ushort tile = (ushort)(mapValue & (ushort)MapTileBits.LOMASK);
+
+            /* generateBus(pos.posX, pos.posY); */
+
+            if (roadEffect < (15 * MAX_ROAD_EFFECT / 16))
+            {
+                // roadEffect < 15/16 of max road, enable deteriorating road
+                if ((getRandom16() & 511) == 0)
+                {
+                    if ((ushort)(mapValue & (ushort)MapTileBits.CONDBIT) == 0)
+                    {
+                        //assert(MAX_ROAD_EFFECT == 32); // Otherwise the '(getRandom16() & 31)' makes no sense
+                        if (roadEffect < (getRandom16() & 31))
+                        {
+                            if ((tile & 15) < 2 || (tile & 15) == 15)
+                            {
+                                map[pos.posX,pos.posY] = (ushort) MapTileCharacters.RIVER;
+                            }
+                            else
+                            {
+                                map[pos.posX,pos.posY] = randomRubble();
+                            }
+                            return;
+                        }
+                    }
+                }
+            }
+
+            if ((mapValue & (ushort) MapTileBits.BURNBIT) == 0)
+            { 
+                /* If Bridge */
+                roadTotal += 4; // Bridge counts as 4 road tiles
+                if (doBridge(new Position(pos.posX, pos.posY), tile))
+                {
+                    return;
+                }
+            }
+
+            if (tile < (ushort) MapTileCharacters.LTRFBASE)
+            {
+                tden = 0;
+            }
+            else if (tile < (ushort) MapTileCharacters.HTRFBASE)
+            {
+                tden = 1;
+            }
+            else
+            {
+                roadTotal++; // Heavy traffic counts as 2 roads.
+                tden = 2;
+            }
+
+            short trafficDensity = (short) (trafficDensityMap.worldGet(pos.posX, pos.posY) >> 6);
+
+            if (trafficDensity > 1)
+            {
+                trafficDensity--;
+            }
+
+            if (tden != trafficDensity)
+            { 
+                /* tden 0..2   */
+                z = (short) (((tile - (ushort) MapTileCharacters.ROADBASE) & 15) + densityTable[trafficDensity]);
+                z |= (short)(mapValue & (MapTileBits.ALLBITS - MapTileBits.ANIMBIT));
+
+                if (trafficDensity > 0)
+                {
+                    z |= (short) MapTileBits.ANIMBIT;
+                }
+
+                map[pos.posX,pos.posY] = (ushort) z;
+            }
+        }
+
+        /// <summary>
+        /// Handle a bridge
+        /// </summary>
+        /// <param name="pos">Position of the bridge.</param>
+        /// <param name="tile">Tile value of the bridge.</param>
+        /// <returns></returns>
+        private bool doBridge(Position pos, ushort tile)
+        {
+            short[] HDx = { -2, 2, -2, -1, 0, 1, 2 };
+            short[] HDy = { -1, -1, 0, 0, 0, 0, 0 };
+            short[] HBRTAB =
+            {
+                (short)MapTileCharacters.HBRDG1 | (short)MapTileBits.BULLBIT,
+                (short)MapTileCharacters.HBRDG3 | (short)MapTileBits.BULLBIT,
+                (short)MapTileCharacters.HBRDG0 | (short)MapTileBits.BULLBIT,
+                (short)MapTileCharacters.RIVER,
+                (short)MapTileCharacters.BRWH | (short)MapTileBits.BULLBIT,
+                (short)MapTileCharacters.RIVER,
+                (short)MapTileCharacters.HBRDG2 | (short)MapTileBits.BULLBIT,
+            };
+            short[] HBRTAB2 =
+            {
+                (short)MapTileCharacters.RIVER,
+                (short)MapTileCharacters.RIVER,
+                (short)MapTileCharacters.HBRIDGE | (short)MapTileBits.BULLBIT,
+                (short)MapTileCharacters.HBRIDGE | (short)MapTileBits.BULLBIT,
+                (short)MapTileCharacters.HBRIDGE | (short)MapTileBits.BULLBIT,
+                (short)MapTileCharacters.HBRIDGE | (short)MapTileBits.BULLBIT,
+                (short)MapTileCharacters.HBRIDGE | (short)MapTileBits.BULLBIT,
+            };
+            short[] VDx = { 0, 1, 0, 0, 0, 0, 1 };
+            short[] VDy = { -2, -2, -1, 0, 1, 2, 2 };
+            short[] VBRTAB =
+            {
+                (short)MapTileCharacters.VBRDG0 | (short)MapTileBits.BULLBIT,
+                (short)MapTileCharacters.VBRDG1 | (short)MapTileBits.BULLBIT,
+                (short)MapTileCharacters.RIVER,
+                (short)MapTileCharacters.BRWV | (short)MapTileBits.BULLBIT,
+                (short)MapTileCharacters.RIVER,
+                (short)MapTileCharacters.VBRDG2 | (short)MapTileBits.BULLBIT,
+                (short)MapTileCharacters.VBRDG3 | (short)MapTileBits.BULLBIT,
+            };
+            short[] VBRTAB2 =
+            {
+                (short)MapTileCharacters.VBRIDGE | (short)MapTileBits.BULLBIT,
+                (short)MapTileCharacters.RIVER,
+                (short)MapTileCharacters.VBRIDGE | (short)MapTileBits.BULLBIT,
+                (short)MapTileCharacters.VBRIDGE | (short)MapTileBits.BULLBIT,
+                (short)MapTileCharacters.VBRIDGE | (short)MapTileBits.BULLBIT,
+                (short)MapTileCharacters.VBRIDGE | (short)MapTileBits.BULLBIT,
+                (short)MapTileCharacters.RIVER,
+            };
+            int z, x, y, MPtem;
+
+            if (tile == (ushort) MapTileCharacters.BRWV)
+            { 
+                /*  Vertical bridge close */
+
+                if ((getRandom16() & 3) == 0 && getBoatDistance(pos) > 340)
+                {
+                    for (z = 0; z < 7; z++)
+                    { 
+                        /* Close */
+                        x = pos.posX + VDx[z];
+                        y = pos.posY + VDy[z];
+
+                        if (Position.testBounds((short) x, (short) y))
+                        {
+                            if ((map[x,y] & (ushort) MapTileBits.LOMASK) == (VBRTAB[z] & (short) MapTileBits.LOMASK))
+                            {
+                                map[x,y] = (ushort) VBRTAB2[z];
+                            }
+                        }
+                    }
+                }
+                return true;
+            }
+
+            if (tile == (ushort) MapTileCharacters.BRWH)
+            { 
+                /*  Horizontal bridge close  */
+                if ((getRandom16() & 3) == 0 && getBoatDistance(pos) > 340)
+                {
+                    for (z = 0; z < 7; z++)
+                    { 
+                        /* Close */
+                        x = pos.posX + HDx[z];
+                        y = pos.posY + HDy[z];
+
+                        if (Position.testBounds((short) x, (short) y))
+                        {
+                            if ((map[x,y] & (ushort) MapTileBits.LOMASK) == (HBRTAB[z] & (short) MapTileBits.LOMASK))
+                            {
+                                map[x,y] = (ushort) HBRTAB2[z];
+                            }
+                        }
+                    }
+                }
+                return true;
+            }
+
+            if (getBoatDistance(pos) < 300 || (getRandom16() & 7) == 0)
+            {
+                if ((tile & 1) != 0)
+                {
+                    if (pos.posX < WORLD_W - 1)
+                    {
+                        if (map[pos.posX + 1,pos.posY] == (ushort) MapTileCharacters.CHANNEL)
+                        { 
+                            /* Vertical open */
+                            for (z = 0; z < 7; z++)
+                            {
+                                x = pos.posX + VDx[z];
+                                y = pos.posY + VDy[z];
+
+                                if (Position.testBounds((short) x, (short) y))
+                                {
+                                    MPtem = map[x,y];
+                                    if (MPtem == (int) MapTileCharacters.CHANNEL || ((MPtem & 15) == (VBRTAB2[z] & 15)))
+                                    {
+                                        map[x,y] = (ushort) VBRTAB[z];
+                                    }
+                                }
+                            }
+                            return true;
+                        }
+                    }
+                    return false;
+
+                }
+                else
+                {
+                    if (pos.posY > 0)
+                    {
+                        if (map[pos.posX,pos.posY - 1] == (ushort) MapTileCharacters.CHANNEL)
+                        {
+                            /* Horizontal open  */
+                            for (z = 0; z < 7; z++)
+                            {
+                                x = pos.posX + HDx[z];
+                                y = pos.posY + HDy[z];
+
+                                if (Position.testBounds((short) x, (short) y))
+                                {
+                                    MPtem = map[x,y];
+                                    if (((MPtem & 15) == (HBRTAB2[z] & 15)) || MPtem == (int) MapTileCharacters.CHANNEL)
+                                    {
+                                        map[x,y] = (ushort) HBRTAB[z];
+                                    }
+                                }
+                            }
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Compute distance to nearest boat from a given bridge.
+        /// </summary>
+        /// <param name="pos">Position of bridge.</param>
+        /// <returns>Distance to nearest boat.</returns>
+        private int getBoatDistance(Position pos)
+        {
+            // TODO need spritelist
+            return 9999;
         }
 
         /// <summary>

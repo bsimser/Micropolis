@@ -150,6 +150,23 @@ namespace MicropolisCore
         private const long NUCLEAR_POWER_STRENGTH = 2000;
 
         /// <summary>
+        /// How often to perform the short term census.
+        /// TODO Rename to CENSUS_MONTHLY_FREQUENCY or so?
+        /// </summary>
+        private const int CENSUS_FREQUENCY_10 = 4;
+
+        /// <summary>
+        /// How often to perform the long term census.
+        /// TODO Rename to CENSUS_YEARLY_FREQUENCY or so?
+        /// </summary>
+        private const int CENSUS_FREQUENCY_120 = CENSUS_FREQUENCY_10 * 12;
+
+        /// <summary>
+        /// How often to collect taxes.
+        /// </summary>
+        private const int TAX_FREQUENCY = 48;
+
+        /// <summary>
         /// Number of road tiles in the game.
         /// 
         /// Bridges count as 4 tiles, and high density traffic counts as
@@ -973,7 +990,12 @@ namespace MicropolisCore
         /// </summary>
         private bool autoBudget;
         private long messageTimeLast;
-        //private GameLevel gameLevel;
+
+        /// <summary>
+        /// Difficulty level of the game (0..2)
+        /// </summary>
+        private GameLevel gameLevel;
+
         private short initSimLoad;
         private ScenarioType scenario;
         public short simSpeed;
@@ -1213,7 +1235,7 @@ namespace MicropolisCore
             totalFunds = 0;
             autoBulldoze = true;
             autoBudget = true;
-
+            gameLevel = GameLevel.LEVEL_EASY;
             initSimLoad = 0;
             simSpeed = 0;
             simSpeedMeta = 0;

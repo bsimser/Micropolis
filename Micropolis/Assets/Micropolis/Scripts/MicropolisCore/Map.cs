@@ -1,4 +1,6 @@
-﻿namespace MicropolisCore
+﻿using System.Runtime.CompilerServices;
+
+namespace MicropolisCore
 {
     /// <summary>
     /// Generic class for maps in the Micropolis game.
@@ -18,14 +20,26 @@
         public int MAP_W; // Number of clusters in horizontal direction.
         public int MAP_H; // Number of clusters in vertical direction.
 
-        public Map(DATA defaultValue, int blksize)
+        public Map(int blksize)
         {
-            _MAP_DEFAULT_VALUE = defaultValue;
             BLKSIZE = blksize;
             MAP_BLOCKSIZE = BLKSIZE;
             MAP_W = (Micropolis.WORLD_W + BLKSIZE - 1) / BLKSIZE;
             MAP_H = (Micropolis.WORLD_H + BLKSIZE - 1) / BLKSIZE;
             _mapData = new DATA[MAP_W * MAP_H];
+        }
+
+        public Map(DATA defaultValue, int blksize) : this(blksize)
+        {
+            _MAP_DEFAULT_VALUE = defaultValue;
+        }
+
+        protected Map(Map<DATA> map) : this(map.BLKSIZE)
+        {
+            for (int i = 0; i < MAP_W * MAP_H; i++)
+            {
+                _mapData[i] = map._mapData[i];
+            }
         }
 
         public void clear()

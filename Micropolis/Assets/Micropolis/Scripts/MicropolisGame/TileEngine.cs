@@ -23,8 +23,8 @@ namespace MicropolisGame
 
             // dynamic load the sprite for the tile based on our theme
             //var theme = "x11";
-            //var theme = "classic";
-            var theme = "classic95";
+            var theme = "classic";
+            //var theme = "classic95";
             //var theme = "wildwest";
             //var theme = "mooncolony";
             //var theme = "medievaltimes";

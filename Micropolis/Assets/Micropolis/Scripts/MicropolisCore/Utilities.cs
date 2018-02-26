@@ -1,9 +1,24 @@
-﻿namespace MicropolisCore
+﻿using System;
+
+namespace MicropolisCore
 {
     public partial class Micropolis
     {
         public void makeDollarDecimalStr(string numStr, string dollarStr)
         {
+        }
+
+        private T clamp<T>(T val, T lower, T upper) where T : IComparable
+        {
+            if (val.CompareTo(lower) < 0)
+            {
+                return lower;
+            }
+            if (val.CompareTo(upper) > 0)
+            {
+                return upper;
+            }
+            return val;
         }
 
         public void pause()
@@ -230,9 +245,20 @@
         /// <param name="indDemandResult"></param>
         public void getDemands(out float resDemandResult, out float comDemandResult, out float indDemandResult)
         {
-            resDemandResult = 0f;
-            comDemandResult = 0f;
-            indDemandResult = 0f;
+            resDemandResult = (float)resValve / (float)RES_VALVE_RANGE;
+            comDemandResult = (float) comValve / (float) COM_VALVE_RANGE;
+            indDemandResult = (float) indValve / (float) IND_VALVE_RANGE;
+        }
+
+        /// <summary>
+        /// Set/change the game level.
+        /// </summary>
+        /// <param name="level">New game level.</param>
+        void setGameLevel(GameLevel level)
+        {
+            //assert(level >= LEVEL_FIRST && level <= LEVEL_LAST);
+            gameLevel = level;
+            updateGameLevel();
         }
     }
 }

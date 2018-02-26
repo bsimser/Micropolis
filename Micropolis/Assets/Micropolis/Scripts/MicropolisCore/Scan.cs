@@ -9,15 +9,52 @@ namespace MicropolisCore
         /// </summary>
         public void fireAnalysis()
         {
-            //TODO
-            //smoothStationMap(&fireStationMap);
-            //smoothStationMap(&fireStationMap);
-            //smoothStationMap(&fireStationMap);
+            smoothStationMap(fireStationMap);
+            smoothStationMap(fireStationMap);
+            smoothStationMap(fireStationMap);
 
             fireStationEffectMap = fireStationMap;
 
             newMapFlags[(int) MapType.MAP_TYPE_FIRE_RADIUS] = 1;
             newMapFlags[(int) MapType.MAP_TYPE_DYNAMIC] = 1;
+        }
+
+        /// <summary>
+        /// Smooth a station map.
+        /// 
+        /// Used for smoothing fire station and police station coverage maps.
+        /// </summary>
+        /// <param name="map">Map to smooth.</param>
+        private void smoothStationMap(MapShort8 map)
+        {
+            short x, y, edge;
+            var tempMap = new MapShort8(map);
+
+            for (x = 0; x < tempMap.MAP_W; x++)
+            {
+                for (y = 0; y < tempMap.MAP_H; y++)
+                {
+                    edge = 0;
+                    if (x > 0)
+                    {
+                        edge += tempMap.get(x - 1, y);
+                    }
+                    if (x < tempMap.MAP_W - 1)
+                    {
+                        edge += tempMap.get(x + 1, y);
+                    }
+                    if (y > 0)
+                    {
+                        edge += tempMap.get(x, y - 1);
+                    }
+                    if (y < tempMap.MAP_H - 1)
+                    {
+                        edge += tempMap.get(x, y + 1);
+                    }
+                    edge = (short) (tempMap.get(x, y) + edge / 4);
+                    map.set(x, y, (short) (edge / 2));
+                }
+            }
         }
 
         public void populationDensityScan()
@@ -83,6 +120,43 @@ namespace MicropolisCore
         }
 
         /// <summary>
+        /// Get population of a zone.
+        /// </summary>
+        /// <param name="pos">Position of the zone to count.</param>
+        /// <param name="tile">Tile of the zone.</param>
+        /// <returns>Population of the zone.</returns>
+        private int getPopulationDensity(Position pos, ushort tile)
+        {
+            int pop;
+
+            if (tile == (ushort) MapTileCharacters.FREEZ)
+            {
+                pop = doFreePop(pos);
+                return pop;
+            }
+
+            if (tile < (ushort) MapTileCharacters.COMBASE)
+            {
+                pop = getResZonePop(tile);
+                return pop;
+            }
+
+            if (tile < (ushort) MapTileCharacters.INDBASE)
+            {
+                pop = getComZonePop(tile) * 8;
+                return pop;
+            }
+
+            if (tile < (ushort) MapTileCharacters.PORTBASE)
+            {
+                pop = getIndZonePop(tile) * 8;
+                return pop;
+            }
+
+            return 0;
+        }
+
+        /// <summary>
         /// Does pollution, terrain, land value
         /// </summary>
         public void pollutionTerrainLandValueScan()
@@ -97,7 +171,52 @@ namespace MicropolisCore
         /// <returns>Value of the pollution (0..255, bigger is worse)</returns>
         public int getPollutionValue(int loc)
         {
-            //TODO
+            if (loc < (int) MapTileCharacters.POWERBASE)
+            {
+
+                if (loc >= (int)MapTileCharacters.HTRFBASE)
+                {
+                    return /* 25 */ 75;     /* heavy traf  */
+                }
+
+                if (loc >= (int)MapTileCharacters.LTRFBASE)
+                {
+                    return /* 10 */ 50;     /* light traf  */
+                }
+
+                if (loc < (int)MapTileCharacters.ROADBASE)
+                {
+
+                    if (loc > (int)MapTileCharacters.FIREBASE)
+                    {
+                        return /* 60 */ 90;
+                    }
+
+                    /* XXX: Why negative pollution from radiation? */
+                    if (loc >= (int)MapTileCharacters.RADTILE)
+                    {
+                        return /* -40 */ 255; /* radioactivity  */
+                    }
+
+                }
+                return 0;
+            }
+
+            if (loc <= (int)MapTileCharacters.LASTIND)
+            {
+                return 0;
+            }
+
+            if (loc < (int)MapTileCharacters.PORTBASE)
+            {
+                return 50;        /* Ind  */
+            }
+
+            if (loc <= (int)MapTileCharacters.LASTPOWERPLANT)
+            {
+                return /* 60 */ 100;      /* prt, aprt, cpp */
+            }
+
             return 0;
         }
 
@@ -245,37 +364,6 @@ namespace MicropolisCore
                     comRateMap.set(x, y, z);
                 }
             }
-        }
-
-        private int getPopulationDensity(Position pos, ushort tile)
-        {
-            int pop;
-
-            if (tile == (ushort) MapTileCharacters.FREEZ)
-            {
-                pop = doFreePop(pos);
-                return pop;
-            }
-
-            if (tile < (ushort) MapTileCharacters.COMBASE)
-            {
-                pop = getResZonePop(tile);
-                return pop;
-            }
-
-            if (tile < (ushort) MapTileCharacters.INDBASE)
-            {
-                pop = getComZonePop(tile) * 8;
-                return pop;
-            }
-
-            if (tile < (ushort) MapTileCharacters.PORTBASE)
-            {
-                pop = getIndZonePop(tile) * 8;
-                return pop;
-            }
-
-            return 0;
         }
     }
 }
