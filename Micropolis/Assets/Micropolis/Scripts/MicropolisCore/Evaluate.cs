@@ -12,11 +12,16 @@ namespace MicropolisCore
         {
             if (totalPop > 0)
             {
-                // TODO
+                short[] problemTable = new short[(int) CityVotingProblems.PROBNUM];
+                for (int z = 0; z < (int) CityVotingProblems.PROBNUM; z++)
+                {
+                    problemTable[z] = 0;
+                }
+
                 getAssessedValue();
                 doPopNum();
-                // doProblems
-                // getScore
+                doProblems(problemTable);
+                getScore(problemTable);
                 doVotes(); // How well is the mayor doing?
                 changeEval();
             }
@@ -40,8 +45,14 @@ namespace MicropolisCore
             cityClass = CityClass.CC_VILLAGE;
             cityScore = 500;
             cityScoreDelta = 0;
-            // TOOD problemVotes
-            // TODO problemOrder
+            for (int i = 0; i < (int)CityVotingProblems.PROBNUM; i++)
+            {
+                problemVotes[i] = 0;
+            }
+            for (int i = 0; i < (int)CityVotingProblems.CVP_PROBLEM_COMPLAINTS; i++)
+            {
+                problemOrder[i] = (int) CityVotingProblems.CVP_NUMPROBLEMS;
+            }
         }
 
         /// <summary>
@@ -95,13 +106,148 @@ namespace MicropolisCore
         }
 
         /// <summary>
+        /// Classify the city based on its population.
+        /// </summary>
+        /// <param name="cityPopulation">Number of people in the city.</param>
+        /// <returns>City classification.</returns>
+        private CityClass getCityClass(long cityPopulation)
+        {
+            CityClass cityClassification = CityClass.CC_VILLAGE;
+
+            if (cityPopulation > 2000)
+            {
+                cityClassification = CityClass.CC_TOWN;
+            }
+            if (cityPopulation > 10000)
+            {
+                cityClassification = CityClass.CC_CITY;
+            }
+            if (cityPopulation > 50000)
+            {
+                cityClassification = CityClass.CC_CAPITAL;
+            }
+            if (cityPopulation > 100000)
+            {
+                cityClassification = CityClass.CC_METROPOLIS;
+            }
+            if (cityPopulation > 500000)
+            {
+                cityClassification = CityClass.CC_MEGALOPOLIS;
+            }
+
+            return cityClassification;
+        }
+
+        /// <summary>
+        /// Evaluate problems of the city, take votes, and decide which are the most
+        /// important ones.
+        /// problemTable contains severity of each problem,
+        /// problemVotes contains votes of each problem,
+        /// problemOrder contains (in decreasing order) the worst problems.
+        /// </summary>
+        /// <param name="problemTable">Storage of how bad each problem is.</param>
+        private void doProblems(short[] problemTable)
+        {
+            bool[] problemTaken = new bool[(int) CityVotingProblems.PROBNUM]; // Which problems are taken?
+
+            for (int z = 0; z < (int) CityVotingProblems.PROBNUM; z++)
+            {
+                problemTaken[z] = false;
+                problemTable[z] = 0;
+            }
+
+            problemTable[(int)CityVotingProblems.CVP_CRIME] = crimeAverage;                /* Crime */
+            problemTable[(int)CityVotingProblems.CVP_POLLUTION] = pollutionAverage;            /* Pollution */
+            problemTable[(int)CityVotingProblems.CVP_HOUSING] = (short) (landValueAverage * 7 / 10);   /* Housing */
+            problemTable[(int)CityVotingProblems.CVP_TAXES] = (short) (cityTax * 10);                /* Taxes */
+            problemTable[(int)CityVotingProblems.CVP_TRAFFIC] = getTrafficAverage();         /* Traffic */
+            problemTable[(int)CityVotingProblems.CVP_UNEMPLOYMENT] = getUnemployment();           /* Unemployment */
+            problemTable[(int)CityVotingProblems.CVP_FIRE] = getFireSeverity();           /* Fire */
+            voteProblems(problemTable);
+
+            for (int z = 0; z < (int) CityVotingProblems.CVP_PROBLEM_COMPLAINTS; z++)
+            {
+                // Find biggest problem not taken yet
+                int maxVotes = 0;
+                int bestProblem = (int) CityVotingProblems.CVP_NUMPROBLEMS;
+                for (int i = 0; i < (int) CityVotingProblems.CVP_NUMPROBLEMS; i++)
+                {
+                    if ((problemVotes[i] > maxVotes) && (!problemTaken[i]))
+                    {
+                        bestProblem = i;
+                        maxVotes = problemVotes[i];
+                    }
+                }
+
+                // bestProblem == CVP_NUMPROBLEMS means no problem found
+                problemOrder[z] = (short) bestProblem;
+                if (bestProblem < (int) CityVotingProblems.CVP_NUMPROBLEMS)
+                {
+                    problemTaken[bestProblem] = true;
+                }
+                // else: No problem found.
+                //       Repeating the procedure will give the same result.
+                //       Optimize by filling all remaining entries, and breaking out
+            }
+        }
+
+        /// <summary>
+        /// Vote on the problems of the city.
+        /// problemVotes contains the vote counts
+        /// </summary>
+        /// <param name="problemTable">Storage of how bad each problem is.</param>
+        private void voteProblems(short[] problemTable)
+        {
+            for (int z = 0; z < (int) CityVotingProblems.PROBNUM; z++)
+            {
+                problemVotes[z] = 0;
+            }
+
+            int problem = 0; // Problem to vote for
+            int voteCount = 0; // Number of votes
+            int loopCount = 0; // Number of attempts
+            while (voteCount < 100 && loopCount < 600)
+            {
+                if (getRandom(300) < problemTable[problem])
+                {
+                    problemVotes[problem]++;
+                    voteCount++;
+                }
+                problem++;
+                if (problem > (int) CityVotingProblems.PROBNUM)
+                {
+                    problem = 0;
+                }
+                loopCount++;
+            }
+        }
+
+        /// <summary>
         /// Compute average traffic in the city.
         /// </summary>
         /// <returns>Value representing how large the traffic problem is.</returns>
         public short getTrafficAverage()
         {
-            // TODO
-            return 0;
+            long trafficTotal;
+            short x, y, count;
+
+            trafficTotal = 0;
+            count = 1;
+            for (x = 0; x < WORLD_W; x += (short) landValueMap.MAP_BLOCKSIZE)
+            {
+                for (y = 0; y < WORLD_H; y += (short) landValueMap.MAP_BLOCKSIZE)
+                {
+                    if (landValueMap.worldGet(x, y) > 0)
+                    {
+                        trafficTotal += trafficDensityMap.worldGet(x, y);
+                        count++;
+                    }
+                }
+            }
+
+            trafficAverage = (short)((trafficTotal / count) * 2.4);
+
+            return trafficAverage;
         }
 
         /// <summary>
@@ -131,6 +277,118 @@ namespace MicropolisCore
         public short getFireSeverity()
         {
             return (short) Math.Min(firePop * 5, 255);
+        }
+
+        /// <summary>
+        /// Compute total score
+        /// </summary>
+        /// <param name="problemTable">Storage of how bad each problem is.</param>
+        private void getScore(short[] problemTable)
+        {
+            int x, z;
+            short cityScoreLast;
+
+            cityScoreLast = cityScore;
+            x = 0;
+
+            for (z = 0; z < (int) CityVotingProblems.CVP_NUMPROBLEMS; z++)
+            {
+                x += problemTable[z];       /* add 7 probs */
+            }
+
+            /**
+             * @todo Should this expression depend on CVP_NUMPROBLEMS?
+             */
+            x = x / 3;                    /* 7 + 2 average */
+            x = Math.Min(x, 256);
+
+            z = clamp((256 - x) * 4, 0, 1000);
+
+            if (resCap)
+            {
+                z = (int)(z * .85);
+            }
+
+            if (comCap)
+            {
+                z = (int)(z * .85);
+            }
+
+            if (indCap)
+            {
+                z = (int)(z * .85);
+            }
+
+            if (roadEffect < MAX_ROAD_EFFECT)
+            {
+                z -= MAX_ROAD_EFFECT - (int) roadEffect;
+            }
+
+            if (policeEffect < MAX_POLICE_STATION_EFFECT)
+            {
+                // 10.0001 = 10000.1 / 1000, 1/10.0001 is about 0.1
+                z = (int)(z * (0.9 + (policeEffect / (10.0001 * MAX_POLICE_STATION_EFFECT))));
+            }
+
+            if (fireEffect < MAX_FIRE_STATION_EFFECT)
+            {
+                // 10.0001 = 10000.1 / 1000, 1/10.0001 is about 0.1
+                z = (int)(z * (0.9 + (fireEffect / (10.0001 * MAX_FIRE_STATION_EFFECT))));
+            }
+
+            if (resValve < -1000)
+            {
+                z = (int)(z * .85);
+            }
+
+            if (comValve < -1000)
+            {
+                z = (int)(z * .85);
+            }
+
+            if (indValve < -1000)
+            {
+                z = (int)(z * .85);
+            }
+
+            float SM = 1.0f;
+            if (cityPop == 0 || cityPopDelta == 0)
+            {
+                SM = 1.0f; // there is nobody or no migration happened
+
+            }
+            else if (cityPopDelta == cityPop)
+            {
+                SM = 1.0f; // city sprang into existence or doubled in size
+
+            }
+            else if (cityPopDelta > 0)
+            {
+                SM = ((float)cityPopDelta / cityPop) + 1.0f;
+
+            }
+            else if (cityPopDelta < 0)
+            {
+                SM = 0.95f + ((float)cityPopDelta / (cityPop - cityPopDelta));
+            }
+
+            z = (int)(z * SM);
+            z = z - getFireSeverity() - cityTax; // dec score for fires and taxes
+
+            float TM = unpoweredZoneCount + poweredZoneCount;   // dec score for unpowered zones
+            if (TM > 0.0f)
+            {
+                z = (int)(z * (float)(poweredZoneCount / TM));
+            }
+            else
+            {
+            }
+
+            z = clamp(z, 0, 1000);
+
+            cityScore = (short) ((cityScore + z) / 2);
+
+            cityScoreDelta = (short) (cityScore - cityScoreLast);
         }
 
         /// <summary>
@@ -185,8 +443,15 @@ namespace MicropolisCore
         /// <returns>Number of problems.</returns>
         public int countProblems()
         {
-            // TODO
-            return 0;
+            int i;
+            for (i = 0; i < (int)CityVotingProblems.CVP_PROBLEM_COMPLAINTS; i++)
+            {
+                if (problemOrder[i] == (int)CityVotingProblems.CVP_NUMPROBLEMS)
+                {
+                    break;
+                }
+            }
+            return i;
         }
 
         /// <summary>
@@ -199,8 +464,15 @@ namespace MicropolisCore
         /// </returns>
         public int getProblemNumber(int i)
         {
-            // TODO
-            return 0;
+            if (i < 0 || i >= (int) CityVotingProblems.CVP_PROBLEM_COMPLAINTS
+                || problemOrder[i] == (int) CityVotingProblems.CVP_NUMPROBLEMS)
+            {
+                return -1;
+            }
+            else
+            {
+                return problemOrder[i];
+            }
         }
 
         /// <summary>
@@ -213,41 +485,15 @@ namespace MicropolisCore
         /// </returns>
         public int getProblemVotes(int i)
         {
-            // TODO
-            return 0;
-        }
-
-        /// <summary>
-        /// Classify the city based on its population.
-        /// </summary>
-        /// <param name="cityPopulation">Number of people in the city.</param>
-        /// <returns>City classification.</returns>
-        private CityClass getCityClass(long cityPopulation)
-        {
-            CityClass cityClassification = CityClass.CC_VILLAGE;
-
-            if (cityPopulation > 2000)
+            if (i < 0 || i >= (int) CityVotingProblems.CVP_PROBLEM_COMPLAINTS
+                || problemOrder[i] == (int) CityVotingProblems.CVP_NUMPROBLEMS)
             {
-                cityClassification = CityClass.CC_TOWN;
+                return -1;
             }
-            if (cityPopulation > 10000)
+            else
             {
-                cityClassification = CityClass.CC_CITY;
+                return problemVotes[problemOrder[i]];
             }
-            if (cityPopulation > 50000)
-            {
-                cityClassification = CityClass.CC_CAPITAL;
-            }
-            if (cityPopulation > 100000)
-            {
-                cityClassification = CityClass.CC_METROPOLIS;
-            }
-            if (cityPopulation > 500000)
-            {
-                cityClassification = CityClass.CC_MEGALOPOLIS;
-            }
-
-            return cityClassification;
         }
     }
 }

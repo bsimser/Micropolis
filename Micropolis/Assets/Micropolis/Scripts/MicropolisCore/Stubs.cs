@@ -192,8 +192,12 @@ namespace MicropolisCore
         /// <returns>Value of the map at the given position.</returns>
         public int getTile(int x, int y)
         {
-            // TODO
-            return 0;
+            if (!Position.testBounds((short) x, (short) y))
+            {
+                return (int) MapTileCharacters.DIRT;
+            }
+
+            return map[x, y];
         }
 
         /// <summary>
@@ -204,16 +208,12 @@ namespace MicropolisCore
         /// <param name="tile">the tile value to set.</param>
         public void setTile(int x, int y, int tile)
         {
-            // TODO
-        }
+            if (!Position.testBounds((short) x, (short) y))
+            {
+                return;
+            }
 
-        /// <summary>
-        /// Get the address of the internal buffer containing the map. This is
-        /// used to enable the tile engine to access the tiles directly.
-        /// </summary>
-        public void getMapBuffer()
-        {
-            // TODO
+            map[x, y] = (ushort) tile;
         }
 
         /// <summary>
@@ -227,8 +227,7 @@ namespace MicropolisCore
         /// <returns>Value of the power grid map at the given position.</returns>
         public int getPowerGrid(int x, int y)
         {
-            // TODO
-            return 0;
+            return powerGridMap.worldGet(x, y);
         }
 
         /// <summary>
@@ -239,17 +238,7 @@ namespace MicropolisCore
         /// <param name="power">the value to set.</param>
         public void setPowerGrid(int x, int y, int power)
         {
-            // TODO
-        }
-
-        /// <summary>
-        /// Get the address of the internal buffer containing the power grid
-        /// map.This is used to enable the tile engine to access the power
-        /// grid map directly.
-        /// </summary>
-        public void getPowerGridMapBuffer()
-        {
-            // TODO
+            powerGridMap.worldSet(x, y, (byte) power);
         }
 
         /// <summary>
@@ -263,8 +252,7 @@ namespace MicropolisCore
         /// <returns>Value of the population density map at the given position.</returns>
         public int getPopulationDensity(int x, int y)
         {
-            // TODO
-            return 0;
+            return populationDensityMap.get(x, y);
         }
 
         /// <summary>
@@ -275,17 +263,7 @@ namespace MicropolisCore
         /// <param name="density">the value to set.</param>
         public void setPopulationDensity(int x, int y, int density)
         {
-            // TODO
-        }
-
-        /// <summary>
-        /// Get the address of the internal buffer containing the population
-        /// density map.This is used to enable the tile engine to access the
-        /// population density map directly.
-        /// </summary>
-        public void getPopulationDensityMapBuffer()
-        {
-            // TODO
+            populationDensityMap.set(x, y, (byte) density);
         }
 
         /// <summary>
@@ -299,8 +277,7 @@ namespace MicropolisCore
         /// <returns>Value of the rate of growth map at the given position.</returns>
         public int getRateOfGrowth(int x, int y)
         {
-            // TODO
-            return 0;
+            return rateOfGrowthMap.get(x, y);
         }
 
         /// <summary>
@@ -311,17 +288,7 @@ namespace MicropolisCore
         /// <param name="rate">the value to set.</param>
         public void setRateOfGrowth(int x, int y, int rate)
         {
-            // TODO
-        }
-
-        /// <summary>
-        /// Get the address of the internal buffer containing the rate of
-        /// growth map.This is used to enable the tile engine to access the
-        /// rate of growth map directly.
-        /// </summary>
-        public void getRateOfGrowthMapBuffer()
-        {
-            // TODO
+            rateOfGrowthMap.set(x, y, (short) rate);
         }
 
         /// <summary>
@@ -336,8 +303,7 @@ namespace MicropolisCore
         /// <returns>Value of the traffic density at the given position.</returns>
         public int getTrafficDensity(int x, int y)
         {
-            // TODO
-            return 0;
+            return trafficDensityMap.get(x, y);
         }
 
         /// <summary>
@@ -352,23 +318,14 @@ namespace MicropolisCore
         /// <param name="density">the value to set.</param>
         public void setTrafficDensity(int x, int y, int density)
         {
-            // TODO
+            trafficDensityMap.set(x, y, (byte) density);
         }
 
-        /// <summary>
-        /// Get the address of the internal buffer containing the traffic
-        /// density map.This is used to enable the tile engine to access the
-        /// traffic density map directly.
-        /// </summary>
-        public void getTrafficDensityMapBuffer()
-        {
-            // TODO
-        }
-
-        // TODO more of the same 3 functions get, set, getbuffer for the following
+        // TODO more of the same 3 functions get, set, getbuffer for the following:
         // TODO pollution density
         // TODO crime rate
         // TODO land value
+        // TODO these are never used in the code but might be for the UI
 
         /// <summary>
         /// Get a value from the fire coverage map.
@@ -382,8 +339,7 @@ namespace MicropolisCore
         /// <returns>Value of the fir coverage map at the given position.</returns>
         public int getFireCoverage(int x, int y)
         {
-            // TODO
-            return 0;
+            return fireStationEffectMap.get(x, y);
         }
 
         /// <summary>
@@ -398,17 +354,7 @@ namespace MicropolisCore
         /// <param name="coverage">the value to set.</param>
         public void setFireCoverage(int x, int y, int coverage)
         {
-            // TODO
-        }
-
-        /// <summary>
-        /// Get the address of the internal buffer containing the fire coverage
-        /// map.This is used to enable the tile engine to access the
-        /// fire coverage map directly.
-        /// </summary>
-        public void getFireCoverageMapBuffer()
-        {
-            // TODO
+            fireStationEffectMap.set(x, y, (short) coverage);
         }
 
         /// <summary>
@@ -423,8 +369,7 @@ namespace MicropolisCore
         /// <returns>Value of the fir coverage map at the given position.</returns>
         public int getPoliceCoverage(int x, int y)
         {
-            // TODO
-            return 0;
+            return policeStationEffectMap.get(x, y);
         }
 
         /// <summary>
@@ -439,17 +384,7 @@ namespace MicropolisCore
         /// <param name="coverage">the value to set.</param>
         public void setPoliceCoverage(int x, int y, int coverage)
         {
-            // TODO
-        }
-
-        /// <summary>
-        /// Get the address of the internal buffer containing the police coverage
-        /// map.This is used to enable the tile engine to access the police 
-        /// coverage map directly.
-        /// </summary>
-        public void getPoliceCoverageMapBuffer()
-        {
-            // TODO
+            policeStationEffectMap.set(x, y, (short) coverage);
         }
     }
 }

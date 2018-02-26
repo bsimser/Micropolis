@@ -1,4 +1,6 @@
-﻿namespace MicropolisCore
+﻿using System;
+
+namespace MicropolisCore
 {
     public partial class Micropolis
     {
@@ -8,14 +10,14 @@
         /// <param name="hist">Source history data.</param>
         /// <param name="s">Destination byte array.</param>
         /// <param name="scale">Scale factor.</param>
-        public void drawMonth(byte[] hist, byte[] s, float scale)
+        public void drawMonth(short[] hist, char[] s, float scale)
         {
             int val, x;
 
             for (x = 0; x < 120; x++)
             {
                 val = (int) (hist[x] * scale);
-                s[119 - x] = clamp<byte>((byte) val, 0, 255);
+                s[119 - x] = (char) clamp(val, 0, 255);
             }
         }
 
@@ -56,7 +58,69 @@
         /// </summary>
         public void initGraphMax()
         {
-            // TODO
+            int x;
+
+            resHist10Max = 0;
+            comHist10Max = 0;
+            indHist10Max = 0;
+
+            for (x = 118; x >= 0; x--)
+            {
+
+                if (resHist[x] < 0)
+                {
+                    resHist[x] = 0;
+                }
+                if (comHist[x] < 0)
+                {
+                    comHist[x] = 0;
+                }
+                if (indHist[x] < 0)
+                {
+                    indHist[x] = 0;
+                }
+
+                resHist10Max = Math.Max(resHist10Max, resHist[x]);
+                comHist10Max = Math.Max(comHist10Max, comHist[x]);
+                indHist10Max = Math.Max(indHist10Max, indHist[x]);
+
+            }
+
+            graph10Max =
+                Math.Max(resHist10Max,
+                    Math.Max(comHist10Max,
+                        indHist10Max));
+
+            resHist120Max = 0;
+            comHist120Max = 0;
+            indHist120Max = 0;
+
+            for (x = 238; x >= 120; x--)
+            {
+
+                if (resHist[x] < 0)
+                {
+                    resHist[x] = 0;
+                }
+                if (comHist[x] < 0)
+                {
+                    comHist[x] = 0;
+                }
+                if (indHist[x] < 0)
+                {
+                    indHist[x] = 0;
+                }
+
+                resHist120Max = Math.Max(resHist120Max, resHist[x]);
+                comHist120Max = Math.Max(comHist120Max, comHist[x]);
+                indHist120Max = Math.Max(indHist120Max, indHist[x]);
+
+            }
+
+            graph120Max =
+                Math.Max(resHist120Max,
+                    Math.Max(comHist120Max,
+                        indHist120Max));
         }
 
         /// <summary>
@@ -66,11 +130,67 @@
         /// <param name="historyScale">Scale of history data. see HistoryScale</param>
         /// <param name="minValResult">Pointer to variable to write minimal value to.</param>
         /// <param name="maxValResult">Pointer to variable to write maximal value to.</param>
-        public void getHistoryRange(int historyType, int historyScale, out short minValResult, out short maxValResult)
+        public void getHistoryRange(HistoryType historyType, HistoryScale historyScale, out short minValResult, out short maxValResult)
         {
-            // TODO
-            minValResult = 0;
-            maxValResult = 0;
+            if (historyType < 0 || historyType >= HistoryType.HISTORY_TYPE_COUNT
+                || historyScale < 0 || historyScale >= HistoryScale.HISTORY_SCALE_COUNT)
+            {
+                minValResult = 0;
+                maxValResult = 0;
+                return;
+            }
+
+            short[] history = null;
+            switch (historyType)
+            {
+                case HistoryType.HISTORY_TYPE_RES:
+                    history = resHist;
+                    break;
+                case HistoryType.HISTORY_TYPE_COM:
+                    history = comHist;
+                    break;
+                case HistoryType.HISTORY_TYPE_IND:
+                    history = indHist;
+                    break;
+                case HistoryType.HISTORY_TYPE_MONEY:
+                    history = moneyHist;
+                    break;
+                case HistoryType.HISTORY_TYPE_CRIME:
+                    history = crimeHist;
+                    break;
+                case HistoryType.HISTORY_TYPE_POLLUTION:
+                    history = pollutionHist;
+                    break;
+                default:
+                    break;
+            }
+
+            int offset = 0;
+            switch (historyScale)
+            {
+                case HistoryScale.HISTORY_SCALE_SHORT:
+                    offset = 0;
+                    break;
+                case HistoryScale.HISTORY_SCALE_LONG:
+                    offset = 120;
+                    break;
+                default:
+                    break;
+            }
+
+            short minVal = 32000;
+            short maxVal = -32000;
+
+            for (int i = 0; i < HISTORY_COUNT; i++)
+            {
+                short val = history[i + offset];
+
+                minVal = Math.Min(val, minVal);
+                maxVal = Math.Max(val, maxVal);
+            }
+
+            minValResult = minVal;
+            maxValResult = maxVal;
         }
 
         /// <summary>
@@ -80,22 +200,113 @@
         /// <param name="historyScale">Scale of history data. see HistoryScale</param>
         /// <param name="historyIndex">Index in the data to obtain</param>
         /// <returns>Historic data value of the requested graph</returns>
-        public short getHistory(int historyType, int historyScale, int historyIndex)
+        public short getHistory(HistoryType historyType, HistoryScale historyScale, int historyIndex)
         {
-            // TODO
-            return 0;
+            if (historyType < 0 || historyType >= HistoryType.HISTORY_TYPE_COUNT
+                || historyScale < 0 || historyScale >= HistoryScale.HISTORY_SCALE_COUNT
+                || historyIndex < 0 || historyIndex >= HISTORY_COUNT)
+            {
+                return 0;
+            }
+
+            short[] history = null;
+            switch (historyType)
+            {
+                case HistoryType.HISTORY_TYPE_RES:
+                    history = resHist;
+                    break;
+                case HistoryType.HISTORY_TYPE_COM:
+                    history = comHist;
+                    break;
+                case HistoryType.HISTORY_TYPE_IND:
+                    history = indHist;
+                    break;
+                case HistoryType.HISTORY_TYPE_MONEY:
+                    history = moneyHist;
+                    break;
+                case HistoryType.HISTORY_TYPE_CRIME:
+                    history = crimeHist;
+                    break;
+                case HistoryType.HISTORY_TYPE_POLLUTION:
+                    history = pollutionHist;
+                    break;
+                default:
+                    break;
+            }
+
+            int offset = 0;
+            switch (historyScale)
+            {
+                case HistoryScale.HISTORY_SCALE_SHORT:
+                    offset = 0;
+                    break;
+                case HistoryScale.HISTORY_SCALE_LONG:
+                    offset = 120;
+                    break;
+                default:
+                    break;
+            }
+
+            short result = history[historyIndex + offset];
+
+            return result;
         }
 
         /// <summary>
         /// Store a value into the history tables.
         /// </summary>
-        /// <param name="hisotryType">Type of history information. see HistoryType</param>
+        /// <param name="historyType">Type of history information. see HistoryType</param>
         /// <param name="historyScale">Scale of history data. see HistoryScale</param>
         /// <param name="historyIndex">Index in the data to obtain</param>
         /// <param name="historyValue">Index in the value to store</param>
-        public void setHistory(int hisotryType, int historyScale, int historyIndex, short historyValue)
+        public void setHistory(HistoryType historyType, HistoryScale historyScale, int historyIndex, short historyValue)
         {
-            // TODO
+            if (historyType < 0 || historyType >= HistoryType.HISTORY_TYPE_COUNT
+                || historyScale < 0 || historyScale >= HistoryScale.HISTORY_SCALE_COUNT
+                || historyIndex < 0 || historyIndex >= HISTORY_COUNT)
+            {
+                return;
+            }
+
+            short[] history = null;
+            switch (historyType)
+            {
+                case HistoryType.HISTORY_TYPE_RES:
+                    history = resHist;
+                    break;
+                case HistoryType.HISTORY_TYPE_COM:
+                    history = comHist;
+                    break;
+                case HistoryType.HISTORY_TYPE_IND:
+                    history = indHist;
+                    break;
+                case HistoryType.HISTORY_TYPE_MONEY:
+                    history = moneyHist;
+                    break;
+                case HistoryType.HISTORY_TYPE_CRIME:
+                    history = crimeHist;
+                    break;
+                case HistoryType.HISTORY_TYPE_POLLUTION:
+                    history = pollutionHist;
+                    break;
+                default:
+                    break;
+            }
+
+            int offset = 0;
+            switch (historyScale)
+            {
+                case HistoryScale.HISTORY_SCALE_SHORT:
+                    offset = 0;
+                    break;
+                case HistoryScale.HISTORY_SCALE_LONG:
+                    offset = 120;
+                    break;
+                default:
+                    break;
+            }
+
+            history[historyIndex + offset] = historyValue;
         }
     }
 }

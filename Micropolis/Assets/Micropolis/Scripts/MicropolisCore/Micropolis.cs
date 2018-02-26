@@ -650,8 +650,19 @@ namespace MicropolisCore
         /// </summary>
         public short cityYes;
 
-        // short problemVotes[PROBNUM];
-        // short probelmOrder[CVP_PROBLEM_COMPLAINTS];
+        /// <summary>
+        /// Problem votes.
+        /// 
+        /// The number of votes for each problem.
+        /// </summary>
+        short[] problemVotes;
+
+        /// <summary>
+        /// Order of taken problems.
+        /// 
+        /// Contains index of problemVotes of taken problems, in decreasing order.
+        /// </summary>
+        short[] problemOrder;
 
         /// <summary>
         /// City population.
@@ -1116,6 +1127,8 @@ namespace MicropolisCore
             mustDrawBudget = 0;
             floodCount = 0;
             cityYes = 0;
+            problemVotes = new short[(int) CityVotingProblems.PROBNUM];
+            problemOrder = new short[(int) CityVotingProblems.CVP_PROBLEM_COMPLAINTS];
             cityPop = 0;
             cityPopDelta = 0;
             cityAssessedValue = 0;

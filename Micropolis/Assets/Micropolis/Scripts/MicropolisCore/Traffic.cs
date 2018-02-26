@@ -51,6 +51,13 @@
 
             var pos = new Position(startPos);
 
+#if false
+            if ((!getRandom(2)) && findPerimeterTelecom(pos)) {
+                /* printf("Telecom!\n"); */
+                return 1;
+            }
+#endif
+
             if (findPerimeterRoad(pos))
             {
                 if (tryDrive(pos, dest))

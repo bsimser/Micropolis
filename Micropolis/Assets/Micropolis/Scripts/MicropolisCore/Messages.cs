@@ -14,6 +14,14 @@ namespace MicropolisCore
 
             // Running a scenario, and waiting it to 'end' so we can give a score
             // TODO
+            if (scenario > ScenarioType.SC_NONE && scoreType > ScenarioType.SC_NONE && scoreWait > 0)
+            {
+                scoreWait--;
+                if (scoreWait == 0)
+                {
+                    doScenarioScore(scoreType);
+                }
+            }
 
             checkGrowth();
 
@@ -177,6 +185,11 @@ namespace MicropolisCore
                     }
                     break;
             }
+        }
+
+        private void doScenarioScore(ScenarioType scenarioType)
+        {
+            // TODO when we implement scenarios
         }
 
         /// <summary>
