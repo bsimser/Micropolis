@@ -139,6 +139,12 @@ namespace MicropolisCore
             }
         }
 
+        /// <summary>
+        /// Perform residential immigration into the current residential tile.
+        /// </summary>
+        /// <param name="pos">Position of the tile.</param>
+        /// <param name="pop">Population ?</param>
+        /// <param name="value">Land value corrected for pollution.</param>
         private void doResIn(Position pos, int pop, int value)
         {
             short pollution = populationDensityMap.worldGet(pos.posX, pos.posY);
@@ -348,11 +354,12 @@ namespace MicropolisCore
             rateOfGrowthMap.worldSet(pos.posX, pos.posY, (short) value);
         }
 
-        private void makeHospital(Position pos)
-        {
-            // TODO
-        }
-
+        /// <summary>
+        /// Evaluate residential zone.
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="traf"></param>
+        /// <returns></returns>
         private short evalRes(Position pos, int traf)
         {
             short value;
@@ -379,11 +386,115 @@ namespace MicropolisCore
             return value;
         }
 
-        private void doResOut(Position pos, int pop, int value)
+        /// <summary>
+        /// If needed, add a new hospital or a new church.
+        /// TODO this doubles for churches and might need to be fixed from the original C code
+        /// </summary>
+        /// <param name="pos">Center position of the new hospital or church.</param>
+        private void makeHospital(Position pos)
         {
-            // TODO
+            if (needHospital > 0)
+            {
+                zonePlop(pos, (short) (MapTileCharacters.HOSPITAL - 4));
+                needHospital = 0;
+                return;
+            }
+
+            /*
+             * add churches later
+             * 
+            if (needChurch > 0)
+            {
+                int churchType = getRandom(7); // 0 to 7 inclusive
+                int tile;
+                if (churchType == 0)
+                {
+                    tile = CHURCH0;
+                }
+                else
+                {
+                    tile = CHURCH1 + ((churchType - 1) * 9);
+                }
+
+                //printf("NEW CHURCH tile %d x %d y %d type %d\n", tile, pos.posX, pos.posY, churchType);
+
+                zonePlop(pos, tile - 4);
+                needChurch = 0;
+                return;
+            }
+            */
         }
 
+        /// <summary>
+        /// Perform residential emigration from the current residential tile.
+        /// </summary>
+        /// <param name="pos">Position of the tile.</param>
+        /// <param name="pop">Population ?</param>
+        /// <param name="value">Land value corrected for pollution.</param>
+        private void doResOut(Position pos, int pop, int value)
+        {
+            short[] Brdr = {0, 3, 6, 1, 4, 7, 2, 5, 8};
+            short x, y, loc, z;
+
+            if (pop == 0)
+            {
+                return;
+            }
+
+            if (pop > 16)
+            {
+                resPlop(pos, (pop - 24) / 8, value);
+                incRateOfGrowth(pos, -8);
+                return;
+            }
+
+            if (pop == 16)
+            {
+                incRateOfGrowth(pos, -8);
+                map[pos.posX,pos.posY] = (ushort) MapTileCharacters.FREEZ | (ushort)MapTileBits.BLBNCNBIT | (ushort)MapTileBits.ZONEBIT;
+                for (x = (short) (pos.posX - 1); x <= pos.posX + 1; x++)
+                {
+                    for (y = (short) (pos.posY - 1); y <= pos.posY + 1; y++)
+                    {
+                        if (Position.testBounds(x, y))
+                        {
+                            if ((map[x,y] & (ushort) MapTileBits.LOMASK) != (ushort) MapTileCharacters.FREEZ)
+                            {
+                                map[x,y] = (ushort)(MapTileCharacters.LHTHR + value + getRandom(2) + (ushort) MapTileBits.BLBNCNBIT);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (pop < 16)
+            {
+                incRateOfGrowth(pos, -1);
+                z = 0;
+                for (x = (short) (pos.posX - 1); x <= pos.posX + 1; x++)
+                {
+                    for (y = (short) (pos.posY - 1); y <= pos.posY + 1; y++)
+                    {
+                        if (Position.testBounds(x, y))
+                        {
+                            loc = (short)(map[x,y] & (ushort) MapTileBits.LOMASK);
+                            if ((loc >= (ushort) MapTileCharacters.LHTHR) && (loc <= (ushort) MapTileCharacters.HHTHR))
+                            {
+                                map[x,y] = (ushort)(Brdr[z] + (ushort) MapTileBits.BLBNCNBIT + (ushort) MapTileCharacters.FREEZ - 4);
+                                return;
+                            }
+                        }
+                        z++;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Compute land value at pos, taking pollution into account.
+        /// </summary>
+        /// <param name="pos">Position of interest.</param>
+        /// <returns>Indication of land-value adjusted for pollution (0 >= low value, 3 => high value)</returns>
         private short getLandPollutionValue(Position pos)
         {
             short landVal;
