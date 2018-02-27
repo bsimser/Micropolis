@@ -8,7 +8,7 @@ You'll be able to install a copy of Micropolis once we have an installer (using 
 
 ## Documentation
 
-See the documentation Table of Contents for an overview of Micropolis and everything known about it and it's origin, SimCity.
+See the documentation [Table of Contents](../wiki/Home.md) for an overview of Micropolis and everything known about it and it's origin, SimCity.
 
 ## History
 
