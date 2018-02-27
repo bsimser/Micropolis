@@ -1,6 +1,6 @@
 # Micropolis Unity Version
 
-Micropolis is a ground-up C# rewrite of the MicropolisCore system using the Unity engine to create a full blown Micropolis native game that runs on Windows, Mac, and Unix. It includes a fully working city simulation game true to the original along with several new features and improvements.
+Micropolis is a ground up C# rewrite of the MicropolisCore system using the Unity engine to create a full blown Micropolis native game that runs on Windows, Mac, and Unix. It includes a fully working city simulation game true to the original along with several new features and improvements.
 
 ![screenshot](https://github.com/bsimser/micropolis-unity/blob/develop/images/micropolis.png)
 
