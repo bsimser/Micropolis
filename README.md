@@ -10,6 +10,10 @@ You'll be able to install a copy of Micropolis once we have an installer (using 
 
 Please see our [wiki](https://github.com/bsimser/micropolis-unity/wiki) for everything you wanted to know about Micropolis, but were afraid to ask.
 
+## Latest News
+
+For a [list of known issues see GitHub](https://github.com/bsimser/micropolis-unity/issues) or take a look at the [roadmap](https://github.com/bsimser/micropolis-unity/wiki/Roadmap) or by watching this repo and subscribing to notifications.
+
 ## History
 
 Thursday, January 10, 2008 was the day [Don Hopkins](https://github.com/SimHacker) released Micropolis, an open source release of the original City Simulator, [SimCity](https://en.wikipedia.org/wiki/SimCity). I've been involved with Micropolis ever since the day Don told me about the release of the code. I immediately got into it, helped promote it, fixed up things in the code, and wrote a series of (unfinished) [blog posts](https://weblogs.asp.net/bsimser/building-a-city-the-series) about it.
