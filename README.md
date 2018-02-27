@@ -2,6 +2,8 @@
 
 Micropolis is a ground-up C# rewrite of the MicropolisCore system using the Unity engine to create a full blown Micropolis native game that runs on Windows, Mac, and Unix. It includes a fully working city simulation game true to the original along with several new features and improvements.
 
+![screenshot](https://github.com/bsimser/micropolis-unity/blob/develop/images/micropolis.png)
+
 ## Installation
 
 You'll be able to install a copy of Micropolis once we have an installer (using [Squirrel](https://github.com/Squirrel/Squirrel.Windows)). In the meantime you can download or clone this repository and run it from within Unity (it's not recommended to fork the repo at this time as there a lot of changes going on and the current codebase isn't stable yet).
