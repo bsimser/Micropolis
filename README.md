@@ -34,9 +34,11 @@ So here we are with yet-another-port. I guess.
 
 ## This Project
 
-It represents a culmination of sources from the original Micropolis source code release which was made up of modified TCL/Tk C code (based on the original X11 Multiplayer Unix release of SimCity, but with the Multiplayer bits removed) and the C++/Python rewrite done by [Don Hopkins](https://github.com/SimHacker). 
+This rewrite of Micropolis represents a culmination of sources from the original Micropolis source code release which was made up of modified TCL/Tk C code (based on the original X11 Multiplayer Unix release of SimCity, but with the Multiplayer bits removed) and the C++/Python rewrite done by [Don Hopkins](https://github.com/SimHacker). 
 
-Using both of these codebases as a reference this project builds a C# 2D game using the Unity engine for graphics and UI. The result is a game that runs on modern hardware as a single stand-alone executable true to the original and able to port to other platforms (Linux, OSX, iOS, Android, etc.). No special tools are required to run it except a computer and installation is a single click download (with built-in automatic updates so you always have the latest version).
+Using both of these codebases as a reference, this project builds a C# 2D game using the Unity engine for graphics and UI. The result is a game that runs on modern hardware as a single stand-alone executable with the ability to port and run on other platforms (iOS, Android, etc.). No special tools are required to run it except a computer. The installation is a single click download (with built-in automatic updates so you always have the latest version).
+
+Going beyond the origina, the plan is to continue to evolve this desktop version with new features that brings the old school gameplay of city building and new ideas together in a modern package.
 
 ## Building
 
