@@ -14,6 +14,10 @@ Please see our [wiki](https://github.com/bsimser/micropolis-unity/wiki) for ever
 
 For a [list of known issues see GitHub](https://github.com/bsimser/micropolis-unity/issues) or take a look at the [roadmap](https://github.com/bsimser/micropolis-unity/wiki/Roadmap) or by watching this repo and subscribing to notifications.
 
+## License
+
+True to the orignal, this game and it's code is licensed under the [MIT License](https://opensource.org/licenses/MIT) for anyone to use. 
+
 ## History
 
 Thursday, January 10, 2008 was the day [Don Hopkins](https://github.com/SimHacker) released Micropolis, an open source release of the original City Simulator, [SimCity](https://en.wikipedia.org/wiki/SimCity). I've been involved with Micropolis ever since the day Don told me about the release of the code. I immediately got into it, helped promote it, fixed up things in the code, and wrote a series of (unfinished) [blog posts](https://weblogs.asp.net/bsimser/building-a-city-the-series) about it.
@@ -31,7 +35,5 @@ So here we are with yet-another-port. I guess.
 It represents a culmination of sources from the original Micropolis source code release which was made up of modified TCL/Tk C code (based on the original X11 Multiplayer Unix release of SimCity, but with the Multiplayer bits removed) and the C++/Python rewrite done by [Don Hopkins](https://github.com/SimHacker). 
 
 Using both of these codebases as a reference this project builds a C# 2D game using the Unity engine for graphics and UI. The result is a game that runs on modern hardware as a single stand-alone executable true to the original and able to port to other platforms (Linux, OSX, iOS, Android, etc.). No special tools are required to run it except a computer and installation is a single click download (with built-in automatic updates so you always have the latest version).
-
-True to the orignal, this game is fully open sourced and licensed under the [MIT License](https://opensource.org/licenses/MIT) for anyone to use. 
 
 Enjoy!
