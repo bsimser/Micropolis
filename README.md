@@ -36,4 +36,12 @@ It represents a culmination of sources from the original Micropolis source code 
 
 Using both of these codebases as a reference this project builds a C# 2D game using the Unity engine for graphics and UI. The result is a game that runs on modern hardware as a single stand-alone executable true to the original and able to port to other platforms (Linux, OSX, iOS, Android, etc.). No special tools are required to run it except a computer and installation is a single click download (with built-in automatic updates so you always have the latest version).
 
+## Building
+
+This project can be built using the free version of Unity v2017.3 on any platform the Unity Editor is supported. Just open the project and build. All code and assets are included. Micropolis makes use of the following (free) assets:
+* [TextMesh Pro](https://assetstore.unity.com/packages/essentials/beta-projects/textmesh-pro-84126)
+* [Cinemachine](https://assetstore.unity.com/packages/essentials/cinemachine-79898)
+
+Both assets are free and from Unity Technologies and should be downloaded and installed prior to opening the project in Unity.
+
 Enjoy!
