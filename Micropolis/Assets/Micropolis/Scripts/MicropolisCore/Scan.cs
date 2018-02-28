@@ -5,21 +5,6 @@ namespace MicropolisCore
     public partial class Micropolis
     {
         /// <summary>
-        /// Make firerate map from firestation map.
-        /// </summary>
-        public void fireAnalysis()
-        {
-            smoothStationMap(fireStationMap);
-            smoothStationMap(fireStationMap);
-            smoothStationMap(fireStationMap);
-
-            fireStationEffectMap = fireStationMap;
-
-            newMapFlags[(int) MapType.MAP_TYPE_FIRE_RADIUS] = 1;
-            newMapFlags[(int) MapType.MAP_TYPE_DYNAMIC] = 1;
-        }
-
-        /// <summary>
         /// Smooth a station map.
         /// 
         /// Used for smoothing fire station and police station coverage maps.
@@ -57,7 +42,22 @@ namespace MicropolisCore
             }
         }
 
-        public void populationDensityScan()
+        /// <summary>
+        /// Make firerate map from firestation map.
+        /// </summary>
+        private void fireAnalysis()
+        {
+            smoothStationMap(fireStationMap);
+            smoothStationMap(fireStationMap);
+            smoothStationMap(fireStationMap);
+
+            fireStationEffectMap = fireStationMap;
+
+            newMapFlags[(int) MapType.MAP_TYPE_FIRE_RADIUS] = 1;
+            newMapFlags[(int) MapType.MAP_TYPE_DYNAMIC] = 1;
+        }
+
+        private void populationDensityScan()
         {
             tempMap1.clear();
             long Xtot = 0;
@@ -159,9 +159,134 @@ namespace MicropolisCore
         /// <summary>
         /// Does pollution, terrain, land value
         /// </summary>
-        public void pollutionTerrainLandValueScan()
+        private void pollutionTerrainLandValueScan()
         {
-            //TODO
+            long ptot, LVtot;
+            int x, y, z, dis;
+            int pollutionLevel, loc, worldX, worldY, Mx, My, pnum, LVnum, pmax;
+
+            // tempMap3 is a map of development density, smoothed into terrainMap.
+            tempMap3.clear();
+
+            LVtot = 0;
+            LVnum = 0;
+
+            for (x = 0; x < landValueMap.MAP_W; x++)
+            {
+                for (y = 0; y < landValueMap.MAP_H; y++)
+                {
+                    pollutionLevel = 0;
+                    bool landValueFlag = false;
+                    worldX = x * 2;
+                    worldY = y * 2;
+
+                    for (Mx = worldX; Mx <= worldX + 1; Mx++)
+                    {
+                        for (My = worldY; My <= worldY + 1; My++)
+                        {
+                            loc = (map[Mx,My] & (ushort) MapTileBits.LOMASK);
+                            if (loc != 0)
+                            {
+                                if (loc < (ushort) MapTileCharacters.RUBBLE)
+                                {
+                                    // Increment terrain memory.
+                                    byte value = tempMap3.get(x >> 1, y >> 1);
+                                    tempMap3.set(x >> 1, y >> 1, (byte) (value + 15));
+                                    continue;
+                                }
+                                pollutionLevel += getPollutionValue(loc);
+                                if (loc >= (ushort) MapTileCharacters.ROADBASE)
+                                {
+                                    landValueFlag = true;
+                                }
+                            }
+                        }
+                    }
+
+                    /* XXX ??? This might have to do with the radiation tile returning -40.
+                                if (pollutionLevel < 0) {
+                                    pollutionLevel = 250;
+                                }
+                    */
+
+                    pollutionLevel = Math.Min(pollutionLevel, 255);
+                    tempMap1.set(x, y, (byte) pollutionLevel);
+
+                    if (landValueFlag)
+                    {              
+                        /* LandValue Equation */
+                        dis = 34 - getCityCenterDistance(worldX, worldY) / 2;
+                        dis = dis << 2;
+                        dis += terrainDensityMap.get(x >> 1, y >> 1);
+                        dis -= pollutionDensityMap.get(x, y);
+                        if (crimeRateMap.get(x, y) > 190)
+                        {
+                            dis -= 20;
+                        }
+                        dis = clamp(dis, 1, 250);
+                        landValueMap.set(x, y, (byte) dis);
+                        LVtot += dis;
+                        LVnum++;
+                    }
+                    else
+                    {
+                        landValueMap.set(x, y, 0);
+                    }
+                }
+            }
+
+            if (LVnum > 0)
+            {
+                landValueAverage = (short)(LVtot / LVnum);
+            }
+            else
+            {
+                landValueAverage = 0;
+            }
+
+            doSmooth1(); // tempMap1 -> tempMap2
+            doSmooth2(); // tempMap2 -> tempMap1
+
+            pmax = 0;
+            pnum = 0;
+            ptot = 0;
+
+            for (x = 0; x < WORLD_W; x += pollutionDensityMap.MAP_BLOCKSIZE)
+            {
+                for (y = 0; y < WORLD_H; y += pollutionDensityMap.MAP_BLOCKSIZE)
+                {
+                    z = tempMap1.worldGet(x, y);
+                    pollutionDensityMap.worldSet(x, y, (byte) z);
+
+                    if (z != 0)
+                    { 
+                        /*  get pollute average  */
+                        pnum++;
+                        ptot += z;
+                        /* find max pol for monster  */
+                        if (z > pmax || (z == pmax && (getRandom16() & 3) == 0))
+                        {
+                            pmax = z;
+                            pollutionMaxX = (short) x;
+                            pollutionMaxY = (short) y;
+                        }
+                    }
+                }
+            }
+            if (pnum != 0)
+            {
+                pollutionAverage = (short)(ptot / pnum);
+            }
+            else
+            {
+                pollutionAverage = 0;
+            }
+
+            smoothTerrain();
+
+            newMapFlags[(int) MapType.MAP_TYPE_POLLUTION] = 1;
+            newMapFlags[(int) MapType.MAP_TYPE_LAND_VALUE] = 1;
+            newMapFlags[(int) MapType.MAP_TYPE_DYNAMIC] = 1;
         }
 
         /// <summary>
@@ -259,12 +384,117 @@ namespace MicropolisCore
         /// </summary>
         public void crimeScan()
         {
-            // TODO
+            smoothStationMap(policeStationMap);
+            smoothStationMap(policeStationMap);
+            smoothStationMap(policeStationMap);
+
+            long totz = 0;
+            int numz = 0;
+            int cmax = 0;
+
+            for (int x = 0; x < WORLD_W; x += crimeRateMap.MAP_BLOCKSIZE)
+            {
+                for (int y = 0; y < WORLD_H; y += crimeRateMap.MAP_BLOCKSIZE)
+                {
+                    int z = landValueMap.worldGet(x, y);
+                    if (z > 0)
+                    {
+                        ++numz;
+                        z = 128 - z;
+                        z += populationDensityMap.worldGet(x, y);
+                        z = Math.Min(z, 300);
+                        z -= policeStationMap.worldGet(x, y);
+                        z = clamp(z, 0, 250);
+                        crimeRateMap.worldSet(x, y, (Byte)z);
+                        totz += z;
+
+                        // Update new crime hot-spot
+                        if (z > cmax || (z == cmax && (getRandom16() & 3) == 0))
+                        {
+                            cmax = z;
+                            crimeMaxX = (short) x;
+                            crimeMaxY = (short) y;
+                        }
+
+                    }
+                    else
+                    {
+                        crimeRateMap.worldSet(x, y, 0);
+                    }
+                }
+            }
+
+            if (numz > 0)
+            {
+                crimeAverage = (short)(totz / numz);
+            }
+            else
+            {
+                crimeAverage = 0;
+            }
+
+            policeStationEffectMap = policeStationMap;
+
+            newMapFlags[(int) MapType.MAP_TYPE_CRIME] = 1;
+            newMapFlags[(int) MapType.MAP_TYPE_POLICE_RADIUS] = 1;
+            newMapFlags[(int) MapType.MAP_TYPE_DYNAMIC] = 1;
         }
 
         public void smoothTerrain()
         {
-            // TODO
+            if ((donDither & 1) != 0)
+            {
+                int x, y = 0, dir = 1;
+                int z = 0;
+
+                for (x = 0; x < terrainDensityMap.MAP_W; x++)
+                {
+                    for (; y != terrainDensityMap.MAP_H && y != -1; y += dir)
+                    {
+                        z +=
+                            tempMap3.get((x == 0) ? x : (x - 1), y) +
+                            tempMap3.get((x == (terrainDensityMap.MAP_W - 1)) ? x : (x + 1), y) +
+                            tempMap3.get(x, (y == 0) ? (0) : (y - 1)) +
+                            tempMap3.get(x, (y == (terrainDensityMap.MAP_H - 1)) ? y : (y + 1)) +
+                            (tempMap3.get(x, y) << 2);
+                        Byte val = (Byte)(z / 8);
+                        terrainDensityMap.set(x, y, val);
+                        z &= 0x7;
+                    }
+                    dir = -dir;
+                    y += dir;
+                }
+            }
+            else
+            {
+                short x, y;
+
+                for (x = 0; x < terrainDensityMap.MAP_W; x++)
+                {
+                    for (y = 0; y < terrainDensityMap.MAP_H; y++)
+                    {
+                        int z = 0;
+                        if (x > 0)
+                        {
+                            z += tempMap3.get(x - 1, y);
+                        }
+                        if (x < (terrainDensityMap.MAP_W - 1))
+                        {
+                            z += tempMap3.get(x + 1, y);
+                        }
+                        if (y > 0)
+                        {
+                            z += tempMap3.get(x, y - 1);
+                        }
+                        if (y < (terrainDensityMap.MAP_H - 1))
+                        {
+                            z += tempMap3.get(x, y + 1);
+                        }
+                        byte val = (byte) ((byte)(z / 4 + tempMap3.get(x, y)) / 2);
+                        terrainDensityMap.set(x, y, val);
+                    }
+                }
+            }
         }
 
         /// <summary>
