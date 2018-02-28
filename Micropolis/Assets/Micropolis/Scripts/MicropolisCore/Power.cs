@@ -3,7 +3,34 @@
     public partial class Micropolis
     {
         /// <summary>
-        /// Scan the map for powered tiles, and copy them to the powerGridMap array.
+        /// Check at position pos for a power-less conducting tile in the
+        /// direction testDir.
+        /// TODO Re-use something like Micropolis::getFromMap(), and fold this function into its caller.
+        /// </summary>
+        /// <param name="pos">Position to start from.</param>
+        /// <param name="testDir">Direction to investigate.</param>
+        /// <returns>Unpowered tile has been found in the indicated direction.</returns>
+        private bool testForConductive(Position pos, Direction2 testDir)
+        {
+            var movedPos = new Position(pos);
+
+            if (movedPos.move(testDir))
+            {
+                if ((ushort)(map[movedPos.posX, movedPos.posY] & (ushort) MapTileBits.CONDBIT) == (ushort) MapTileBits.CONDBIT)
+                {
+                    if (powerGridMap.worldGet(movedPos.posX, movedPos.posY) == 0)
+                    {
+                        return true;
+                    }                    
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Scan the map for powered tiles, and copy them to the powerGridMap 
+        /// array.
         /// Also warns the user about using too much power ('buy another power plant').
         /// </summary>
         public void doPowerScan()
@@ -57,29 +84,16 @@
         }
 
         /// <summary>
-        /// Check at position pos for a power-less conducting tile in the
-        /// direction testDir.
-        /// TODO Re-use something like Micropolis::getFromMap(), and fold this function into its caller.
+        /// Push position a pos onto the power stack if there is room.
         /// </summary>
-        /// <param name="pos">Position to start from.</param>
-        /// <param name="testDir">Direction to investigate.</param>
-        /// <returns>Unpowered tile has been found in the indicated direction.</returns>
-        private bool testForConductive(Position pos, Direction2 testDir)
+        /// <param name="pos">Position to push.</param>
+        private void pushPowerStack(Position pos)
         {
-            var movedPos = new Position(pos);
-
-            if (movedPos.move(testDir))
+            if (powerStackPointer < (POWER_STACK_SIZE - 2))
             {
-                if ((ushort)(map[movedPos.posX, movedPos.posY] & (ushort) MapTileBits.CONDBIT) == (ushort) MapTileBits.CONDBIT)
-                {
-                    if (powerGridMap.worldGet(movedPos.posX, movedPos.posY) == 0)
-                    {
-                        return true;
-                    }                    
-                }
+                powerStackPointer++;
+                powerStackXY[powerStackPointer] = pos;
             }
-
-            return false;
         }
 
         /// <summary>
@@ -91,19 +105,6 @@
             //assert(powerStackPointer > 0);
             powerStackPointer--;
             return powerStackXY[powerStackPointer + 1];
-        }
-
-        /// <summary>
-        /// Push position a pos onto the power stack if there is room.
-        /// </summary>
-        /// <param name="pos">Position to push.</param>
-        private void pushPowerStack(Position pos)
-        {
-            if (powerStackPointer < (POWER_STACK_SIZE - 2))
-            {
-                powerStackPointer++;
-                powerStackXY[powerStackPointer] = pos;
-            }
         }
     }
 }
