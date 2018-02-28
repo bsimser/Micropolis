@@ -1,14 +1,37 @@
-﻿namespace MicropolisCore
+﻿using System;
+using System.IO;
+
+namespace MicropolisCore
 {
     public partial class Micropolis
     {
         /// <summary>
         /// Get version of Micropolis program.
+        /// TODO Use this function or eliminate it.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Textual version.</returns>
         public string getMicropolisVersion()
         {
             return "5.0";
+        }
+
+        /// <summary>
+        /// Check whether dir points to a directory.
+        /// </summary>
+        /// <param name="dir">Directory to search.</param>
+        /// <param name="envVar">Environment variable controlling searchpath of the directory.</param>
+        /// <returns>Directory has been found.</returns>
+        private bool testDirectory(string dir, string envVar)
+        {
+            if (Directory.Exists(dir))
+            {
+                return true;
+            }
+
+            //fprintf(stderr, "Can't find the directory \"%s\"!\n", dir.c_str());
+            //fprintf(stderr, "The environment variable \"%s\" should name a directory.\n", envVar);
+
+            return false;
         }
 
         /// <summary>
@@ -16,7 +39,25 @@
         /// </summary>
         public void environmentInit()
         {
-            // TODO
+            string s = Environment.GetEnvironmentVariable("SIMHOME");
+            if (string.IsNullOrEmpty(s))
+            {
+                s = Directory.GetCurrentDirectory();
+            }
+            homeDir = s;
+
+            if (testDirectory(homeDir, "$SIMHOME"))
+            {
+                resourceDir = homeDir + "/res/";
+                if (testDirectory(resourceDir, "$SIMHOME/res"))
+                {
+                    return; // All ok
+                }
+            }
+
+            // Failed on $SIMHOME, ".", or the 'res' directory.
+            //fprintf(stderr, "Please check the environment or reinstall Micropolis and try again! Sorry!\n");
+            //exit(1);
         }
 
         /// <summary>
@@ -30,7 +71,7 @@
             startingYear = 1900;
             simPasses = 1;
             simPass = 0;
-            setAutoGoto(true);
+            setAutoGoto(true); // Enable auto-goto
             setCityTax(7);
             cityTime = 50;
             setEnableDisasters(true); // Enable disasters
@@ -51,7 +92,7 @@
             clearMap();
             initWillStuff();
             setFunds(5000);
-            // TODO setGameLevelFunds(LEVEL_EASY);
+            setGameLevelFunds(GameLevel.LEVEL_EASY);
             setSpeed(0);
             setPasses(1);
         }
