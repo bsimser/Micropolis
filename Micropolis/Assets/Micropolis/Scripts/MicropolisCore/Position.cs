@@ -175,15 +175,15 @@ namespace MicropolisCore
             return false;
         }
 
+        /// <summary>
+        /// Test whether the position is on-map
+        /// </summary>
+        /// <returns>Position is on-map</returns>
         public bool testBounds()
         {
             return testBounds((short) posX, (short) posY);
         }
 
-        /// <summary>
-        /// Test whether the position is on-map.
-        /// </summary>
-        /// <returns>Position is on-map</returns>
         public static bool testBounds(short x, short y)
         {
             return x >= 0 && x < Micropolis.WORLD_W

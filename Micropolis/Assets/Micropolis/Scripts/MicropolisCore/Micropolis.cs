@@ -977,7 +977,7 @@ namespace MicropolisCore
         /// </summary>
         private SimSprite[] freeSprites;
 
-        // TODO private SimSprite[] globalSprites[SPRITE_COUNT];
+        private SimSprite[] globalSprites;
 
         private int absDist;
         private short spriteCycle;
@@ -1030,9 +1030,6 @@ namespace MicropolisCore
         private bool evalChanged;
 
         private short blinkFlag;
-        // CallbackFunction callbackHook
-        // void *callbackData
-        // void *userData;
 
         // Position stack top pointer, points to top position.
         private short curMapStackPointer;
@@ -1144,7 +1141,6 @@ namespace MicropolisCore
             policeStationMap.clear();
             policeStationEffectMap.clear();
             comRateMap.clear();
-            // TODO mapBase
             resHist = new short[HISTORY_LENGTH];
             comHist = new short[HISTORY_LENGTH];
             indHist = new short[HISTORY_LENGTH];
@@ -1190,8 +1186,6 @@ namespace MicropolisCore
             doAnimation = true;
             doMessages = true;
             doNotices = true;
-            // TODO cellSrc
-            // TODO cellDst
             cityPopLast = 0;
             categoryLast = 0;
             autoGoto = false;
@@ -1278,15 +1272,8 @@ namespace MicropolisCore
         public void destroy()
         {
             destroyMapArrays();
-        }
 
-        /// <summary>
-        /// Generate a random RUBBLE tile
-        /// </summary>
-        /// <returns></returns>
-        private ushort randomRubble()
-        {
-            return(ushort)((ushort)((ushort)MapTileCharacters.RUBBLE + (getRandom16() & 3)) | (ushort) MapTileBits.BULLBIT);
+            // TODO Clean up all other stuff.
         }
     }
 }

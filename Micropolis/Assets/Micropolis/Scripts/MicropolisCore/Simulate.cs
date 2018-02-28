@@ -1344,6 +1344,15 @@ namespace MicropolisCore
         }
 
         /// <summary>
+        /// Generate a random RUBBLE tile
+        /// </summary>
+        /// <returns></returns>
+        private ushort randomRubble()
+        {
+            return (ushort)((ushort)((ushort)MapTileCharacters.RUBBLE + (getRandom16() & 3)) | (ushort)MapTileBits.BULLBIT);
+        }
+
+        /// <summary>
         /// Handle a zone on fire.
         /// 
         /// Decreases rate of growth of the zone, and makes remaining tiles bulldozable.
