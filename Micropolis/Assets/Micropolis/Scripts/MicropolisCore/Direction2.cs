@@ -23,6 +23,11 @@
 
     public class DirectionUtils
     {
+        public static Direction2 rotate90(Direction2 dir)
+        {
+            return rotate45(dir, 2);
+        }
+
         public static Direction2 rotate180(Direction2 dir)
         {
             return rotate45(dir, 4);

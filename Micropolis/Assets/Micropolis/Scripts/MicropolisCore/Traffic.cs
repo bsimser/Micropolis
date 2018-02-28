@@ -1,4 +1,6 @@
-﻿namespace MicropolisCore
+﻿using System;
+
+namespace MicropolisCore
 {
     public partial class Micropolis
     {
@@ -79,7 +81,46 @@
         /// </summary>
         public void addToTrafficDensityMap()
         {
-            // TODO 
+            /* For each saved position of the drive */
+            while (curMapStackPointer > 0)
+            {
+
+                Position pos = pullPos();
+                if (pos.testBounds())
+                {
+
+                    ushort tile = (ushort)(map[pos.posX,pos.posY] & (ushort) MapTileBits.LOMASK);
+
+                    if (tile >= (ushort) MapTileCharacters.ROADBASE && tile < (ushort) MapTileCharacters.POWERBASE)
+                    {
+                        SimSprite sprite;
+
+                        // Update traffic density.
+                        int traffic = trafficDensityMap.worldGet(pos.posX, pos.posY);
+                        traffic += 50;
+                        traffic = Math.Min(traffic, 240);
+                        trafficDensityMap.worldSet(pos.posX, pos.posY, (byte)traffic);
+
+                        // Check for heavy traffic.
+                        if (traffic >= 240 && getRandom(5) == 0)
+                        {
+
+                            trafMaxX = (short) pos.posX;
+                            trafMaxY = (short) pos.posY;
+
+                            /* Direct helicopter towards heavy traffic */
+                            sprite = getSprite((int) SpriteType.SPRITE_HELICOPTER);
+                            if (sprite != null && sprite.control == -1)
+                            {
+
+                                sprite.destX = trafMaxX * 16;
+                                sprite.destY = trafMaxY * 16;
+
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -140,14 +181,205 @@
             return true;
         }
 
+        /// <summary>
+        /// Try to drive to a destination.
+        /// </summary>
+        /// <param name="startPos">Starting position.</param>
+        /// <param name="destZone">Zonetype to drive to.</param>
+        /// <returns>Was drive succesful?</returns>
         bool tryDrive(Position startPos, ZoneType destZone)
         {
-            // TODO
+            Direction2 dirLast = Direction2.DIR2_INVALID;
+            Position drivePos = new Position(startPos);
+
+            /* Maximum distance to try */
+            for (short dist = 0; dist < MAX_TRAFFIC_DISTANCE; dist++)
+            {
+                Direction2 dir = tryGo(drivePos, dirLast);
+                if (dir != Direction2.DIR2_INVALID)
+                { 
+                    // we found a road
+                    drivePos.move(dir);
+                    dirLast = DirectionUtils.rotate180(dir);
+
+                    /* Save pos every other move.
+                     * This also relates to
+                     * Micropolis::trafficDensityMap::MAP_BLOCKSIZE
+                     */
+                    if ((dist & 1) != 0)
+                    {
+                        pushPos(drivePos);
+                    }
+
+                    if (driveDone(drivePos, destZone))
+                    { 
+                        // if destination is reached
+                        return true; /* pass */
+                    }
+                }
+                else
+                {
+                    if (curMapStackPointer > 0)
+                    { 
+                        /* dead end, backup */
+                        curMapStackPointer--;
+                        dist += 3;
+                    }
+                    else
+                    {
+                        return false; /* give up at start  */
+                    }
+
+                }
+            }
+
+            return false; /* gone MAX_TRAFFIC_DISTANCE */
+        }
+
+        /// <summary>
+        /// Has the journey arrived at its destination?
+        /// </summary>
+        /// <param name="pos">Current position.</param>
+        /// <param name="destZone">Zonetype to drive to.</param>
+        /// <returns>Destination has been reached.</returns>
+        private bool driveDone(Position pos, ZoneType destZone)
+        {
+            // TODO Use macros to determine the zone type: residential, commercial or industrial.
+            // commercial, industrial, residential destinations
+            ushort[] targetLow = { (ushort) MapTileCharacters.COMBASE, (ushort) MapTileCharacters.LHTHR, (ushort) MapTileCharacters.LHTHR };
+            ushort[] targetHigh = { (ushort)MapTileCharacters.NUCLEAR, (ushort)MapTileCharacters.PORT, (ushort)MapTileCharacters.COMBASE };
+
+            //assert(ZT_NUM_DESTINATIONS == LENGTH_OF(targetLow));
+            //assert(ZT_NUM_DESTINATIONS == LENGTH_OF(targetHigh));
+
+            ushort l = targetLow[(int) destZone]; // Lowest acceptable tile value
+            ushort h = targetHigh[(int) destZone]; // Highest acceptable tile value
+
+            if (pos.posY > 0)
+            {
+                ushort z = (ushort)(map[pos.posX,pos.posY - 1] & (ushort)MapTileBits.LOMASK);
+                if (z >= l && z <= h)
+                {
+                    return true;
+                }
+            }
+
+            if (pos.posX < (WORLD_W - 1))
+            {
+                ushort z = (ushort)(map[pos.posX + 1,pos.posY] & (ushort) MapTileBits.LOMASK);
+                if (z >= l && z <= h)
+                {
+                    return true;
+                }
+            }
+
+            if (pos.posY < (WORLD_H - 1))
+            {
+                ushort z = (ushort)(map[pos.posX,pos.posY + 1] & (ushort)MapTileBits.LOMASK);
+                if (z >= l && z <= h)
+                {
+                    return true;
+                }
+            }
+
+            if (pos.posX > 0)
+            {
+                ushort z = (ushort)(map[pos.posX - 1,pos.posY] & (ushort) MapTileBits.LOMASK);
+                if (z >= l && z <= h)
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
 
         /// <summary>
+        /// Try to drive one tile in a random direction.
+        /// </summary>
+        /// <param name="pos">Current position.</param>
+        /// <param name="dirLast">Forbidden direction for movement (to prevent reversing).</param>
+        /// <returns>Direction of movement, DIR2_INVALID is returned if not moved.</returns>
+        private Direction2 tryGo(Position pos, Direction2 dirLast)
+        {
+            Direction2[] directions = new Direction2[4];
+
+            // Find connections from current position.
+            Direction2 dir = Direction2.DIR2_NORTH;
+            int count = 0;
+            int i;
+            for (i = 0; i < 4; i++)
+            {
+                if (dir != dirLast && roadTest(getTileFromMap(pos, dir, (ushort) MapTileCharacters.DIRT)))
+                {
+                    // found a road in an allowed direction
+                    directions[i] = dir;
+                    count++;
+                }
+                else
+                {
+                    directions[i] = Direction2.DIR2_INVALID;
+                }
+
+                dir = DirectionUtils.rotate90(dir);
+            }
+
+            if (count == 0)
+            { 
+                // dead end
+                return Direction2.DIR2_INVALID;
+            }
+
+            // We have at least one way to go.
+
+            if (count == 1)
+            { 
+                // only one solution
+                for (i = 0; i < 4; i++)
+                {
+                    if (directions[i] != Direction2.DIR2_INVALID)
+                    {
+                        return directions[i];
+                    }
+                }
+            }
+
+            // more than one choice, draw a random number.
+            i = getRandom16() & 3;
+            while (directions[i] == Direction2.DIR2_INVALID)
+            {
+                i = (i + 1) & 3;
+            }
+            return directions[i];
+        }
+
+        /// <summary>
+        /// Push a position onto the position stack.
+        /// TODO use the .NET Stack class instead for this
+        /// </summary>
+        /// <param name="pos">Position to push.</param>
+        private void pushPos(Position pos)
+        {
+            curMapStackPointer++;
+            //assert(curMapStackPointer < MAX_TRAFFIC_DISTANCE + 1);
+            curMapStackXY[curMapStackPointer] = pos;
+        }
+
+        /// <summary>
+        /// Pull top-most position from the position stack.
+        /// TODO use the .NET Stack class instead for this
+        /// </summary>
+        /// <returns>Pulled position.</returns>
+        private Position pullPos()
+        {
+            //assert(curMapStackPointer > 0);
+            curMapStackPointer--;
+            return curMapStackXY[curMapStackPointer + 1];
+        }
+
+        /// <summary>
         /// Get neighbouring tile from the map.
+        /// TODO should probably be in a Tile or Map class or something.
         /// </summary>
         /// <param name="pos">Current position.</param>
         /// <param name="dir">Direction of neighbouring tile, only horizontal and vertical directions are supported.</param>

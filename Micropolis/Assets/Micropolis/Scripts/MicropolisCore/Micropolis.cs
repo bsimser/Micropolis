@@ -383,6 +383,18 @@ namespace MicropolisCore
         /// </summary>
         private bool censusChanged;
 
+        private Position[] curMapStackXY;
+
+        /// <summary>
+        /// X coordinate of a position with heavy traffic
+        /// </summary>
+        private short trafMaxX;
+
+        /// <summary>
+        /// Y coordinate of a position with heavy traffic
+        /// </summary>
+        private short trafMaxY;
+
         /// <summary>
         /// Spending on roads.
         /// </summary>
@@ -1189,6 +1201,12 @@ namespace MicropolisCore
             for (int i = 0; i < POWER_STACK_SIZE; i++)
             {
                 powerStackXY[i] = new Position();
+            }
+
+            curMapStackXY = new Position[MAX_TRAFFIC_DISTANCE + 1];
+            for (int i = 0; i < MAX_TRAFFIC_DISTANCE + 1; i++)
+            {
+                curMapStackXY[i] = new Position();
             }
 
             nextRandom = 1;
