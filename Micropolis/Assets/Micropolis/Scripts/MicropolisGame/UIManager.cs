@@ -1,16 +1,16 @@
 ﻿using MicropolisEngine;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace MicropolisGame
 {
     public class UIManager
     {
         private readonly MicropolisUnityEngine _engine;
-        private readonly Text _fundsText;
-        private readonly Text _dateText;
-        private readonly Text _poplationText;
-        private readonly Text _messageText;
+        private readonly TextMeshProUGUI _fundsText;
+        private readonly TextMeshProUGUI _dateText;
+        private readonly TextMeshProUGUI _poplationText;
+        private readonly TextMeshProUGUI _messageText;
 
         public UIManager(MicropolisUnityEngine engine)
         {
@@ -18,10 +18,10 @@ namespace MicropolisGame
             _engine = engine;
 
             // find our UI elements in the scene
-            _fundsText = GameObject.Find("Funds").GetComponent<Text>();
-            _dateText = GameObject.Find("Date").GetComponent<Text>();
-            _poplationText = GameObject.Find("Population").GetComponent<Text>();
-            _messageText = GameObject.Find("Message").GetComponent<Text>();
+            _fundsText = GameObject.Find("Funds").GetComponent<TextMeshProUGUI>();
+            _dateText = GameObject.Find("Date").GetComponent<TextMeshProUGUI>();
+            _poplationText = GameObject.Find("Population").GetComponent<TextMeshProUGUI>();
+            _messageText = GameObject.Find("Message").GetComponent<TextMeshProUGUI>();
 
             // subscribe to event handlers in the engine
             _engine.OnUpdateDate += DoUpdateDate;
