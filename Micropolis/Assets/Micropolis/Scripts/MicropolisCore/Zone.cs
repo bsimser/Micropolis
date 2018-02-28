@@ -25,12 +25,11 @@ namespace MicropolisCore
             ushort tile = (ushort)(map[pos.posX,pos.posY] & (ushort) MapTileBits.LOMASK);
 
             // Do special zones.
-//            if ((tile > (ushort) MapTileCharacters.PORTBASE) &&
-//                (tile < (ushort)MapTileCharacters.CHURCH1BASE))
-//            {
-//                doSpecialZone(pos, zonePowerFlag);
-//                return;
-//            }
+            if (tile > (ushort) MapTileCharacters.PORTBASE)
+            {
+                // TODO doSpecialZone(pos, zonePowerFlag);
+                return;
+            }
 
             // Do residential zones.
             if (tile < (ushort)MapTileCharacters.HOSPITAL)
@@ -40,29 +39,21 @@ namespace MicropolisCore
             }
 
             // Do hospitals and churches.
-//            if ((tile < (ushort)MapTileCharacters.COMBASE) ||
-//                ((tile >= (ushort)MapTileCharacters.CHURCH1BASE) &&
-//                 (tile <= (ushort)MapTileCharacters.CHURCH7LAST)))
-//            {
-//                doHospitalChurch(pos);
-//                return;
-//            }
+            if (tile < (ushort)MapTileCharacters.COMBASE)
+            {
+                // TODO doHospitalChurch(pos);
+                return;
+            }
 
             // Do commercial zones.
             if (tile < (ushort)MapTileCharacters.INDBASE)
             {
-                //doCommercial(pos, zonePowerFlag);
+                // TODO doCommercial(pos, zonePowerFlag);
                 return;
             }
 
             // Do industrial zones.
-//            if (tile < (ushort)MapTileCharacters.CHURCH1BASE)
-//            {
-//                doIndustrial(pos, zonePowerFlag);
-//                return;
-//            }
-
-            //printf("UNEXPOECTED ZONE: %d !!!\n", tile);
+            // TODO doIndustrial(pos, zonePowerFlag);
         }
 
         /// <summary>
@@ -234,7 +225,6 @@ namespace MicropolisCore
 
                 if (Position.testBounds((short) xx, (short) yy))
                 {
-                    // TODO is HOUSE the proper constant here?
                     map[xx, yy] = (ushort)((ushort) MapTileCharacters.HOUSE + (ushort) MapTileBits.BLBNCNBIT + getRandom(2) + value * 3);
                 }
             }

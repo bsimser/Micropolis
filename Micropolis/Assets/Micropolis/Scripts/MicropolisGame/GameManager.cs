@@ -19,18 +19,14 @@ namespace MicropolisGame
             _tileManager = new TileManager(_engine);
             _uiManager = new UIManager(_engine);
 
-            // set the default values for a new city
-            _engine.cityTax = 10;
-            _engine.setPasses(1);
-
-            // TODO until we get a front end let's kick off the engine here with hard coded values
+            // TODO until we get a front end let's kick off the engine here with some hard coded values
             // generate a random city
             //_engine.generateMap();
-            _engine.setSpeed(1);
-            _engine.setCityTax(9);
             // load a sample city for testing
-            _engine.loadFile("cities" + Path.DirectorySeparatorChar + "kyoto.cty");
+            _engine.loadFile("cities" + Path.DirectorySeparatorChar + "neatmap.cty");
             // other engine stuff
+            _engine.setSpeed(1);
+            _engine.setPasses(1);
             _engine.setEnableDisasters(false);
         }
 

@@ -11,6 +11,9 @@ namespace MicropolisEngine
     /// </summary>
     public class MicropolisUnityEngine : MicropolisGenericEngine
     {
+        /// <summary>
+        /// String representation of <see cref="MessageNumber"/>
+        /// </summary>
         public string[] messages =
         {
             "",
@@ -43,7 +46,7 @@ namespace MicropolisEngine
             "A helicopter crashed !",
             "Unemployment rate is high.",
             "YOUR CITY HAS GONE BROKE!",
-            "Firebombing reported !",
+            "Firebombing reported !", // TODO original message "Bulldozing too many trees."
             "Need more parks.",
             "Explosion detected !",
             "Insufficient funds to build that.",
@@ -57,9 +60,9 @@ namespace MicropolisEngine
             "Heavy traffic reported.",
             "Flooding reported !!",
             "A nuclear meltdown has occurred !!!",
-            "They're rioting in the streets !!",
-            "Started a new city.",
-            "Restored a saved city.",
+            "They're rioting in the streets !!", // TODO original message "Cannot build on water."
+            "Started a new city.", // TODO original message "Cannot build that here."
+            "Restored a saved city.", // TODO original message "Cannot bulldoze here."
             "You won the scenario!",
             "You lost the scenario.",
             "About Micropolis.",
@@ -71,6 +74,25 @@ namespace MicropolisEngine
             "Scenario: DETROIT, MI.  1972.",
             "Scenario: BOSTON, MA.  2010.",
             "Scenario: RIO DE JANEIRO, BRAZIL  2047.",
+        };
+
+        public string[] editorIconMessages =
+        {
+            "Bulldoze: $1",
+            "Road: $10",
+            "Power lines: $5",
+            "Railroad: $20",
+            "Park: $10",
+            "Residential: $100",
+            "Commercial: $100",
+            "Industrial: $100",
+            "Police station: $500",
+            "Fire station: $500",
+            "Stadium: $3000",
+            "Nuclear reactor: $5000",
+            "Seaport: $5000",
+            "Airport: $10000",
+            "Coal power plant: $3000"
         };
 
         // list of notices to show to user

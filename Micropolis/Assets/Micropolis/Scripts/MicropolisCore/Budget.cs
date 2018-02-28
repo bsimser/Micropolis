@@ -59,7 +59,7 @@
             else if (total > 0)
             {
 
-                //assert(yumDuckets <= total);
+                // assert(yumDuckets <= total);
 
                 // Not enough yumDuckets to fund everything.
                 // First spend on roads, then on fire, then on police.
@@ -273,6 +273,10 @@
 
         public void updateBudget()
         {
+            // TODO The scripting language should pull these raw values out
+            //      and format them, instead of the simulator core formatting
+            //      them and pushing them out.
+
             if (mustDrawBudget != 0)
             {
                 callback("update", "s", "budget");
