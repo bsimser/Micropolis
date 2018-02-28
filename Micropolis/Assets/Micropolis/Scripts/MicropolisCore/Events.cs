@@ -8,6 +8,8 @@
 
         public event UpdateCityName OnUpdateCityName;
 
+        public event UpdateEvaluation OnUpdateEvaluation;
+
         public event SendMessage OnSendMessage;
     }
 }

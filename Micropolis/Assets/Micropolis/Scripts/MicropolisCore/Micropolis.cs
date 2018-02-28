@@ -684,14 +684,14 @@ namespace MicropolisCore
         /// 
         /// The number of votes for each problem.
         /// </summary>
-        short[] problemVotes;
+        public short[] problemVotes;
 
         /// <summary>
         /// Order of taken problems.
         /// 
         /// Contains index of problemVotes of taken problems, in decreasing order.
         /// </summary>
-        short[] problemOrder;
+        public short[] problemOrder;
 
         /// <summary>
         /// City population.
@@ -717,7 +717,7 @@ namespace MicropolisCore
         /// </summary>
         public long cityAssessedValue;
 
-        private CityClass cityClass;
+        public CityClass cityClass;
 
         /// <summary>
         /// City score.
@@ -1006,7 +1006,7 @@ namespace MicropolisCore
         /// <summary>
         /// Difficulty level of the game (0..2)
         /// </summary>
-        private GameLevel gameLevel;
+        public GameLevel gameLevel;
 
         private short initSimLoad;
         private ScenarioType scenario;

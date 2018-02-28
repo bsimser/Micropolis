@@ -415,6 +415,28 @@ namespace MicropolisCore
         public void doScoreCard()
         {
             callback("update", "s", "evaluation");
+
+            // The user interface should pull these raw values out and format
+            // them. The simulator core used to format them and push them out,
+            // but the user interface should pull them out and format them
+            // itself.
+
+            // City Evaluation ${FormatYear(currentYear())}
+            // Public Opinion
+            //   Is the mayor doing a good job?
+            //     Yes: ${FormatPercent(cityYes)}
+            //     No: ${FormatPercent(100 - cityYes)}
+            //   What are the worst problems?
+            //     for i in range(0, CVP_PROBLEM_COMPLAINTS),
+            //                 while problemOrder[i] < CVP_NUMPROBLEMS:
+            //     ${probStr[problemOrder[i]]}:
+            //                  ${FormatPercent(problemVotes[problemOrder[i]])}
+            // Statistics
+            //   Population: ${FormatNumber(cityPop)}
+            //   Net Migration: ${FormatNumber(cityPopDelta)} (last year)
+            //   Assessed Value: ${FormatMoney(cityAssessedValue))
+            //   Category: ${cityClassStr[cityClass]}
+            //   Game Level: ${cityLevelStr[gameLevel]}
         }
 
         /// <summary>

@@ -91,6 +91,9 @@ namespace MicropolisCore
         ///  - i: integer
         ///  - f: float
         ///  - s: string
+        /// 
+        /// TODO we will *not* be doing this with strings like this but this is fine for now
+        /// TODO replace all the args[1] names with a method like HandleUpdateDate or something
         /// </summary>
         /// <param name="name">Name of the callback.</param>
         /// <param name="args">Parameters of the callback.</param>
@@ -119,6 +122,13 @@ namespace MicropolisCore
                     if (OnUpdateCityName != null)
                     {
                         OnUpdateCityName();
+                    }
+                }
+                else if (args[1] == "evaluation")
+                {
+                    if (OnUpdateEvaluation != null)
+                    {
+                        OnUpdateEvaluation();
                     }
                 }
                 else
