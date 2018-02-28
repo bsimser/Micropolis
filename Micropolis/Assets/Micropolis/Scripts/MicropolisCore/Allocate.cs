@@ -1,4 +1,6 @@
-﻿namespace MicropolisCore
+﻿using System;
+
+namespace MicropolisCore
 {
     public partial class Micropolis
     {
@@ -23,7 +25,7 @@
         /// </summary>
         private void destroyMapArrays()
         {
-            // TODO clear the map
+            Array.Clear(map, 0, map.Length);
 
             populationDensityMap.clear();
             trafficDensityMap.clear();
@@ -37,7 +39,13 @@
 
             terrainDensityMap.clear();
 
-            // TODO free histories
+            Array.Clear(resHist, 0, resHist.Length);
+            Array.Clear(comHist, 0, comHist.Length);
+            Array.Clear(indHist, 0, indHist.Length);
+            Array.Clear(moneyHist, 0, moneyHist.Length);
+            Array.Clear(pollutionHist, 0, pollutionHist.Length);
+            Array.Clear(crimeHist, 0, crimeHist.Length);
+            Array.Clear(miscHist, 0, miscHist.Length);
         }
     }
 }

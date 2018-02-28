@@ -4,10 +4,6 @@ namespace MicropolisCore
 {
     public partial class Micropolis
     {
-        public void makeDollarDecimalStr(string numStr, string dollarStr)
-        {
-        }
-
         private T clamp<T>(T val, T lower, T upper) where T : IComparable
         {
             if (val.CompareTo(lower) < 0)
@@ -21,6 +17,9 @@ namespace MicropolisCore
             return val;
         }
 
+        /// <summary>
+        /// Pause a simulation
+        /// </summary>
         public void pause()
         {
             if (!simPaused)
@@ -34,6 +33,9 @@ namespace MicropolisCore
             callback("update", "s", "paused");
         }
 
+        /// <summary>
+        /// Resume simulation after pausing it
+        /// </summary>
         public void resume()
         {
             if (simPaused)
@@ -77,6 +79,35 @@ namespace MicropolisCore
             callback("update", "s", "passes");
         }
 
+        /// <summary>
+        /// Set the game level and initial funds.
+        /// </summary>
+        /// <param name="level">New game level.</param>
+        public void setGameLevelFunds(GameLevel level)
+        {
+            switch (level)
+            {
+                default:
+                case GameLevel.LEVEL_EASY:
+                    setFunds(20000);
+                    setGameLevel(GameLevel.LEVEL_EASY);
+                    break;
+
+                case GameLevel.LEVEL_MEDIUM:
+                    setFunds(10000);
+                    setGameLevel(GameLevel.LEVEL_MEDIUM);
+                    break;
+
+                case GameLevel.LEVEL_HARD:
+                    setFunds(5000);
+                    setGameLevel(GameLevel.LEVEL_HARD);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Report to the front-end that a new game level has been set.
+        /// </summary>
         public void updateGameLevel()
         {
             callback("update", "s", "gameLevel");
@@ -120,7 +151,7 @@ namespace MicropolisCore
                 year = startingYear;
             }
 
-            year = (int) ((year - startingYear) - cityTime / 48);
+            year = (int) (year - startingYear - cityTime / 48);
             cityTime += year * 48;
             doTimeStuff();
         }
