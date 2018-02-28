@@ -138,7 +138,8 @@ namespace MicropolisCore
             if (temporaryLogMessage)
             {
                 // remove this later as we want to use events and delegates and not have 
-                // Unity code in the core engine but here we can see what's going on
+                // Unity code in the core engine but here we can see whats callbacks are
+                // coming in and create statements to handle them then get rid of this
                 Debug.Log(string.Format("callback: {0} event: {1}", name, string.Join(",", args)));
             }
         }
@@ -150,8 +151,7 @@ namespace MicropolisCore
         /// <param name="strength"></param>
         public void doEarthquake(int strength)
         {
-            //makeSound("city", "ExplosionLow"); // Make the sound all over.
-
+            // TODO makeSound("city", "ExplosionLow"); // Make the sound all over.
             callback("startEarthquake", "d", strength.ToString());
         }
 
@@ -180,7 +180,7 @@ namespace MicropolisCore
         {
             if (enableSound)
             {
-                //callback("makeSound", "ssdd", channel, sound, x, y);
+                // TODO callback("makeSound", "ssdd", channel, sound, x, y);
             }
         }
 
@@ -321,11 +321,95 @@ namespace MicropolisCore
             trafficDensityMap.set(x, y, (byte) density);
         }
 
-        // TODO more of the same 3 functions get, set, getbuffer for the following:
-        // TODO pollution density
-        // TODO crime rate
-        // TODO land value
-        // TODO these are never used in the code but might be for the UI
+        /// <summary>
+        /// Get a value from the pollution density map.
+        /// TODO Use world coordinates instead (use pollutionDensityMap.worldGet() instead).
+        /// </summary>
+        /// <remarks>
+        /// Off-map positions are considered to contain 0.
+        /// </remarks>
+        /// <param name="x">X coordinate of the position to get, 0 to WORLD_W_2.</param>
+        /// <param name="y">Y coordinate of the position to get, 0 to WORLD_H_2.</param>
+        /// <returns>Value of the rate of pollution density map at the given position.</returns>
+        public int getPollutionDensity(int x, int y)
+        {
+            return populationDensityMap.get(x, y);
+        }
+
+        /// <summary>
+        /// Set a value in the pollition density map.
+        /// TODO Use world coordinates instead (use pollutionDensityMap.worldSet() instead).
+        /// </summary>
+        /// <remarks>
+        /// Off-map positions are ignored.
+        /// </remarks>
+        /// <param name="x">X coordinate of the position to get, 0 to WORLD_W_2.</param>
+        /// <param name="y">Y coordinate of the position to get, 0 to WORLD_H_2.</param>
+        /// <param name="density">the value to set.</param>
+        public void setPollutionDensity(int x, int y, int density)
+        {
+            populationDensityMap.set(x, y, (byte) density);
+        }
+
+        /// <summary>
+        /// Get a value from the crime rate map.
+        /// TODO Use world coordinates instead (use crimeRateMap.worldGet() instead).
+        /// </summary>
+        /// <remarks>
+        /// Off-map positions are considered to contain 0.
+        /// </remarks>
+        /// <param name="x">X coordinate of the position to get, 0 to WORLD_W_2.</param>
+        /// <param name="y">Y coordinate of the position to get, 0 to WORLD_H_2.</param>
+        /// <returns>Value of the crime rate map at the given position.</returns>
+        public int getCrimeRate(int x, int y)
+        {
+            return crimeRateMap.get(x, y);
+        }
+
+        /// <summary>
+        /// Set a value in the crime rate map.
+        /// TODO Use world coordinates instead (use crimeRateMap.worldSet() instead).
+        /// </summary>
+        /// <remarks>
+        /// Off-map positions are ignored.
+        /// </remarks>
+        /// <param name="x">X coordinate of the position to get, 0 to WORLD_W_2.</param>
+        /// <param name="y">Y coordinate of the position to get, 0 to WORLD_H_2.</param>
+        /// <param name="rate">the value to set.</param>
+        public void setCrimeRate(int x, int y, int rate)
+        {
+            crimeRateMap.set(x, y, (byte) rate);
+        }
+
+        /// <summary>
+        /// Get a value from the land value map.
+        /// TODO Use world coordinates instead (use landValueMap.worldGet() instead).
+        /// </summary>
+        /// <remarks>
+        /// Off-map positions are considered to contain 0.
+        /// </remarks>
+        /// <param name="x">X coordinate of the position to get, 0 to WORLD_W_2.</param>
+        /// <param name="y">Y coordinate of the position to get, 0 to WORLD_H_2.</param>
+        /// <returns>Value of the land value map at the given position.</returns>
+        public int getLandValue(int x, int y)
+        {
+            return landValueMap.get(x, y);
+        }
+
+        /// <summary>
+        /// Set a value in the land value map.
+        /// TODO Use world coordinates instead (use landValueMap.worldSet() instead).
+        /// </summary>
+        /// <remarks>
+        /// Off-map positions are ignored.
+        /// </remarks>
+        /// <param name="x">X coordinate of the position to get, 0 to WORLD_W_2.</param>
+        /// <param name="y">Y coordinate of the position to get, 0 to WORLD_H_2.</param>
+        /// <param name="value">the value to set.</param>
+        public void setLandValue(int x, int y, int value)
+        {
+            landValueMap.set(x, y, (byte) value);
+        }
 
         /// <summary>
         /// Get a value from the fire coverage map.

@@ -109,6 +109,7 @@
 
         /// <summary>
         /// Clear everything from all land
+        /// TODO function is never called
         /// </summary>
         private void clearUnnatural()
         {
@@ -744,6 +745,9 @@
             }
         }
 
+        /// <summary>
+        /// TODO function is never called
+        /// </summary>
         public void smoothWater()
         {
             int x, y;

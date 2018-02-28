@@ -1274,7 +1274,131 @@ namespace MicropolisCore
         /// <param name="pos">Position of the fire.</param>
         private void doFire(Position pos)
         {
-            // TODO
+            short[] DX = { -1, 0, 1, 0 };
+            short[] DY = { 0, -1, 0, 1 };
+            short z;
+
+            // Try to set neighbouring tiles on fire as well
+            for (z = 0; z < 4; z++)
+            {
+                if ((getRandom16() & 7) == 0)
+                {
+                    short xTem = (short) (pos.posX + DX[z]);
+                    short yTem = (short) (pos.posY + DY[z]);
+
+                    if (Position.testBounds(xTem, yTem))
+                    {
+                        ushort c = map[xTem, yTem];
+                        if ((ushort)(c & (ushort) MapTileBits.BURNBIT) == 0)
+                        {
+                            continue;
+                        }
+
+                        if ((ushort)(c & (ushort) MapTileBits.ZONEBIT) != 0)
+                        {
+                            // Neighbour is a zone and burnable
+                            fireZone(new Position(xTem, yTem), c);
+
+                            if ((c & (ushort) MapTileBits.LOMASK) > (ushort) MapTileCharacters.IZB)
+                            {
+                                makeExplosionAt(xTem * 16 + 8, yTem * 16 + 8);
+                            }
+                        }
+
+                        map[xTem, yTem] = randomFire();
+                    }
+                }
+            }
+
+            // Compute likelyhood of fire running out of fuel
+            short rate = 10; // Likelyhood of extinguishing (bigger means less chance)
+            z = fireStationEffectMap.worldGet(pos.posX, pos.posY);
+
+            if (z > 0)
+            {
+                rate = 3;
+                if (z > 20)
+                {
+                    rate = 2;
+                }
+                if (z > 100)
+                {
+                    rate = 1;
+                }
+            }
+
+            // Decide whether to put out the fire.
+            if (getRandom(rate) == 0)
+            {
+                map[pos.posX, pos.posY] = randomRubble();
+            }
+        }
+
+        /// <summary>
+        /// Generate a random animated FIRE tile
+        /// </summary>
+        /// <returns></returns>
+        private ushort randomFire()
+        {
+            return (ushort)((ushort)((ushort) MapTileCharacters.FIRE + (getRandom16() & 7)) | (ushort) MapTileBits.ANIMBIT);
+        }
+
+        /// <summary>
+        /// Handle a zone on fire.
+        /// 
+        /// Decreases rate of growth of the zone, and makes remaining tiles bulldozable.
+        /// 
+        /// TODO maybe move this to the zone file (or class if we create one)
+        /// </summary>
+        /// <param name="pos">Position of the zone on fire.</param>
+        /// <param name="ch">Character of the zone.</param>
+        private void fireZone(Position pos, ushort ch)
+        {
+            short XYmax;
+
+            int value = rateOfGrowthMap.worldGet(pos.posX, pos.posY);
+            value = clamp(value - 20, -200, 200);
+            rateOfGrowthMap.worldSet(pos.posX, pos.posY, (short) value);
+
+            ch = (ushort)(ch & (ushort) MapTileBits.LOMASK);
+
+            if (ch < (ushort) MapTileCharacters.PORTBASE)
+            {
+                XYmax = 2;
+            }
+            else
+            {
+                if (ch == (ushort) MapTileCharacters.AIRPORT)
+                {
+                    XYmax = 5;
+                }
+                else
+                {
+                    XYmax = 4;
+                }
+            }
+
+            // Make remaining tiles of the zone bulldozable
+            for (short x = -1; x < XYmax; x++)
+            {
+                for (short y = -1; y < XYmax; y++)
+                {
+                    short xTem = (short) (pos.posX + x);
+                    short yTem = (short) (pos.posY + y);
+
+                    if (!Position.testBounds(xTem, yTem))
+                    {
+                        continue;
+                    }
+
+                    if ((ushort)(map[xTem,yTem] & (ushort) MapTileBits.LOMASK) >= (ushort) MapTileCharacters.ROADBASE)
+                    {
+                        /* post release */
+                        map[xTem,yTem] |= (ushort) MapTileBits.BULLBIT;
+                    }
+
+                }
+            }
         }
     }
 }

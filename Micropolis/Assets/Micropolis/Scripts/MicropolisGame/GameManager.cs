@@ -23,7 +23,7 @@ namespace MicropolisGame
             // generate a random city
             //_engine.generateMap();
             // load a sample city for testing
-            _engine.loadFile("cities" + Path.DirectorySeparatorChar + "neatmap.cty");
+            _engine.loadFile("cities" + Path.DirectorySeparatorChar + "deadwood.cty");
             // other engine stuff
             _engine.setSpeed(1);
             _engine.setPasses(1);

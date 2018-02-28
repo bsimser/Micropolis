@@ -1263,7 +1263,7 @@ namespace MicropolisCore
         }
 
         /// <summary>
-        /// Generate a random MapTileCharacters::RUBBLE tile
+        /// Generate a random RUBBLE tile
         /// </summary>
         /// <returns></returns>
         private ushort randomRubble()
