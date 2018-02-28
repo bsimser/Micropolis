@@ -13,7 +13,6 @@ namespace MicropolisCore
             float TM;
 
             // Running a scenario, and waiting it to 'end' so we can give a score
-            // TODO
             if (scenario > ScenarioType.SC_NONE && scoreType > ScenarioType.SC_NONE && scoreWait > 0)
             {
                 scoreWait--;
@@ -187,14 +186,14 @@ namespace MicropolisCore
             }
         }
 
-        private void doScenarioScore(ScenarioType scenarioType)
-        {
-            // TODO when we implement scenarios
-        }
-
         /// <summary>
         /// Detect a change in city class, and produce a message if the player has
         /// reached the next class.
+        /// TODO This code is very closely related to Micropolis::doPopNum().
+        ///      Maybe merge both in some way?
+        ///      (This function gets called much more often however then doPopNum().
+        ///      Also, at the first call, the difference between thisCityPop and
+        ///      cityPop is huge.)
         /// </summary>
         public void checkGrowth()
         {
@@ -250,6 +249,84 @@ namespace MicropolisCore
                 }
 
                 cityPopLast = thisCityPop;
+            }
+        }
+
+        /// <summary>
+        /// Compute score for each scenario
+        /// </summary>
+        /// <param name="scenarioType">Scenario used</param>
+        private void doScenarioScore(ScenarioType type)
+        {
+            short z = (short) MessageNumber.MESSAGE_SCENARIO_LOST; // you lose
+
+            switch (type)
+            {
+                case ScenarioType.SC_DULLSVILLE:
+                    if (cityClass >= CityClass.CC_METROPOLIS)
+                    {
+                        z = (short) MessageNumber.MESSAGE_SCENARIO_WON;
+                    }
+                    break;
+
+                case ScenarioType.SC_SAN_FRANCISCO:
+                    if (cityClass >= CityClass.CC_METROPOLIS)
+                    {
+                        z = (short)MessageNumber.MESSAGE_SCENARIO_WON;
+                    }
+                    break;
+
+                case ScenarioType.SC_HAMBURG:
+                    if (cityClass >= CityClass.CC_METROPOLIS)
+                    {
+                        z = (short)MessageNumber.MESSAGE_SCENARIO_WON;
+                    }
+                    break;
+
+                case ScenarioType.SC_BERN:
+                    if (trafficAverage < 80)
+                    {
+                        z = (short)MessageNumber.MESSAGE_SCENARIO_WON;
+                    }
+                    break;
+
+                case ScenarioType.SC_TOKYO:
+                    if (cityScore > 500)
+                    {
+                        z = (short)MessageNumber.MESSAGE_SCENARIO_WON;
+                    }
+                    break;
+
+                case ScenarioType.SC_DETROIT:
+                    if (crimeAverage < 60)
+                    {
+                        z = (short)MessageNumber.MESSAGE_SCENARIO_WON;
+                    }
+                    break;
+
+                case ScenarioType.SC_BOSTON:
+                    if (cityScore > 500)
+                    {
+                        z = (short)MessageNumber.MESSAGE_SCENARIO_WON;
+                    }
+                    break;
+
+                case ScenarioType.SC_RIO:
+                    if (cityScore > 500)
+                    {
+                        z = (short)MessageNumber.MESSAGE_SCENARIO_WON;
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+
+            sendMessage(z, NOWHERE, NOWHERE, true, true);
+
+            if (z == (short) MessageNumber.MESSAGE_SCENARIO_LOST)
+            {
+                doLoseGame();
             }
         }
 
