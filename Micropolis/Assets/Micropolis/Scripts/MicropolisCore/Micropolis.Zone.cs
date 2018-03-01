@@ -6,6 +6,7 @@ namespace MicropolisCore
     {
         /// <summary>
         /// Handle zone
+        /// TODO make a new Zone class then a CommericalZone, IndustrialZone, and ResidentialZone from it
         /// </summary>
         /// <param name="pos">Position of the zone.</param>
         private void doZone(Position pos)
@@ -27,7 +28,7 @@ namespace MicropolisCore
             // Do special zones.
             if (tile > (ushort) MapTileCharacters.PORTBASE)
             {
-                // TODO doSpecialZone(pos, zonePowerFlag);
+                doSpecialZone(pos, zonePowerFlag);
                 return;
             }
 
@@ -41,19 +42,609 @@ namespace MicropolisCore
             // Do hospitals and churches.
             if (tile < (ushort)MapTileCharacters.COMBASE)
             {
-                // TODO doHospitalChurch(pos);
+                doHospitalChurch(pos);
                 return;
             }
 
             // Do commercial zones.
             if (tile < (ushort)MapTileCharacters.INDBASE)
             {
-                // TODO doCommercial(pos, zonePowerFlag);
+                doCommercial(pos, zonePowerFlag);
                 return;
             }
 
             // Do industrial zones.
-            // TODO doIndustrial(pos, zonePowerFlag);
+            doIndustrial(pos, zonePowerFlag);
+        }
+
+        /// <summary>
+        /// Handle industrial zone.
+        /// </summary>
+        /// <param name="pos">Position of the industrial zone.</param>
+        /// <param name="zonePower">Does the zone have power?</param>
+        private void doIndustrial(Position pos, bool zonePower)
+        {
+            short tpop, zscore, TrfGood;
+
+            ushort tile = (ushort) (map[pos.posX,pos.posY] & (ushort) MapTileBits.LOMASK);
+
+            indZonePop++;
+            setSmoke(pos, zonePower);
+            tpop = getIndZonePop(tile);
+            indPop += tpop;
+
+            if (tpop > getRandom(5))
+            {
+                /* Try driving from industrial to residential */
+                TrfGood = makeTraffic(pos, ZoneType.ZT_RESIDENTIAL);
+            }
+            else
+            {
+                TrfGood = 1;
+            }
+
+            if (TrfGood == -1)
+            {
+                doIndOut(pos, tpop, getRandom16() & 1);
+                return;
+            }
+
+            if ((getRandom16() & 7) == 0)
+            {
+                zscore = (short) (indValve + evalInd(TrfGood));
+
+                if (!zonePower)
+                {
+                    zscore = -500;
+                }
+
+                if (zscore > -350 &&
+                    (((short)(zscore - 26380)) > ((short)getRandom16Signed())))
+                {
+                    doIndIn(pos, tpop, getRandom16() & 1);
+                    return;
+                }
+
+                if (zscore < 350 &&
+                    (((short)(zscore + 26380)) < ((short)getRandom16Signed())))
+                {
+                    doIndOut(pos, tpop, getRandom16() & 1);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handle immigration of industrial zone.
+        /// </summary>
+        /// <param name="pos">Position of the center tile of the industrial tile.</param>
+        /// <param name="pop">Population value of the industrial zone.</param>
+        /// <param name="value">Random land value (it seems).</param>
+        private void doIndIn(Position pos, int pop, int value)
+        {
+            if (pop < 4)
+            {
+                indPlop(pos, pop, value);
+                incRateOfGrowth(pos, 8);
+            }
+        }
+
+        /// <summary>
+        /// Place an industrial zone around center tile pos.
+        /// </summary>
+        /// <param name="pos">Center of the industrial zone.</param>
+        /// <param name="den">Population density of the industrial zone (0, 1, 2, or 3).</param>
+        /// <param name="value">Landvalue of the industrial zone (0 or 1).</param>
+        private void indPlop(Position pos, int den, int value)
+        {
+            short baseValue = (short) (((value * 4) + den) * 9 + (short) MapTileCharacters.IND1);
+            zonePlop(pos, baseValue);
+        }
+
+        /// <summary>
+        /// Compute evaluation of an industrial zone.
+        /// </summary>
+        /// <param name="traf">Result if traffic attempt.</param>
+        /// <returns>Evaluation value of the industrial zone.</returns>
+        private short evalInd(int traf)
+        {
+            if (traf < 0)
+            {
+                return -1000;
+            }
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Handle industrial zone emigration.
+        /// </summary>
+        /// <param name="pos">Position of the center tile of the industrial tile.</param>
+        /// <param name="pop">Population value of the industrial zone.</param>
+        /// <param name="value">Random land value (it seems).</param>
+        private void doIndOut(Position pos, int pop, int value)
+        {
+            if (pop > 1)
+            {
+                indPlop(pos, pop - 2, value);
+                incRateOfGrowth(pos, -8);
+                return;
+            }
+
+            if (pop == 1)
+            {
+                zonePlop(pos, (short) MapTileCharacters.INDBASE); // empty industrial zone
+                incRateOfGrowth(pos, -8);
+            }
+        }
+
+        private void setSmoke(Position pos, bool zonePower)
+        {
+            // TODO
+        }
+
+        /// <summary>
+        /// Handle commercial zone.
+        /// </summary>
+        /// <param name="pos">Position of the commercial zone.</param>
+        /// <param name="zonePower">Does the zone have power?</param>
+        private void doCommercial(Position pos, bool zonePower)
+        {
+            short tpop, TrfGood;
+            short zscore, locvalve, value;
+
+            ushort tile = (ushort) (map[pos.posX,pos.posY] & (ushort) MapTileBits.LOMASK);
+
+            comZonePop++;
+            tpop = getComZonePop(tile);
+            comPop += tpop;
+
+            if (tpop > getRandom(5))
+            {
+                /* Try driving from commercial to industrial */
+                TrfGood = makeTraffic(pos, ZoneType.ZT_INDUSTRIAL);
+            }
+            else
+            {
+                TrfGood = 1;
+            }
+
+            if (TrfGood == -1)
+            {
+                value = getLandPollutionValue(pos);
+                doComOut(pos, tpop, value);
+                return;
+            }
+
+            if (!(getRandom16() & 7))
+            {
+
+                locvalve = evalCom(pos, TrfGood);
+                zscore = (short) (comValve + locvalve);
+
+                if (!zonePower)
+                {
+                    zscore = -500;
+                }
+
+                if (TrfGood &&
+                    (zscore > -350) &&
+                    (((short)(zscore - 26380)) > ((short)getRandom16Signed())))
+                {
+                    value = getLandPollutionValue(pos);
+                    doComIn(pos, tpop, value);
+                    return;
+                }
+
+                if ((zscore < 350) &&
+                    (((short)(zscore + 26380)) < ((short)getRandom16Signed())))
+                {
+                    value = getLandPollutionValue(pos);
+                    doComOut(pos, tpop, value);
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Handle emigration of commercial zone.
+        /// </summary>
+        /// <param name="pos">Position of the commercial zone.</param>
+        /// <param name="pop">Population ?</param>
+        /// <param name="value">Land value corrected for pollution.</param>
+        private void doComOut(Position pos, int pop, int value)
+        {
+            if (pop > 1)
+            {
+                comPlop(pos, pop - 2, value);
+                incRateOfGrowth(pos, -8);
+                return;
+            }
+
+            if (pop == 1)
+            {
+                zonePlop(pos, (short) MapTileCharacters.COMBASE);
+                incRateOfGrowth(pos, -8);
+            }
+        }
+
+        /// <summary>
+        /// Build a commercial zone.
+        /// </summary>
+        /// <param name="pos">Position of the commercial zone.</param>
+        /// <param name="Den">Density</param>
+        /// <param name="Value">Land value corrected for pollution.</param>
+        private void comPlop(Position pos, int Den, int Value)
+        {
+            short baseValue;
+
+            baseValue = (short) ((Value * 5 + Den) * 9 + MapTileCharacters.CZB - 4);
+            zonePlop(pos, baseValue);
+        }
+
+        /// <summary>
+        /// Update special zones.
+        /// </summary>
+        /// <param name="pos">Position of the zone.</param>
+        /// <param name="powerOn">Zone is powered.</param>
+        private void doSpecialZone(Position pos, bool powerOn)
+        {
+            // Bigger numbers reduce chance of nuclear melt down
+            short[] meltdownTable = { 30000, 20000, 10000 };
+
+            ushort tile = (ushort)(map[pos.posX,pos.posY] & (ushort) MapTileBits.LOMASK);
+
+            switch (tile)
+            {
+
+                case (ushort) MapTileCharacters.POWERPLANT:
+
+                    coalPowerPop++;
+
+                    if ((cityTime & 7) == 0)
+                    {
+                        repairZone(pos, (ushort) MapTileCharacters.POWERPLANT, 4); /* post */
+                    }
+
+                    pushPowerStack(pos);
+                    coalSmoke(pos);
+
+                    return;
+
+                case (ushort)MapTileCharacters.NUCLEAR:
+
+                    //assert(LEVEL_COUNT == LENGTH_OF(meltdownTable));
+
+                    if (enableDisasters && !getRandom(meltdownTable[gameLevel]))
+                    {
+                        doMeltdown(pos);
+                        return;
+                    }
+
+                    nuclearPowerPop++;
+
+                    if ((cityTime & 7) == 0)
+                    {
+                        repairZone(pos, (ushort) MapTileCharacters.NUCLEAR, 4); /* post */
+                    }
+
+                    pushPowerStack(pos);
+
+                    return;
+
+                case (ushort)MapTileCharacters.FIRESTATION:
+                    {
+
+                        int z;
+
+                        fireStationPop++;
+
+                        if (!(cityTime & 7))
+                        {
+                            repairZone(pos, (ushort) MapTileCharacters.FIRESTATION, 3); /* post */
+                        }
+
+                        if (powerOn)
+                        {
+                            z = (int) fireEffect;                   /* if powered get effect  */
+                        }
+                        else
+                        {
+                            z = (int) (fireEffect / 2);               /* from the funding ratio  */
+                        }
+
+                        Position pos2 = new Position(pos);
+                        bool foundRoad = findPerimeterRoad(pos2);
+
+                        if (!foundRoad)
+                        {
+                            z = z / 2;                        /* post FD's need roads  */
+                        }
+
+                        int value = fireStationMap.worldGet(pos2.posX, pos2.posY);
+                        value += z;
+                        fireStationMap.worldSet(pos2.posX, pos2.posY, value);
+
+                        return;
+                    }
+
+                case (ushort)MapTileCharacters.POLICESTATION:
+                    {
+
+                        int z;
+
+                        policeStationPop++;
+
+                        if (!(cityTime & 7))
+                        {
+                            repairZone(pos, (ushort) MapTileCharacters.POLICESTATION, 3); /* post */
+                        }
+
+                        if (powerOn)
+                        {
+                            z = (int) policeEffect;
+                        }
+                        else
+                        {
+                            z = (int) (policeEffect / 2);
+                        }
+
+                        Position pos2 = new Position(pos);
+                        bool foundRoad = findPerimeterRoad(pos2);
+
+                        if (!foundRoad)
+                        {
+                            z = z / 2; /* post PD's need roads */
+                        }
+
+                        int value = policeStationMap.worldGet(pos2.posX, pos2.posY);
+                        value += z;
+                        policeStationMap.worldSet(pos2.posX, pos2.posY, (short) value);
+
+                        return;
+                    }
+
+                case (ushort)MapTileCharacters.STADIUM:  // Empty stadium
+
+                    stadiumPop++;
+
+                    if (!(cityTime & 15))
+                    {
+                        repairZone(pos, (ushort) MapTileCharacters.STADIUM, 4);
+                    }
+
+                    if (powerOn)
+                    {
+                        // Every now and then, display a match
+                        if (((cityTime + pos.posX + pos.posY) & 31) == 0)
+                        {
+                            drawStadium(pos, (ushort) MapTileCharacters.FULLSTADIUM);
+                            map[pos.posX + 1,pos.posY] = (ushort) MapTileCharacters.FOOTBALLGAME1 + (ushort) MapTileBits.ANIMBIT;
+                            map[pos.posX + 1,pos.posY + 1] = (ushort) MapTileCharacters.FOOTBALLGAME2 + (ushort) MapTileBits.ANIMBIT;
+                        }
+                    }
+
+                    return;
+
+                case (ushort)MapTileCharacters.FULLSTADIUM:  // Full stadium
+
+                    stadiumPop++;
+
+                    if (((cityTime + pos.posX + pos.posY) & 7) == 0)
+                    {
+                        // Stop the match
+                        drawStadium(pos, (ushort) MapTileCharacters.STADIUM);
+                    }
+
+                    return;
+
+                case (ushort)MapTileCharacters.AIRPORT:
+
+                    airportPop++;
+
+                    if ((cityTime & 7) == 0)
+                    {
+                        repairZone(pos, (ushort)MapTileCharacters.AIRPORT, 6);
+                    }
+
+                    // If powered, display a rotating radar
+                    if (powerOn)
+                    {
+                        if ((map[pos.posX + 1,pos.posY - 1] & LOMASK) == MapTileCharacters.RADAR)
+                        {
+                            map[pos.posX + 1,pos.posY - 1] = MapTileCharacters.RADAR0 + ANIMBIT + CONDBIT + BURNBIT;
+                        }
+                    }
+                    else
+                    {
+                        map[pos.posX + 1,pos.posY - 1] = MapTileCharacters.RADAR + CONDBIT + BURNBIT;
+                    }
+
+                    if (powerOn)
+                    { 
+                        // Handle the airport only if there is power
+                        doAirport(pos);
+                    }
+
+                    return;
+
+                case (ushort)MapTileCharacters.PORT:
+
+                    seaportPop++;
+
+                    if ((cityTime & 15) == 0)
+                    {
+                        repairZone(pos, (ushort)MapTileCharacters.PORT, 4);
+                    }
+
+                    // If port has power and there is no ship, generate one
+                    if (powerOn && getSprite((int) SpriteType.SPRITE_SHIP) == null)
+                    {
+                        generateShip();
+                    }
+
+                    return;
+            }
+        }
+
+        /// <summary>
+        /// Generate a airplane or helicopter every now and then.
+        /// </summary>
+        /// <param name="pos">Position of the airport to start from.</param>
+        private void doAirport(Position pos)
+        {
+            if (getRandom(5) == 0)
+            {
+                generatePlane(pos);
+                return;
+            }
+
+            if (getRandom(12) == 0)
+            {
+                generateCopter(pos);
+            }
+        }
+
+        /// <summary>
+        /// Draw a stadium (either full or empty).
+        /// </summary>
+        /// <param name="center">Center tile position of the stadium.</param>
+        /// <param name="z">Base tile value.</param>
+        private void drawStadium(Position center, ushort z)
+        {
+            int x, y;
+
+            z = (ushort) (z - 5);
+
+            for (y = center.posY - 1; y < center.posY + 3; y++)
+            {
+                for (x = center.posX - 1; x < center.posX + 3; x++)
+                {
+                    map[x,y] = (ushort)(z | (ushort) MapTileBits.BNCNBIT);
+                    z++;
+                }
+            }
+
+            map[center.posX,center.posY] |= (ushort)MapTileBits.ZONEBIT | (ushort)MapTileBits.PWRBIT;
+        }
+
+        /// <summary>
+        /// Draw coal smoke tiles around given position (of a coal power plant).
+        /// </summary>
+        /// <param name="pos">Center tile of the coal power plant</param>
+        private void coalSmoke(Position pos)
+        {
+            short[] SmTb = {
+                (short) MapTileCharacters.COALSMOKE1, (short) MapTileCharacters.COALSMOKE2,
+                (short) MapTileCharacters.COALSMOKE3, (short) MapTileCharacters.COALSMOKE4,
+            };
+            short[] dx = { 1, 2, 1, 2 };
+            short[] dy = { -1, -1, 0, 0 };
+
+            for (short x = 0; x < 4; x++)
+            {
+                map[pos.posX + dx[x],pos.posY + dy[x]] = (ushort)(
+                    SmTb[x] | (ushort)MapTileBits.ANIMBIT | (ushort)MapTileBits.CONDBIT |
+                    (ushort)MapTileBits.PWRBIT | (ushort)MapTileBits.BURNBIT);
+            }
+        }
+
+        /// <summary>
+        /// Repair a zone at pos.
+        /// </summary>
+        /// <param name="pos">Center-tile position of the zone.</param>
+        /// <param name="zCent">Value of the center tile.</param>
+        /// <param name="zSize">Size of the zone (in both directions).</param>
+        private void repairZone(Position pos, ushort zCent, short zSize)
+        {
+            ushort tile = (ushort) (zCent - 2 - zSize);
+
+            // y and x loops one position shifted to compensate for the center-tile position.
+            for (short y = -1; y < zSize - 1; y++)
+            {
+                for (short x = -1; x < zSize - 1; x++)
+                {
+
+                    int xx = pos.posX + x;
+                    int yy = pos.posY + y;
+
+                    tile++;
+
+                    if (Position.testBounds(xx, yy))
+                    {
+
+                        ushort mapValue = map[xx,yy];
+
+                        if ((mapValue & (ushort) MapTileBits.ZONEBIT) != 0)
+                        {
+                            continue;
+                        }
+
+                        if ((mapValue & (ushort) MapTileBits.ANIMBIT) != 0)
+                        {
+                            continue;
+                        }
+
+                        ushort mapTile = (ushort)(mapValue & (ushort) MapTileBits.LOMASK);
+
+                        if (mapTile < (ushort) MapTileCharacters.RUBBLE || mapTile >= (ushort) MapTileCharacters.ROADBASE)
+                        {
+                            map[xx,yy] = (ushort) (tile | (ushort) MapTileBits.CONDBIT | (ushort) MapTileBits.BURNBIT);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handle repairing or removing of hospitals and churches.
+        /// </summary>
+        /// <param name="pos">Position of the hospital or church.</param>
+        private void doHospitalChurch(Position pos)
+        {
+            ushort tile = (ushort)(map[pos.posX,pos.posY] & (ushort) MapTileBits.LOMASK);
+
+            if (tile == (ushort) MapTileCharacters.HOSPITAL)
+            {
+
+                hospitalPop++;
+
+                if ((cityTime & 15) == 0)
+                {
+                    repairZone(pos, MapTileCharacters.HOSPITAL, 3);
+                }
+
+                if (needHospital == -1)
+                { 
+                    // Too many hospitals!
+                    if (getRandom(20) == 0)
+                    {
+                        zonePlop(pos, (short) MapTileCharacters.RESBASE); // Remove hospital.
+                    }
+                }
+
+            }
+            else if (tile == (ushort) MapTileCharacters.CHURCH)
+            {
+
+                churchPop++;
+
+                //printf("CHURCH %d %d %d %d\n", churchPop, pos.posX, pos.posY, tile);
+
+                if ((cityTime & 15) == 0)
+                {
+                    repairZone(pos, tile, 3);
+                }
+
+                if (needChurch == -1)
+                { 
+                    // Too many churches!
+                    if (getRandom(20) == 0)
+                    {
+                        zonePlop(pos, (short) MapTileCharacters.RESBASE); // Remove church.
+                    }
+                }
+            }
+
         }
 
         /// <summary>
