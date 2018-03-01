@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace MicropolisGame
 {
+    /// <summary>
+    /// Hub class for communicating between the Micropolis engine and the UI
+    /// </summary>
     public class UIManager
     {
         private readonly MicropolisUnityEngine _engine;

@@ -6,11 +6,22 @@ namespace MicropolisGame
 {
     /// <summary>
     /// Keeps a cached copy of rendered Tiles and provides them for drawing onto a TileMap
+    /// TODO load all tiles at startup (there's only 960 of them)
+    /// TODO load all Tilesets at startup
     /// </summary>
     public class TileEngine
     {
-        private Dictionary<int, Tile> _tiles = new Dictionary<int, Tile>();
+        /// <summary>
+        /// Cached copy of all rendered Tiles
+        /// </summary>
+        private readonly Dictionary<int, Tile> _tiles = new Dictionary<int, Tile>();
 
+        /// <summary>
+        /// Fetches a <see cref="Tile"/> object from a cache or adds it 
+        /// if it's being requested for the first time.
+        /// </summary>
+        /// <param name="tileId">Tile id to render from the MicroplisTileCharacter enum</param>
+        /// <returns>A <see cref="Tile"/> object that can be renedered onto a <see cref="Tilemap"/></returns>
         public Tile GetTile(int tileId)
         {
             if (_tiles.ContainsKey(tileId))
