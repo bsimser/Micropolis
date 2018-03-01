@@ -2,7 +2,7 @@
 {
     public class SimSprite
     {
-        // SimSprite next
+        // TODO SimSprite next (pointer to next sprite making this a linked list)
         public string name;
         public int type;
         public int frame;
