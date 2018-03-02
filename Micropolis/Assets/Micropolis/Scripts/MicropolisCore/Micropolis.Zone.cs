@@ -1,4 +1,5 @@
 ﻿using System;
+using NUnit.Framework.Internal.Commands;
 
 namespace MicropolisCore
 {
@@ -179,7 +180,48 @@ namespace MicropolisCore
 
         private void setSmoke(Position pos, bool zonePower)
         {
-            // TODO
+            bool[] aniThis = { true, false, true, true, false, false, true, true };
+            short[] dx1 = { -1, 0, 1, 0, 0, 0, 0, 1 };
+            short[] dy1 = { -1, 0, -1, -1, 0, 0, -1, -1 };
+            short[] aniTabA = { 0, 0, 32, 40, 0, 0, 48, 56 };
+            short[] aniTabB = { 0, 0, 36, 44, 0, 0, 52, 60 };
+            short[] aniTabC = { (short)MapTileCharacters.IND1, 0, (short)MapTileCharacters.IND2, (short)MapTileCharacters.IND4, 0, 0, (short)MapTileCharacters.IND6, (short)MapTileCharacters.IND8 };
+            short[] aniTabD = { (short)MapTileCharacters.IND1, 0, (short)MapTileCharacters.IND3, (short)MapTileCharacters.IND5, 0, 0, (short)MapTileCharacters.IND7, (short)MapTileCharacters.IND9 };
+
+            ushort tile = (ushort)(map[pos.posX, pos.posY] & (ushort) MapTileBits.LOMASK);
+
+            int z = (tile - (ushort) MapTileCharacters.IZB) >> 3;
+            z = z & 7;
+
+            if (aniThis[z])
+            {
+                int xx = pos.posX + dx1[z];
+                int yy = pos.posY + dy1[z];
+
+                if (Position.testBounds((short) xx, (short) yy))
+                {
+                    // TODO Why do we assign the same map position twice?
+                    // TODO Add SMOKEBASE into aniTabA and aniTabB tables?
+                    if ((map[xx, yy] & (ushort) MapTileBits.LOMASK) == aniTabC[z])
+                    {
+                        map[xx, yy] = (ushort) ((ushort) MapTileBits.ASCBIT |
+                                                ((ushort) MapTileCharacters.SMOKEBASE + (ushort) aniTabA[z]));
+                        map[xx, yy] = (ushort) ((ushort) MapTileBits.ASCBIT |
+                                                ((ushort) MapTileCharacters.SMOKEBASE + (ushort) aniTabB[z]));
+                    }
+                }
+                else
+                {
+                    // TODO Why do we assign the same map position twice?
+                    if ((map[xx, yy] & (ushort)MapTileBits.LOMASK) == aniTabC[z])
+                    {
+                        map[xx, yy] = (ushort)((ushort)MapTileBits.REGBIT |
+                                               ((ushort)MapTileCharacters.SMOKEBASE + (ushort)aniTabC[z]));
+                        map[xx, yy] = (ushort)((ushort)MapTileBits.REGBIT |
+                                               ((ushort)MapTileCharacters.SMOKEBASE + (ushort)aniTabD[z]));
+                    }
+                }
+            }
         }
 
         /// <summary>
