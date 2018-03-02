@@ -215,7 +215,7 @@ namespace MicropolisCore
                 return;
             }
 
-            if (!(getRandom16() & 7))
+            if ((getRandom16() & 7) == 0)
             {
 
                 locvalve = evalCom(pos, TrfGood);
@@ -226,9 +226,9 @@ namespace MicropolisCore
                     zscore = -500;
                 }
 
-                if (TrfGood &&
-                    (zscore > -350) &&
-                    (((short)(zscore - 26380)) > ((short)getRandom16Signed())))
+                if (TrfGood != 0 &&
+                    zscore > -350 &&
+                    (short)(zscore - 26380) > (short)getRandom16Signed())
                 {
                     value = getLandPollutionValue(pos);
                     doComIn(pos, tpop, value);
@@ -243,6 +243,51 @@ namespace MicropolisCore
                 }
 
             }
+        }
+
+        /// <summary>
+        /// Handle immigration of commercial zone.
+        /// </summary>
+        /// <param name="pos">Position of the commercial zone.</param>
+        /// <param name="pop">Population ?</param>
+        /// <param name="value">Land value corrected for pollution.</param>
+        private void doComIn(Position pos, int pop, int value)
+        {
+            short z;
+
+            z = landValueMap.worldGet(pos.posX, pos.posY);
+            z = (short) (z >> 5);
+
+            if (pop > z)
+            {
+                return;
+            }
+
+            if (pop < 5)
+            {
+                comPlop(pos, pop, value);
+                incRateOfGrowth(pos, 8);
+            }
+        }
+
+        /// <summary>
+        /// Compute evaluation of a commercial zone.
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="traf">Result if traffic attempt.</param>
+        /// <returns>Evaluation value of the commercial zone.</returns>
+        private short evalCom(Position pos, int traf)
+        {
+            short Value;
+
+            if (traf < 0)
+            {
+                return -3000;
+            }
+
+            Value = comRateMap.worldGet(pos.posX, pos.posY);
+
+            return Value;
         }
 
         /// <summary>
@@ -314,7 +359,7 @@ namespace MicropolisCore
 
                     //assert(LEVEL_COUNT == LENGTH_OF(meltdownTable));
 
-                    if (enableDisasters && !getRandom(meltdownTable[gameLevel]))
+                    if (enableDisasters && getRandom(meltdownTable[(int) gameLevel]) == 0)
                     {
                         doMeltdown(pos);
                         return;
@@ -338,7 +383,7 @@ namespace MicropolisCore
 
                         fireStationPop++;
 
-                        if (!(cityTime & 7))
+                        if ((cityTime & 7) == 0)
                         {
                             repairZone(pos, (ushort) MapTileCharacters.FIRESTATION, 3); /* post */
                         }
@@ -362,7 +407,7 @@ namespace MicropolisCore
 
                         int value = fireStationMap.worldGet(pos2.posX, pos2.posY);
                         value += z;
-                        fireStationMap.worldSet(pos2.posX, pos2.posY, value);
+                        fireStationMap.worldSet(pos2.posX, pos2.posY, (short) value);
 
                         return;
                     }
@@ -374,7 +419,7 @@ namespace MicropolisCore
 
                         policeStationPop++;
 
-                        if (!(cityTime & 7))
+                        if ((cityTime & 7) == 0)
                         {
                             repairZone(pos, (ushort) MapTileCharacters.POLICESTATION, 3); /* post */
                         }
@@ -407,7 +452,7 @@ namespace MicropolisCore
 
                     stadiumPop++;
 
-                    if (!(cityTime & 15))
+                    if ((cityTime & 15) == 0)
                     {
                         repairZone(pos, (ushort) MapTileCharacters.STADIUM, 4);
                     }
@@ -449,14 +494,15 @@ namespace MicropolisCore
                     // If powered, display a rotating radar
                     if (powerOn)
                     {
-                        if ((map[pos.posX + 1,pos.posY - 1] & LOMASK) == MapTileCharacters.RADAR)
+                        if ((ushort)(map[pos.posX + 1,pos.posY - 1] & (ushort) MapTileBits.LOMASK) == 
+                            (ushort) MapTileCharacters.RADAR)
                         {
-                            map[pos.posX + 1,pos.posY - 1] = MapTileCharacters.RADAR0 + ANIMBIT + CONDBIT + BURNBIT;
+                            map[pos.posX + 1,pos.posY - 1] = (ushort) MapTileCharacters.RADAR0 + (ushort)MapTileBits.ANIMBIT + (ushort)MapTileBits.CONDBIT + (ushort)MapTileBits.BURNBIT;
                         }
                     }
                     else
                     {
-                        map[pos.posX + 1,pos.posY - 1] = MapTileCharacters.RADAR + CONDBIT + BURNBIT;
+                        map[pos.posX + 1,pos.posY - 1] = (ushort)MapTileCharacters.RADAR + (ushort)MapTileBits.CONDBIT + (ushort) MapTileBits.BURNBIT;
                     }
 
                     if (powerOn)
@@ -569,7 +615,7 @@ namespace MicropolisCore
 
                     tile++;
 
-                    if (Position.testBounds(xx, yy))
+                    if (Position.testBounds((short) xx, (short) yy))
                     {
 
                         ushort mapValue = map[xx,yy];
@@ -610,7 +656,7 @@ namespace MicropolisCore
 
                 if ((cityTime & 15) == 0)
                 {
-                    repairZone(pos, MapTileCharacters.HOSPITAL, 3);
+                    repairZone(pos, (ushort) MapTileCharacters.HOSPITAL, 3);
                 }
 
                 if (needHospital == -1)
