@@ -20,13 +20,15 @@ namespace MicropolisGame
             _uiManager = new UIManager(_engine);
 
             // TODO until we get a front end let's kick off the engine here with some hard coded values
+            _engine.initGame();
+            _engine.simInit();
             // generate a random city
             //_engine.generateMap();
             // load a sample city for testing
-            _engine.loadFile("cities" + Path.DirectorySeparatorChar + "deadwood.cty");
+            _engine.loadFile("cities" + Path.DirectorySeparatorChar + "haight.cty");
             // other engine stuff
             _engine.setSpeed(1);
-            _engine.setPasses(1);
+            _engine.doSimInit();
             _engine.setEnableDisasters(false);
         }
 

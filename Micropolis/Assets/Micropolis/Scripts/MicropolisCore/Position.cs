@@ -91,7 +91,7 @@ namespace MicropolisCore
                         posY--;
                         return true;
                     }
-                    break;
+                    goto case Direction2.DIR2_EAST;
 
                 case Direction2.DIR2_EAST:
                     if (posX < Micropolis.WORLD_W - 1)
@@ -134,7 +134,7 @@ namespace MicropolisCore
                 case Direction2.DIR2_WEST:
                     if (posX > 0)
                     {
-                        posX++;
+                        posX--;
                         return true;
                     }
                     break;
@@ -146,9 +146,6 @@ namespace MicropolisCore
                         posY--;
                         return true;
                     }
-                    break;
-
-                case Direction2.DIR2_END:
                     break;
 
                 default:

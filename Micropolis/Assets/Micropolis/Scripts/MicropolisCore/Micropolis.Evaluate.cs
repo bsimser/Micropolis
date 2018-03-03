@@ -214,7 +214,7 @@ namespace MicropolisCore
                     voteCount++;
                 }
                 problem++;
-                if (problem > (int) CityVotingProblems.PROBNUM)
+                if (problem > (int) CityVotingProblems.PROBNUM - 1)
                 {
                     problem = 0;
                 }
