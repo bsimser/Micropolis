@@ -10,6 +10,8 @@ namespace MicropolisGame
         private TileManager _tileManager;
         private UIManager _uiManager;
 
+        public short simSpeed;
+
         private void Start()
         {
             // create an instance of the Micropolis engine
@@ -27,7 +29,7 @@ namespace MicropolisGame
             // load a sample city for testing
             _engine.loadFile("cities" + Path.DirectorySeparatorChar + "haight.cty");
             // other engine stuff
-            _engine.setSpeed(1);
+            _engine.setSpeed(simSpeed);
             _engine.doSimInit();
             _engine.setEnableDisasters(false);
         }
