@@ -7,7 +7,7 @@ namespace MicropolisEngine
     {
         public MicropolisGenericEngine()
         {
-            // resourceDir
+            resourceDir = "res";
             // running
             // timeDelay
             // timerActive = false;

@@ -858,7 +858,7 @@ namespace MicropolisCore
         /// <summary>
         /// Name of the sub-directory where the resources are located.
         /// </summary>
-        private string resourceDir;
+        protected string resourceDir;
         
         //Resource *resources
         //StringTable *stringTables

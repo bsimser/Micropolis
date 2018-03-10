@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using MicropolisCore;
 using MicropolisEngine;
 using UnityEngine;
 
@@ -22,16 +23,34 @@ namespace MicropolisGame
             _uiManager = new UIManager(_engine);
 
             // TODO until we get a front end let's kick off the engine here with some hard coded values
+            //GenerateRandomCity();
+            LoadCity();
+            //LoadScenario();
+        }
+
+        private void GenerateRandomCity()
+        {
             _engine.initGame();
             _engine.simInit();
-            // generate a random city
-            //_engine.generateMap();
-            // load a sample city for testing
-            _engine.loadFile("cities" + Path.DirectorySeparatorChar + "haight.cty");
-            // other engine stuff
+            _engine.generateMap();
             _engine.setSpeed(simSpeed);
             _engine.doSimInit();
             _engine.setEnableDisasters(false);
+        }
+
+        private void LoadCity()
+        {
+            _engine.initGame();
+            _engine.simInit();
+            _engine.loadCity("cities" + Path.DirectorySeparatorChar + "haight.cty");
+            _engine.setSpeed(simSpeed);
+            _engine.doSimInit();
+            _engine.setEnableDisasters(false);
+        }
+
+        private void LoadScenario()
+        {
+            _engine.loadScenario(ScenarioType.SC_DULLSVILLE);
         }
 
         private void Update()

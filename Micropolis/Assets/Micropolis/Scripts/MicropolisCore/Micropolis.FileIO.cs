@@ -6,51 +6,57 @@ namespace MicropolisCore
     public partial class Micropolis
     {
         /// <summary>
-        /// Load a city file from a given filename and (optionally) directory.
+        /// Swap upper and lower byte of all shorts in the array.
         /// </summary>
-        /// <param name="filename">Name of the file to load.</param>
-        /// <param name="dir">f not NULL, name of the directory containing the file.</param>
-        /// <returns>Load was succesfull.</returns>
-        public bool loadFileDir(string filename, string dir)
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        private short swap_shorts(byte[] bytes)
         {
-            // If needed, construct a path to the file
-            if (dir != null)
+            if (BitConverter.IsLittleEndian)
             {
-                // TODO
+                Array.Reverse(bytes);
+                return BitConverter.ToInt16(bytes, 0);
             }
+            return BitConverter.ToInt16(bytes, 0);
+        }
 
-            var fileInfo = new FileInfo(filename);
-            if (fileInfo.Length != 27120)
+        /// <summary>
+        /// Swap upper and lower words of all longs in the array.
+        /// </summary>
+        /// <param name="shorts"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        private int half_swap_longs(short[] shorts, int index)
+        {
+            var bytes = new byte[4];
+            bytes[0] = BitConverter.GetBytes(shorts[index])[0];
+            bytes[1] = BitConverter.GetBytes(shorts[index])[1];
+            index++;
+            bytes[2] = BitConverter.GetBytes(shorts[index])[0];
+            bytes[3] = BitConverter.GetBytes(shorts[index])[1];
+            if (BitConverter.IsLittleEndian)
+            {
+                bytes[2] = BitConverter.GetBytes(shorts[index])[0];
+                bytes[3] = BitConverter.GetBytes(shorts[index])[1];
+                index++;
+                bytes[0] = BitConverter.GetBytes(shorts[index])[0];
+                bytes[1] = BitConverter.GetBytes(shorts[index])[1];
+            }
+            return BitConverter.ToInt32(bytes, 0);
+        }
+
+        private bool load_short(ref short buf, BinaryReader reader)
+        {
+            var bytes = reader.ReadBytes(sizeof(short));
+            if (bytes.Length != sizeof(short))
             {
                 return false;
             }
 
-            var result = true;
-            using (var reader = new BinaryReader(File.OpenRead(filename)))
-            {
-                result = result &&
-                    load_shorts(ref resHist, HISTORY_LENGTH / sizeof(short), reader) &&
-                    load_shorts(ref comHist, HISTORY_LENGTH / sizeof(short), reader) &&
-                    load_shorts(ref indHist, HISTORY_LENGTH / sizeof(short), reader) &&
-                    load_shorts(ref crimeHist, HISTORY_LENGTH / sizeof(short), reader) &&
-                    load_shorts(ref pollutionHist, HISTORY_LENGTH / sizeof(short), reader) &&
-                    load_shorts(ref moneyHist, HISTORY_LENGTH / sizeof(short), reader) &&
-                    load_shorts(ref miscHist, HISTORY_LENGTH / sizeof(short), reader);
+            buf = swap_shorts(bytes); // to intel
 
-                for (int x = 0; x < WORLD_W; x++)
-                {
-                    for (int y = 0; y < WORLD_H; y++)
-                    {
-                        var temp = (short) map[x, y];
-                        result = result && load_short(ref temp, reader);
-                        map[x, y] = (ushort) temp;
-                    }
-                }
-            }
-
-            return result;
+            return true;
         }
-
 
         /// <summary>
         /// Load an array of short values from file to memory.
@@ -71,30 +77,57 @@ namespace MicropolisCore
             return result;
         }
 
-        private bool load_short(ref short buf, BinaryReader reader)
+        /// <summary>
+        /// Load a city file from a given filename and (optionally) directory.
+        /// </summary>
+        /// <param name="filename">Name of the file to load.</param>
+        /// <param name="dir">f not NULL, name of the directory containing the file.</param>
+        /// <returns>Load was succesfull.</returns>
+        public bool loadFileDir(string filename, string dir)
         {
-            var bytes = reader.ReadBytes(sizeof(short));
-            if (bytes.Length != sizeof(short))
+            // If needed, construct a path to the file
+            if (dir != null)
+            {
+                filename = dir + Path.DirectorySeparatorChar + filename;
+            }
+
+            if (!File.Exists(filename))
             {
                 return false;
             }
-            buf = swap_shorts(bytes);
-            return true;
-        }
 
-        /// <summary>
-        /// Swap upper and lower byte of all shorts in the array.
-        /// </summary>
-        /// <param name="bytes"></param>
-        /// <returns></returns>
-        private short swap_shorts(byte[] bytes)
-        {
-            if (BitConverter.IsLittleEndian)
+            var fileInfo = new FileInfo(filename);
+            const int size = 27120;
+            var result = fileInfo.Length == size;
+
+            if (!result)
             {
-                Array.Reverse(bytes);
-                return BitConverter.ToInt16(bytes, 0);
+                return false;
             }
-            return BitConverter.ToInt16(bytes, 0);
+
+            using (var reader = new BinaryReader(File.OpenRead(filename)))
+            {
+                result = result &&
+                         load_shorts(ref resHist, HISTORY_LENGTH / sizeof(short), reader) &&
+                         load_shorts(ref comHist, HISTORY_LENGTH / sizeof(short), reader) &&
+                         load_shorts(ref indHist, HISTORY_LENGTH / sizeof(short), reader) &&
+                         load_shorts(ref crimeHist, HISTORY_LENGTH / sizeof(short), reader) &&
+                         load_shorts(ref pollutionHist, HISTORY_LENGTH / sizeof(short), reader) &&
+                         load_shorts(ref moneyHist, HISTORY_LENGTH / sizeof(short), reader) &&
+                         load_shorts(ref miscHist, HISTORY_LENGTH / sizeof(short), reader);
+
+                for (int x = 0; x < WORLD_W; x++)
+                {
+                    for (int y = 0; y < WORLD_H; y++)
+                    {
+                        var temp = (short) map[x, y];
+                        result = result && load_short(ref temp, reader);
+                        map[x, y] = (ushort) temp;
+                    }
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -102,7 +135,7 @@ namespace MicropolisCore
         /// </summary>
         /// <param name="filename">Name of the file to load.</param>
         /// <returns>Load was succesfull.</returns>
-        public bool loadFile(string filename)
+        private bool loadFile(string filename)
         {
             int n;
 
@@ -165,27 +198,6 @@ namespace MicropolisCore
             return true;
         }
 
-        // this is called half_swap_longs but really does ints because in the current 
-        // 64-bit architecture an int (4 bytes) is what a long was back then
-        private int half_swap_longs(short[] shorts, int index)
-        {
-            var bytes = new byte[4];
-            bytes[0] = BitConverter.GetBytes(shorts[index])[0];
-            bytes[1] = BitConverter.GetBytes(shorts[index])[1];
-            index++;
-            bytes[2] = BitConverter.GetBytes(shorts[index])[0];
-            bytes[3] = BitConverter.GetBytes(shorts[index])[1];
-            if (BitConverter.IsLittleEndian)
-            {
-                bytes[2] = BitConverter.GetBytes(shorts[index])[0];
-                bytes[3] = BitConverter.GetBytes(shorts[index])[1];
-                index++;
-                bytes[0] = BitConverter.GetBytes(shorts[index])[0];
-                bytes[1] = BitConverter.GetBytes(shorts[index])[1];
-            }
-            return BitConverter.ToInt32(bytes, 0);
-        }
-
         /// <summary>
         /// Save a game to disk.
         /// </summary>
@@ -193,8 +205,114 @@ namespace MicropolisCore
         /// <returns>The game was saved successfully.</returns>
         public bool saveFile(string filename)
         {
-            // TODO
-            return false;
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Load a scenario.
+        /// </summary>
+        /// <remarks>
+        /// s cannot be SC_NONE
+        /// </remarks>
+        /// <param name="s">Scenario to load.</param>
+        public void loadScenario(ScenarioType s)
+        {
+            string name = null;
+            string fname = null;
+
+            cityFileName = string.Empty;
+
+            setGameLevel(GameLevel.LEVEL_EASY);
+
+            if (s < ScenarioType.SC_DULLSVILLE || s > ScenarioType.SC_RIO)
+            {
+                s = ScenarioType.SC_DULLSVILLE;
+            }
+
+            switch (s)
+            {
+                case ScenarioType.SC_DULLSVILLE:
+                    name = "Dullsville";
+                    fname = "snro.111";
+                    scenario = ScenarioType.SC_DULLSVILLE;
+                    cityTime = ((1900 - 1900) * 48) + 2;
+                    setFunds(5000);
+                    break;
+
+                case ScenarioType.SC_SAN_FRANCISCO:
+                    name = "San Francisco";
+                    fname = "snro.222";
+                    scenario = ScenarioType.SC_SAN_FRANCISCO;
+                    cityTime = ((1906 - 1900) * 48) + 2;
+                    setFunds(20000);
+                    break;
+
+                case ScenarioType.SC_HAMBURG:
+                    name = "Hamburg";
+                    fname = "snro.333";
+                    scenario = ScenarioType.SC_HAMBURG;
+                    cityTime = ((1965 - 1900) * 48) + 2;
+                    setFunds(20000);
+                    break;
+
+                case ScenarioType.SC_BERN:
+                    name = "Bern";
+                    fname = "snro.444";
+                    scenario = ScenarioType.SC_BERN;
+                    cityTime = ((1965 - 1900) * 48) + 2;
+                    setFunds(20000);
+                    break;
+
+                case ScenarioType.SC_TOKYO:
+                    name = "Tokyo";
+                    fname = "snro.555";
+                    scenario = ScenarioType.SC_TOKYO;
+                    cityTime = ((1957 - 1900) * 48) + 2;
+                    setFunds(20000);
+                    break;
+
+                case ScenarioType.SC_DETROIT:
+                    name = "Detroit";
+                    fname = "snro.666";
+                    scenario = ScenarioType.SC_DETROIT;
+                    cityTime = ((1972 - 1900) * 48) + 2;
+                    setFunds(20000);
+                    break;
+
+                case ScenarioType.SC_BOSTON:
+                    name = "Boston";
+                    fname = "snro.777";
+                    scenario = ScenarioType.SC_BOSTON;
+                    cityTime = ((2010 - 1900) * 48) + 2;
+                    setFunds(20000);
+                    break;
+
+                case ScenarioType.SC_RIO:
+                    name = "Rio de Janeiro";
+                    fname = "snro.888";
+                    scenario = ScenarioType.SC_RIO;
+                    cityTime = ((2047 - 1900) * 48) + 2;
+                    setFunds(20000);
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException("s", s, null);
+            }
+
+            setCleanCityName(name);
+            setSpeed(3);
+            setCityTax(7);
+
+            loadFileDir(fname, resourceDir);
+
+            initWillStuff();
+            initFundingLevel();
+            updateFunds();
+            invalidateMaps();
+            initSimLoad = 1;
+            doInitialEval = true;
+            doSimInit();
+            didLoadScenario();
         }
 
         /// <summary>
@@ -208,14 +326,35 @@ namespace MicropolisCore
         /// <summary>
         /// Try to load a new game from disk.
         /// TODO In what state is the game left when loading fails?
-        /// TODO String normalization code is duplicated in Micropolis::saveCityAs(). Extract to a sub-function.
+        /// TODO String normalization code is duplicated in Micropolis::saveCityAs(). 
+        ///      Extract to a sub-function.
         /// </summary>
         /// <param name="filename">Name of the file to load.</param>
         /// <returns>Game was loaded successfully.</returns>
         public bool loadCity(string filename)
         {
-            // TODO
-            return false;
+            if (loadFile(filename))
+            {
+                cityFileName = filename;
+
+                var lastSlash = cityFileName.LastIndexOf('/');
+                var pos = (lastSlash == - 1) ? 0 : lastSlash + 1;
+
+                var lastDot = cityFileName.LastIndexOf('.');
+                var last = (lastDot == -1) ? cityFileName.Length : lastDot;
+
+                var newCityName = cityFileName.Substring(pos, last - pos);
+                setCityName(newCityName);
+
+                didLoadCity();
+
+                return true;
+            }
+            else
+            {
+                didntLoadCity(filename);
+                return false;
+            }
         }
 
         /// <summary>
@@ -240,7 +379,21 @@ namespace MicropolisCore
         /// </summary>
         public void saveCity()
         {
-            // TODO
+            if (cityFileName.Length > 0)
+            {
+                doSaveCityAs();
+            }
+            else
+            {
+                if (saveFile(cityFileName))
+                {
+                    didSaveCity();
+                }
+                else
+                {
+                    didntSaveCity(cityFileName);
+                }
+            }
         }
 
         /// <summary>
@@ -275,7 +428,7 @@ namespace MicropolisCore
         /// <param name="filename">Name of the file to use for storing the game.</param>
         public void saveCityAs(string filename)
         {
-            // TODO
+            throw new NotImplementedException();
         }
     }
 }

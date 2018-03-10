@@ -48,7 +48,7 @@ namespace MicropolisCore
 
             if (testDirectory(homeDir, "$SIMHOME"))
             {
-                resourceDir = homeDir + "/res/";
+                resourceDir = homeDir + Path.PathSeparator + "res" + Path.PathSeparator;
                 if (testDirectory(resourceDir, "$SIMHOME/res"))
                 {
                     return; // All ok
