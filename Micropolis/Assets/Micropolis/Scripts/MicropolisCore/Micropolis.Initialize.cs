@@ -1,4 +1,6 @@
-﻿namespace MicropolisCore
+﻿using System;
+
+namespace MicropolisCore
 {
     public partial class Micropolis
     {

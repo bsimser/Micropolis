@@ -12,7 +12,7 @@ namespace MicropolisCore
         /// <returns>Textual version.</returns>
         public string getMicropolisVersion()
         {
-            return "5.0";
+            return "6.0";
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace MicropolisCore
 
         public void simHeat()
         {
-            // TODO
+            throw new NotImplementedException();
         }
 
         public void simLoop(bool doSim)

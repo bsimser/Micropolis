@@ -355,7 +355,7 @@ namespace MicropolisCore
         /// <param name="y">Vertical coordinate in the city of the sound.</param>
         public void doMakeSound(int mesgNum, int x, int y)
         {
-            // TODO
+            throw new NotImplementedException();
         }
 
         /// <summary>

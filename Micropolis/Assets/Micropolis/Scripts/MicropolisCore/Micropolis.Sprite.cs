@@ -1,4 +1,6 @@
-﻿namespace MicropolisCore
+﻿using System;
+
+namespace MicropolisCore
 {
     public partial class Micropolis
     {
@@ -12,7 +14,7 @@
         /// <returns>New sprite object.</returns>
         public SimSprite newSprite(string name, int type, int x, int y)
         {
-            return new SimSprite();
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -23,6 +25,7 @@
         /// <param name="y">New y coordinate of the sprite (in pixels?).</param>
         public void initSprite(SimSprite sprite, int x, int y)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -42,6 +45,7 @@
         /// <param name="sprite">Sprite to destroy.</param>
         public void destroySprite(SimSprite sprite)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -51,7 +55,15 @@
         /// <returns>Pointer to the active sprite if avaiable, else NULL.</returns>
         public SimSprite getSprite(int type)
         {
-            return new SimSprite();
+            var sprite = globalSprites[type];
+            if (sprite == null || sprite.frame == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return sprite;
+            }
         }
 
         /// <summary>
@@ -63,7 +75,7 @@
         /// <returns></returns>
         public SimSprite makeSprite(int type, int x, int y)
         {
-            return new SimSprite();
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -74,7 +86,7 @@
         /// <returns>Map character if on-map, or -1 if off-map.</returns>
         public short getChar(int x, int y)
         {
-            return 0;
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -85,12 +97,12 @@
         /// <returns>New direction.</returns>
         public short turnTo(int p, int d)
         {
-            return 0;
+            throw new NotImplementedException();
         }
 
         public bool tryOther(int Tpoo, int Told, int Tnew)
         {
-            return false;
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -100,7 +112,7 @@
         /// <returns>Sprite is at least partly off-map.</returns>
         public bool spriteNotInBounds(SimSprite sprite)
         {
-            return false;
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -113,7 +125,7 @@
         /// <returns>Direction to go in.</returns>
         public short getDir(int orgX, int orgY, int desX, int desY)
         {
-            return 0;
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -126,7 +138,7 @@
         /// <returns>Manhattan distance between both points.</returns>
         public int getDistance(int x1, int y1, int x2, int y2)
         {
-            return 0;
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -137,16 +149,73 @@
         /// <returns>Sprites are colliding.</returns>
         public bool checkSpriteCollision(SimSprite s1, SimSprite s2)
         {
-            return false;
+            throw new NotImplementedException();
         }
 
         /// <summary>
         /// Move all sprites.
         /// 
         /// Sprites with frame == 0 are removed.
+        /// TODO It uses name[0] == '\0' as condition which seems stupid
+        /// TODO destroySprite modifies the spriteList 
+        ///      while we loop over it.     
         /// </summary>
         public void moveObjects()
         {
+            if (simSpeed == 0)
+            {
+                return;
+            }
+
+            spriteCycle++;
+
+            foreach (var sprite in spriteList)
+            {
+                if (sprite.frame > 0)
+                {
+                    switch (sprite.type)
+                    {
+                        case (int) SpriteType.SPRITE_TRAIN:
+                            doTrainSprite(sprite);
+                            break;
+
+                        case (int) SpriteType.SPRITE_HELICOPTER:
+                            doCopterSprite(sprite);
+                            break;
+
+                        case (int) SpriteType.SPRITE_AIRPLANE:
+                            doAirplaneSprite(sprite);
+                            break;
+
+                        case (int) SpriteType.SPRITE_SHIP:
+                            doShipSprite(sprite);
+                            break;
+
+                        case (int) SpriteType.SPRITE_MONSTER:
+                            doMonsterSprite(sprite);
+                            break;
+
+                        case (int) SpriteType.SPRITE_TORNADO:
+                            doTornadoSprite(sprite);
+                            break;
+
+                        case (int) SpriteType.SPRITE_EXPLOSION:
+                            doExplosionSprite(sprite);
+                            break;
+
+                        case (int) SpriteType.SPRITE_BUS:
+                            doBusSprite(sprite);
+                            break;
+                    }
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(sprite.name))
+                    {
+                        destroySprite(sprite);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -155,6 +224,7 @@
         /// <param name="sprite">Train sprite.</param>
         public void doTrainSprite(SimSprite sprite)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -163,6 +233,7 @@
         /// <param name="sprite">Helicopter sprite.</param>
         public void doCopterSprite(SimSprite sprite)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -171,6 +242,7 @@
         /// <param name="sprite">Airplane sprite</param>
         public void doAirplaneSprite(SimSprite sprite)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -179,6 +251,7 @@
         /// <param name="sprite">Ship sprite</param>
         public void doShipSprite(SimSprite sprite)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -206,6 +279,7 @@
         /// <param name="sprite">Monster sprite</param>
         public void doMonsterSprite(SimSprite sprite)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -214,6 +288,7 @@
         /// <param name="sprite">Tornado sprite to move.</param>
         public void doTornadoSprite(SimSprite sprite)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -222,6 +297,7 @@
         /// <param name="sprite">Fire sprite.</param>
         public void doExplosionSprite(SimSprite sprite)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -230,6 +306,7 @@
         /// <param name="sprite">Bus sprite</param>
         public void doBusSprite(SimSprite sprite)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -240,7 +317,7 @@
         /// <returns>0 if not, 1 if you can, -1 otherwise</returns>
         public int canDriveOn(int x, int y)
         {
-            return 0;
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -249,11 +326,12 @@
         /// <param name="sprite">sprite that should explode.</param>
         public void explodeSprite(SimSprite sprite)
         {
+            throw new NotImplementedException();
         }
 
         public bool checkWet(int x)
         {
-            return false;
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -263,6 +341,7 @@
         /// <param name="oy">Y coordinate in pixels.</param>
         public void destroyMapTile(int ox, int oy)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -273,6 +352,7 @@
         /// <param name="ch">Map character at (Xloc, Yloc).</param>
         public void startFireInZone(int Xloc, int Yloc, int ch)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -282,6 +362,7 @@
         /// <param name="y">Y coordinate in map coordinate.</param>
         public void startFire(int x, int y)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -291,6 +372,7 @@
         /// <param name="y">Y coordinate in map coordinate.</param>
         public void generateTrain(int x, int y)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -300,6 +382,7 @@
         /// <param name="y">Y coordinate in map coordinate.</param>
         public void generateBus(int x, int y)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -307,6 +390,7 @@
         /// </summary>
         public void generateShip()
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -316,6 +400,7 @@
         /// <param name="y">Y coordinate in map coordinate.</param>
         public void makeShipHere(int x, int y)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -323,6 +408,7 @@
         /// </summary>
         public void makeMonster()
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -332,6 +418,7 @@
         /// <param name="y">Y coordinate in map coordinate.</param>
         public void makeMonsterAt(int x, int y)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -342,6 +429,7 @@
         /// <param name="pos">Start position in map coordinates.</param>
         public void generateCopter(Position pos)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -352,6 +440,7 @@
         /// <param name="pos">Start position in map coordinates.</param>
         public void generatePlane(Position pos)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -359,6 +448,7 @@
         /// </summary>
         public void makeTornado()
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -368,6 +458,7 @@
         /// <param name="y">Y coordinate of the explosion (in map coordinates).</param>
         public void makeExplosion(int x, int y)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -377,6 +468,7 @@
         /// <param name="y">Y coordinate of the explosion (in pixels).</param>
         public void makeExplosionAt(int x, int y)
         {
+            throw new NotImplementedException();
         }
     }
 }

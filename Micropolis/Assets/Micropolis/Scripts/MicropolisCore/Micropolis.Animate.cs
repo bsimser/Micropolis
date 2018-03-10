@@ -1,4 +1,6 @@
-﻿namespace MicropolisCore
+﻿using System;
+
+namespace MicropolisCore
 {
     public partial class Micropolis
     {
@@ -149,7 +151,7 @@
 
         private int getNextAnimatedTile(int index)
         {
-            return 0;
+            throw new NotImplementedException();
         }
     }
 }

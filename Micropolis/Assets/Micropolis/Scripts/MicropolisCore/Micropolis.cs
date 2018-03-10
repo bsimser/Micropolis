@@ -1241,7 +1241,7 @@ namespace MicropolisCore
             resValve = 0;
             comValve = 0;
             indValve = 0;
-
+            globalSprites = new SimSprite[(int) SpriteType.SPRITE_COUNT];
             absDist = 0;
             spriteCycle = 0;
             totalFunds = 0;

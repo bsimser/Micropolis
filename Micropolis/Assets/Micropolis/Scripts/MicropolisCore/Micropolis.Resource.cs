@@ -1,4 +1,6 @@
-﻿namespace MicropolisCore
+﻿using System;
+
+namespace MicropolisCore
 {
     /// <summary>
     /// Get resources (from files)
@@ -13,6 +15,7 @@
         /// <param name="num">Number of the string in the resource</param>
         public void getIndString(string str, int id, short num)
         {
+            throw new NotImplementedException();
         }
     }
 }

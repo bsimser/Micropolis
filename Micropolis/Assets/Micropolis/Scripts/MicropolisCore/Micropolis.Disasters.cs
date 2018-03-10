@@ -147,7 +147,7 @@ namespace MicropolisCore
         /// </summary>
         private void makeAirCrash()
         {
-            // TODO
+            throw new NotImplementedException();
         }
 
         /// <summary>
