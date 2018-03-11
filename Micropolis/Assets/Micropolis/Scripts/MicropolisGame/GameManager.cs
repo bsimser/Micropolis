@@ -2,6 +2,7 @@
 using MicropolisCore;
 using MicropolisEngine;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MicropolisGame
 {
@@ -54,7 +55,7 @@ namespace MicropolisGame
             _engine.setSpeed(simSpeed);
             _engine.doSimInit();
             _engine.setEnableDisasters(false);
-            _uiManager.ToggleTextElements(true);
+            _uiManager.ToggleGameElements(true);
         }
 
         public void LoadCity()
@@ -66,14 +67,14 @@ namespace MicropolisGame
             _engine.setSpeed(simSpeed);
             _engine.doSimInit();
             _engine.setEnableDisasters(false);
-            _uiManager.ToggleTextElements(true);
+            _uiManager.ToggleGameElements(true);
         }
 
         public void LoadScenario()
         {
             _uiManager.HideMainPanel();
             _engine.loadScenario(ScenarioType.SC_DULLSVILLE);
-            _uiManager.ToggleTextElements(true);
+            _uiManager.ToggleGameElements(true);
         }
 
         public void Quit()
@@ -109,6 +110,13 @@ namespace MicropolisGame
             // TODO show a list of graphic tilesets
             // TODO reload the tileset with the new graphics
             // TODO resume the game (or just come back to the pause panel?)
+        }
+
+        public void SetSpeed(Dropdown dropdown)
+        {
+            Debug.Log("dropdown: " + dropdown.itemText + " value: " + dropdown.value);
+            var speed = dropdown.value;
+            _engine.setSpeed((short) speed);
         }
     }
 }

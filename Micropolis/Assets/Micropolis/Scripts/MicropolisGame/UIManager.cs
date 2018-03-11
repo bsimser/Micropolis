@@ -16,6 +16,7 @@ namespace MicropolisGame
         public Transform messagePanel;
         public Transform datePanel;
         public Transform populationPanel;
+        public Transform inGamePanel;
 
         private TextMeshProUGUI _fundsText;
         private TextMeshProUGUI _dateText;
@@ -38,16 +39,17 @@ namespace MicropolisGame
 
             // setup the initial view we want to start with
             HidePausePanel();
-            ToggleTextElements(false);
+            ToggleGameElements(false);
             ShowMainPanel();
         }
 
-        public void ToggleTextElements(bool show)
+        public void ToggleGameElements(bool show)
         {
             fundsPanel.gameObject.SetActive(show);
             messagePanel.gameObject.SetActive(show);
             datePanel.gameObject.SetActive(show);
             populationPanel.gameObject.SetActive(show);
+            inGamePanel.gameObject.SetActive(show);
         }
 
         public void SetFunds(long funds)
