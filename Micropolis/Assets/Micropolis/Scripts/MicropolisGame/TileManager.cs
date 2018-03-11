@@ -26,6 +26,15 @@ namespace MicropolisGame
         private readonly TileEngine _tileEngine;
 
         /// <summary>
+        /// Expose the TileEngine class to the GameManager
+        /// and other classes so we can call some load tilesets.
+        /// </summary>
+        public TileEngine Engine
+        {
+            get { return _tileEngine; }
+        }
+
+        /// <summary>
         /// Constructs the engine and hooks it up to the <see cref="Micropolis"/> engine.
         /// Also finds the <see cref="Tilemap"/> in the scene to do the drawing to.
         /// </summary>
@@ -39,7 +48,7 @@ namespace MicropolisGame
 
         public void Draw()
         {
-            // TODO should we clear the layer on every pass?
+            // TODO more efficient to only clear tiles that have changed
             _mapLayer.ClearAllTiles();
 
             // TODO should only draw visible tiles not the entire map

@@ -28,7 +28,7 @@ namespace MicropolisGame
 
         private void Update()
         {
-            // TODO probably should have a separte class to handle general input?
+            // TODO probably should have a separate class to handle general input?
             if (Input.GetKeyDown(KeyCode.Escape) && !_engine.simPaused)
             {
                 Pause();
@@ -108,8 +108,22 @@ namespace MicropolisGame
         public void LoadGraphics()
         {
             // TODO show a list of graphic tilesets
-            // TODO reload the tileset with the new graphics
-            // TODO resume the game (or just come back to the pause panel?)
+            // TODO let the user pick from the list of tilesets
+            var tilesets = new[]
+            {
+                "x11",
+                "classic",
+                "classic95",
+                "wildwest",
+                "mooncolony",
+                "medievaltimes",
+                "futureusa",
+                "futureeurope",
+                "ancientasia"
+            };
+            // for now just randomly pick a tileset
+            _tileManager.Engine.LoadTileset(tilesets[Random.Range(0, tilesets.Length)]);
+            Resume();
         }
 
         public void SetSpeed(Dropdown dropdown)

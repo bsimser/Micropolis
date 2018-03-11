@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using MicropolisCore;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -6,8 +8,6 @@ namespace MicropolisGame
 {
     /// <summary>
     /// Keeps a cached copy of rendered Tiles and provides them for drawing onto a TileMap
-    /// TODO load all tiles at startup (there's only 960 of them)
-    /// TODO load all Tilesets at startup
     /// </summary>
     public class TileEngine
     {
@@ -15,6 +15,27 @@ namespace MicropolisGame
         /// Cached copy of all rendered Tiles
         /// </summary>
         private readonly Dictionary<int, Tile> _tiles = new Dictionary<int, Tile>();
+
+        private string _tileset;
+
+        public TileEngine()
+        {
+            PreLoadTiles();
+            LoadTileset("classic");
+        }
+
+        /// <summary>
+        /// Preload all tiles into a dictionary for fetching during draw mode
+        /// </summary>
+        private void PreLoadTiles()
+        {
+            for (var i = 0; i < (int) MapTileCharacters.TILE_COUNT; i++)
+            {
+                var path = string.Format("Tiles/tiles_{0}", i);
+                var asset = Resources.Load<Tile>(path);
+                _tiles.Add(i, asset);
+            }
+        }
 
         /// <summary>
         /// Fetches a <see cref="Tile"/> object from a cache or adds it 
@@ -29,26 +50,22 @@ namespace MicropolisGame
                 return _tiles[tileId];
             }
 
-            var path = string.Format("Tiles/tiles_{0}", tileId);
-            var asset = Resources.Load<Tile>(path);
+            throw new ApplicationException("Tile ID: " + tileId + " not found in cache.");
+        }
 
-            // dynamic load the sprite for the tile based on our theme
-            //var theme = "x11";
-            //var theme = "classic";
-            var theme = "classic95";
-            //var theme = "wildwest";
-            //var theme = "mooncolony";
-            //var theme = "medievaltimes";
-            //var theme = "futureusa";
-            //var theme = "futureeurope";
-            //var theme = "ancientasia";
-
-            // TODO we don't have to load all the sprites every time
-            Sprite[] sprites = Resources.LoadAll<Sprite>("Tilesets/" + theme + "/tiles");
-            asset.sprite = sprites[tileId];
-
-            _tiles.Add(tileId, asset);
-            return _tiles[tileId];
+        /// <summary>
+        /// Replace all the sprites in the tile array with the
+        /// sprite resources from the tileset sprites.
+        /// </summary>
+        /// <param name="tileset"></param>
+        public void LoadTileset(string tileset)
+        {
+            _tileset = tileset;
+            var sprites = Resources.LoadAll<Sprite>("Tilesets/" + _tileset + "/tiles");
+            foreach (var tile in _tiles)
+            {
+                tile.Value.sprite = sprites[tile.Key];
+            }
         }
     }
 }
