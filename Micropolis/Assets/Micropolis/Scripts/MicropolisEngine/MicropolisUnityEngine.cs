@@ -11,6 +11,12 @@ namespace MicropolisEngine
     /// </summary>
     public class MicropolisUnityEngine : MicropolisGenericEngine
     {
+        public float zoom;
+
+        public const float MAX_ZOOM = 10f;
+
+        public const float MIN_ZOOM = 20f;
+
         /// <summary>
         /// String representation of <see cref="MessageNumber"/>
         /// </summary>

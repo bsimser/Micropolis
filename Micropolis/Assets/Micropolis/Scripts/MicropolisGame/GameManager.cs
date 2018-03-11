@@ -1,8 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using Cinemachine;
 using MicropolisCore;
 using MicropolisEngine;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 namespace MicropolisGame
 {
@@ -15,6 +18,8 @@ namespace MicropolisGame
 
         public short simSpeed;
 
+        public float zoomSpeed = 20f;
+
         [HideInInspector]
         public UIManager UIManager { get { return _uiManager; } }
 
@@ -24,6 +29,43 @@ namespace MicropolisGame
             _engine = MicropolisUnityEngine.CreateUnityEngine();
             _tileManager = new TileManager(_engine);
             _callbacks = new CallbackManager(this, _engine);
+
+            InitZoom();
+        }
+
+        private void InitZoom()
+        {
+            // TODO find the Cinemachine camera
+            var camera = FindObjectOfType<CinemachineVirtualCamera>();
+            // TODO save the current zoom to our engine
+            _engine.zoom = camera.m_Lens.OrthographicSize;
+        }
+
+        private void HandleZoom()
+        {
+            // TODO temporary function to handle zooming in and out
+            // TODO move to an Input class or something later
+            var zoom = _engine.zoom;
+            // TODO use input mapping instead of hard coded key values here
+            if (Input.GetKey(KeyCode.X) && zoom <= MicropolisUnityEngine.MIN_ZOOM ||
+                Input.GetAxis("Mouse ScrollWheel") < 0 && zoom <= MicropolisUnityEngine.MIN_ZOOM)
+            {
+                // zoom out
+                zoom += 1f * Time.deltaTime * zoomSpeed;
+            }
+            else if (Input.GetKey(KeyCode.Z) && zoom >= MicropolisUnityEngine.MAX_ZOOM ||
+                     Input.GetAxis("Mouse ScrollWheel") > 0 && zoom >= MicropolisUnityEngine.MAX_ZOOM)
+            {
+                // zoom in
+                zoom -= 1f * Time.deltaTime * zoomSpeed;
+            }
+            // if the zoom value changed enough then update the camera
+            if (Math.Abs(zoom - _engine.zoom) > float.Epsilon)
+            {
+                var camera = FindObjectOfType<CinemachineVirtualCamera>();
+                camera.m_Lens.OrthographicSize = zoom;
+                _engine.zoom = zoom;
+            }
         }
 
         private void Update()
@@ -33,6 +75,8 @@ namespace MicropolisGame
             {
                 Pause();
             }
+
+            HandleZoom();
 
             var ellapsedMilliseconds = (int) (Time.deltaTime * 1000);
             if (ellapsedMilliseconds % 16 == 0)
