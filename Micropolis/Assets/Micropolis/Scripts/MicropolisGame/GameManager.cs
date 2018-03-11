@@ -9,17 +9,20 @@ namespace MicropolisGame
     {
         private MicropolisUnityEngine _engine;
         private TileManager _tileManager;
+        private CallbackManager _callbacks;
         private UIManager _uiManager;
 
         public short simSpeed;
 
+        [HideInInspector]
+        public UIManager UIManager { get { return _uiManager; } }
+
         private void Start()
         {
-            // create an instance of the Micropolis engine
+            _uiManager = FindObjectOfType<UIManager>();
             _engine = MicropolisUnityEngine.CreateUnityEngine();
-            // setup our internal manager classes
             _tileManager = new TileManager(_engine);
-            _uiManager = new UIManager(_engine);
+            _callbacks = new CallbackManager(this, _engine);
         }
 
         private void Update()
@@ -36,31 +39,35 @@ namespace MicropolisGame
             }
         }
 
-        // TODO maybe move all UI functions below to it's own class or the UI Manager?
-
         public void GenerateRandomCity()
         {
+            _uiManager.HideMainPanel();
             _engine.initGame();
             _engine.simInit();
             _engine.generateMap();
             _engine.setSpeed(simSpeed);
             _engine.doSimInit();
             _engine.setEnableDisasters(false);
+            _uiManager.ToggleTextElements(true);
         }
 
         public void LoadCity()
         {
+            _uiManager.HideMainPanel();
             _engine.initGame();
             _engine.simInit();
             _engine.loadCity("cities" + Path.DirectorySeparatorChar + "haight.cty");
             _engine.setSpeed(simSpeed);
             _engine.doSimInit();
             _engine.setEnableDisasters(false);
+            _uiManager.ToggleTextElements(true);
         }
 
         public void LoadScenario()
         {
+            _uiManager.HideMainPanel();
             _engine.loadScenario(ScenarioType.SC_DULLSVILLE);
+            _uiManager.ToggleTextElements(true);
         }
 
         public void Quit()
@@ -75,19 +82,19 @@ namespace MicropolisGame
         public void Pause()
         {
             _engine.pause();
-            // TODO show the pause panel
+            _uiManager.ShowPausePanel();
         }
 
         public void QuitToMain()
         {
-            // TODO hide this panel
+            _uiManager.HidePausePanel();
             // TODO end the simulator
-            // TODO show main panel
+            _uiManager.ShowMainPanel();
         }
 
         public void Resume()
         {
-            // TODO hide the pause panel
+            _uiManager.HidePausePanel();
             _engine.resume();
         }
 
