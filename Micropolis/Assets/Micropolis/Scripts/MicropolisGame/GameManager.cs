@@ -109,20 +109,9 @@ namespace MicropolisGame
         {
             // TODO show a list of graphic tilesets
             // TODO let the user pick from the list of tilesets
-            var tilesets = new[]
-            {
-                "x11",
-                "classic",
-                "classic95",
-                "wildwest",
-                "mooncolony",
-                "medievaltimes",
-                "futureusa",
-                "futureeurope",
-                "ancientasia"
-            };
             // for now just randomly pick a tileset
-            _tileManager.Engine.LoadTileset(tilesets[Random.Range(0, tilesets.Length)]);
+            var tileset = _engine.tilesets[Random.Range(0, _engine.tilesets.Count)];
+            _tileManager.Engine.LoadTileset(tileset.FolderName);
             Resume();
         }
 

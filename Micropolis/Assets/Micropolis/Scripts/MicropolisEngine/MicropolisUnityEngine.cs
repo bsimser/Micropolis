@@ -95,8 +95,57 @@ namespace MicropolisEngine
             "Coal power plant: $3000"
         };
 
-        // list of notices to show to user
-        // list of scenarios the user can choose from
+        public List<GraphicTileset> tilesets = new List<GraphicTileset>
+        {
+            new GraphicTileset
+            {
+                FolderName = "classic",
+                Title = "Classic Graphics (DOS)"
+            },
+            new GraphicTileset
+            {
+                FolderName = "classic95",
+                Title = "Classic Graphics (Windows)"
+            },
+            new GraphicTileset
+            {
+                FolderName = "ancientasia",
+                Title = "Ancient Asia"
+            },
+            new GraphicTileset
+            {
+                FolderName = "futureeurope",
+                Title = "Future Europe"
+            },
+            new GraphicTileset
+            {
+                FolderName = "futureusa",
+                Title = "Future USA"
+            },
+            new GraphicTileset
+            {
+                FolderName = "medievaltimes",
+                Title = "Medieval Times"
+            },
+            new GraphicTileset
+            {
+                FolderName = "mooncolony",
+                Title = "Moon Colony"
+            },
+            new GraphicTileset
+            {
+                FolderName = "wildwest",
+                Title = "Wild West"
+            },
+            new GraphicTileset
+            {
+                FolderName = "x11",
+                Title = "Classic Graphics (X11)"
+            }
+        };
+
+        // TODO list of notices to show to user
+
         public List<Scenario> scenarios = new List<Scenario>
         {
             new Scenario
