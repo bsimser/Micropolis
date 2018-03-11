@@ -792,7 +792,7 @@ namespace MicropolisCore
         /// <summary>
         /// Simulation is paused
         /// </summary>
-        private bool simPaused;
+        public bool simPaused;
 
         private int simPausedSpeed;
         protected bool tilesAnimated;

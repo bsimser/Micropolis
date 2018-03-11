@@ -27,6 +27,12 @@ namespace MicropolisGame
 
         private void Update()
         {
+            // TODO probably should have a separte class to handle general input?
+            if (Input.GetKeyDown(KeyCode.Escape) && !_engine.simPaused)
+            {
+                Pause();
+            }
+
             var ellapsedMilliseconds = (int) (Time.deltaTime * 1000);
             if (ellapsedMilliseconds % 16 == 0)
             {
