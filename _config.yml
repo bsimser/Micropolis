@@ -3,6 +3,7 @@ name: Micropolis for Unity
 description: Unity version of Micropolis rewritten from the ground up
 url: https://bsimser.github.io/Micropolis
 repository: https://github.com/bsimser/Micropolis
+show_downloads: true
 twitter:
   username: bsimser
 theme: jekyll-theme-architect
