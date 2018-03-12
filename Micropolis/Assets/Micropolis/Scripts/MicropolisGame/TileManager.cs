@@ -52,22 +52,25 @@ namespace MicropolisGame
             _mapLayer.ClearAllTiles();
 
             // TODO should only draw visible tiles not the entire map
-            for (int x = 0; x < Micropolis.WORLD_W; x++)
+            for (int y = 0; y < Micropolis.WORLD_H; y++)
             {
-                for (int y = 0; y < Micropolis.WORLD_H; y++)
+                for (int x = 0; x < Micropolis.WORLD_W; x++)
                 {
                     var tile = _engine.map[x, y];
                     var tileId = tile & (ushort)MapTileBits.LOMASK;
-                    
-                    // TODO handle animated lightning bolt for tiles without power
-                    var hasPower = tile & unchecked((ushort) MapTileBits.PWRBIT);
 
-                    // TODO handle animated tiles like drawbridges, traffic, etc.
-                    var isAnimated = tile & (ushort) MapTileBits.ANIMBIT;
+                    // if the tile has no power and it's the center of the 
+                    // zone then display the lighting bolt tile instead
+                    if ((tile & (ushort) MapTileBits.ZONEBIT) == (ushort) MapTileBits.ZONEBIT && 
+                        (tile & (ushort) MapTileBits.PWRBIT) == (ushort) MapTileBits.PWRBIT)
+                    {
+                        tileId = (ushort) MapTileCharacters.LIGHTNINGBOLT;
+                    }
 
                     // map is defined from top to bottom but Tilemap works from bottom to top so invert 
                     // the y value here and offset by 1 so we start at 0, -1 instead of 0, 0 in the grid
-                    _mapLayer.SetTile(new Vector3Int(x, -y - 1, 0), _tileEngine.GetTile(tileId));
+                    var offset = y * -1 - 1;
+                    _mapLayer.SetTile(new Vector3Int(x, offset, 0), _tileEngine.GetTile(tileId));
                 }
             }
         }
