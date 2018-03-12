@@ -6,3 +6,6 @@ repository: https://github.com/bsimser/Micropolis
 twitter:
   username: bsimser
 theme: jekyll-theme-architect
+
+plugins:
+  - jekyll-sitemap
