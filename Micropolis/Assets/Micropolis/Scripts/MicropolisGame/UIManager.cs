@@ -23,7 +23,6 @@ namespace MicropolisGame
         private TextMeshProUGUI _populationText;
         private TextMeshProUGUI _messageText;
 
-        // TODO HideMainPanel
         // TODO ShowOptionsPanel
         // TODO HideOptionsPanel
         // TODO ShowLoadGraphicsPanel

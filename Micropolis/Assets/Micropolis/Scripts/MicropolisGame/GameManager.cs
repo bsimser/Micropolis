@@ -161,7 +161,6 @@ namespace MicropolisGame
 
         public void SetSpeed(Dropdown dropdown)
         {
-            Debug.Log("dropdown: " + dropdown.itemText + " value: " + dropdown.value);
             var speed = dropdown.value;
             _engine.setSpeed((short) speed);
         }
