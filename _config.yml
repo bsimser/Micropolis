@@ -9,3 +9,4 @@ theme: jekyll-theme-architect
 
 plugins:
   - jekyll-sitemap
+  - jekyll-seo-tag
