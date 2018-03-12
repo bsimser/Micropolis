@@ -8,6 +8,8 @@ Micropolis is a ground up C# rewrite of the MicropolisCore system using the Unit
 
 ![screenshot](https://raw.githubusercontent.com/bsimser/Micropolis/blob/gh-pages/images/micropolis.png)
 
+This is the source code for the [Micropolis Unity](https://bsimser.github.io/Micropolis/). It's a static [Jekyll](https://jekyllrb.com) site hosted on [GitHub Pages](https://pages.github.com).
+
 ## Installation
 
 You'll be able to install a copy of Micropolis once we have an installer (using [Squirrel](https://github.com/Squirrel/Squirrel.Windows)). In the meantime you can download or clone this repository and run it from within Unity (it's not recommended to fork the repo at this time as there a lot of changes going on and the current codebase isn't stable yet).
