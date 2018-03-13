@@ -52,9 +52,9 @@ namespace MicropolisGame
             _mapLayer.ClearAllTiles();
 
             // TODO should only draw visible tiles not the entire map
-            for (int y = 0; y < Micropolis.WORLD_H; y++)
+            for (int x = 0; x < Micropolis.WORLD_W; x++)
             {
-                for (int x = 0; x < Micropolis.WORLD_W; x++)
+                for (int y = 0; y < Micropolis.WORLD_H; y++)
                 {
                     var tile = _engine.map[x, y];
                     var tileId = tile & (ushort)MapTileBits.LOMASK;

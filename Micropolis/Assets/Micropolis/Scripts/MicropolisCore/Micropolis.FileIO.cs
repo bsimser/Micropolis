@@ -116,6 +116,16 @@ namespace MicropolisCore
                          load_shorts(ref moneyHist, HISTORY_LENGTH / sizeof(short), reader) &&
                          load_shorts(ref miscHist, HISTORY_LENGTH / sizeof(short), reader);
 
+//                var buf = new short[WORLD_W * WORLD_H];
+//                load_shorts(ref buf, WORLD_W * WORLD_H, reader);
+//                for (int x = 0; x < WORLD_W; x++)
+//                {
+//                    for (int y = 0; y < WORLD_H; y++)
+//                    {
+//                        map[x, y] = (ushort) buf[y * WORLD_W + x];
+//                    }
+//                }                    
+
                 for (int x = 0; x < WORLD_W; x++)
                 {
                     for (int y = 0; y < WORLD_H; y++)

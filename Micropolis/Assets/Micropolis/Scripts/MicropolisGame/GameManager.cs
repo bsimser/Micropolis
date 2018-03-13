@@ -65,12 +65,18 @@ namespace MicropolisGame
         public void LoadCity()
         {
             _uiManager.HideMainPanel();
+            _uiManager.ShowLoadCityPanel();
+        }
+
+        public void LoadCity(string cityFileName)
+        {
             _engine.initGame();
             _engine.simInit();
-            _engine.loadCity("cities" + Path.DirectorySeparatorChar + "haight.cty");
+            _engine.loadCity("cities" + Path.DirectorySeparatorChar + cityFileName);
             _engine.setSpeed(simSpeed);
             _engine.doSimInit();
             _engine.setEnableDisasters(false);
+            _uiManager.HideLoadCityPanel();
             _uiManager.ToggleGameElements(true);
         }
 
