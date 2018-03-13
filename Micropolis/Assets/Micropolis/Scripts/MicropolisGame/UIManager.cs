@@ -18,6 +18,7 @@ namespace MicropolisGame
         public Transform populationPanel;
         public Transform inGamePanel;
         public Transform loadCityPanel;
+        public Transform loadScenarioPanel;
 
         private TextMeshProUGUI _fundsText;
         private TextMeshProUGUI _dateText;
@@ -109,6 +110,16 @@ namespace MicropolisGame
         public void HideLoadCityPanel()
         {
             loadCityPanel.gameObject.SetActive(false);
+        }
+
+        public void ShowLoadScenarioPanel()
+        {
+            loadScenarioPanel.gameObject.SetActive(true);
+        }
+
+        public void HideLoadScenarioPanel()
+        {
+            loadScenarioPanel.gameObject.SetActive(false);
         }
     }
 }

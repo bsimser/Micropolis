@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using MicropolisCore;
 using MicropolisEngine;
 using UnityEngine;
@@ -83,7 +84,14 @@ namespace MicropolisGame
         public void LoadScenario()
         {
             _uiManager.HideMainPanel();
-            _engine.loadScenario(ScenarioType.SC_DULLSVILLE);
+            _uiManager.ShowLoadScenarioPanel();
+        }
+
+        public void LoadScenario(string scenarioFileName)
+        {
+            var scenario = _engine.scenarios.First(x => x.filename == scenarioFileName);
+            _engine.loadScenario(scenario.id);
+            _uiManager.HideLoadScenarioPanel();
             _uiManager.ToggleGameElements(true);
         }
 

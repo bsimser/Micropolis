@@ -239,6 +239,7 @@ namespace MicropolisCore
                 s = ScenarioType.SC_DULLSVILLE;
             }
 
+            // TODO duplicates in part the List<Scenario> in MicropolisUnityEngine
             switch (s)
             {
                 case ScenarioType.SC_DULLSVILLE:
