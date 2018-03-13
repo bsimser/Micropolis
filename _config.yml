@@ -8,8 +8,9 @@ twitter:
 theme: jekyll-theme-architect
 
 show_downloads: true
-zip_url: https://github.com/bsimser/Micropolis/zipball/develop
-tar_url: https://github.com/bsimser/Micropolis/tarball/develop
+github:
+  zip_url: https://github.com/bsimser/Micropolis/zipball/develop
+  tar_url: https://github.com/bsimser/Micropolis/tarball/develop
 
 plugins:
   - jekyll-sitemap
