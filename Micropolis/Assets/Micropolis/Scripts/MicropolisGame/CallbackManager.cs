@@ -13,12 +13,10 @@ namespace MicropolisGame
     /// </summary>
     public class CallbackManager
     {
-        private readonly GameManager _gameManager;
         private readonly MicropolisUnityEngine _engine;
 
-        public CallbackManager(GameManager gameManager, MicropolisUnityEngine engine)
+        public CallbackManager(MicropolisUnityEngine engine)
         {
-            _gameManager = gameManager;
             _engine = engine;
             _engine.OnUpdateDate += UpdateDate;
             _engine.OnUpdateFunds += UpdateFunds;
@@ -29,14 +27,20 @@ namespace MicropolisGame
 
         private void UpdateFunds()
         {
-            _gameManager.UIManager.SetFunds(_engine.totalFunds);
+            GuiWindowManager.Instance.GetWindow(EnumGuiWindow.Funds)
+                .gameObject.GetComponent<GuiWindowFunds>()
+                .SetFunds(_engine.totalFunds);
         }
 
         private void UpdateDate()
         {
-            _gameManager.UIManager.SetDate(_engine.cityYear, _engine.cityMonth);
+            GuiWindowManager.Instance.GetWindow(EnumGuiWindow.Date)
+                .gameObject.GetComponent<GuiWindowDate>()
+                .SetDate(_engine.cityYear, _engine.cityMonth);
             // temporary until we find the message that triggers population update
-            _gameManager.UIManager.SetPopulation(_engine.cityPop);
+            GuiWindowManager.Instance.GetWindow(EnumGuiWindow.Population)
+                .gameObject.GetComponent<GuiWindowPopulation>()
+                .SetPopulation(_engine.cityPop);
         }
 
         private void UpdateCityName()
@@ -50,7 +54,9 @@ namespace MicropolisGame
             //TODO handle autoGoto on important messages
             //TODO if there's a picture to show show it (how do we know what picture?)
             var message = _engine.messages[mesgNum];
-            _gameManager.UIManager.SetMessage(message);
+            GuiWindowManager.Instance.GetWindow(EnumGuiWindow.Messages)
+                .gameObject.GetComponent<GuiWindowMessage>()
+                .SetMessage(message);
         }
 
         private void UpdateEvaluation()

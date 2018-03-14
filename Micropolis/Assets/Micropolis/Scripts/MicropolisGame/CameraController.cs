@@ -11,19 +11,25 @@ using UnityEngine;
 /// </summary>
 public class CameraController : MonoBehaviour
 {
+    /// <summary>
+    /// How fast the user can pan around with the keyboard
+    /// </summary>
     public float panSpeed = 20f;
 
+    /// <summary>
+    /// How fast the user can zoom in and out with the keyboard
+    /// </summary>
     public float zoomSpeed = 20f;
 
-    private MicropolisUnityEngine _engine;
     private Vector2 _lastMousePos;
     private CinemachineVirtualCamera _virtualCamera;
     private Camera _mainCamera;
+    private GameManager _gameManager;
 
     private void Start()
     {
-        // get a reference to our game manager which holds the Micropolis engine
-        _engine = FindObjectOfType<GameManager>().Engine;
+        // get a reference to our game manager 
+        _gameManager = FindObjectOfType<GameManager>();
 
         _virtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
         _mainCamera = Camera.main;
@@ -45,7 +51,7 @@ public class CameraController : MonoBehaviour
 
     private void HandleZoom()
     {
-        var zoom = _engine.zoom;
+        var zoom = _gameManager.GetZoom();
 
         // TODO use input mapping instead of hard coded key values here
         if (Input.GetKey(KeyCode.X) && zoom <= MicropolisUnityEngine.MIN_ZOOM ||
@@ -62,16 +68,16 @@ public class CameraController : MonoBehaviour
         }
         
         // if the zoom value changed enough then update the (virtual) camera size
-        if (Math.Abs(zoom - _engine.zoom) > float.Epsilon)
+        if (Math.Abs(zoom - _gameManager.GetZoom()) > float.Epsilon)
         {
             _virtualCamera.m_Lens.OrthographicSize = zoom;
-            _engine.zoom = zoom;
+            _gameManager.SetZoom(zoom);
         }
     }
 
     private void InitZoom()
     {
-        _engine.zoom = _virtualCamera.m_Lens.OrthographicSize;
+        _gameManager.SetZoom(_virtualCamera.m_Lens.OrthographicSize);
     }
 
     private void HandlePan()

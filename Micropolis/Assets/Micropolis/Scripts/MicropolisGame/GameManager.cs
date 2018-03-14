@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Linq;
-using MicropolisCore;
 using MicropolisEngine;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,15 +12,8 @@ namespace MicropolisGame
         private MicropolisUnityEngine _engine;
         private TileManager _tileManager;
         private CallbackManager _callbacks;
-        private UIManager _uiManager;
 
         public short simSpeed;
-
-        [HideInInspector]
-        public UIManager UIManager { get { return _uiManager; } }
-
-        [HideInInspector]
-        public MicropolisUnityEngine Engine { get { return _engine; } }
 
         private void Awake()
         {
@@ -30,9 +22,8 @@ namespace MicropolisGame
 
         private void Start()
         {
-            _uiManager = FindObjectOfType<UIManager>();
             _tileManager = new TileManager(_engine);
-            _callbacks = new CallbackManager(this, _engine);
+            _callbacks = new CallbackManager(_engine);
         }
 
         private void Update()
@@ -51,22 +42,14 @@ namespace MicropolisGame
             }
         }
 
-        public void GenerateRandomCity()
+        public void StartNewCity()
         {
-            _uiManager.HideMainPanel();
             _engine.initGame();
             _engine.simInit();
             _engine.generateMap();
             _engine.setSpeed(simSpeed);
             _engine.doSimInit();
             _engine.setEnableDisasters(false);
-            _uiManager.ToggleGameElements(true);
-        }
-
-        public void LoadCity()
-        {
-            _uiManager.HideMainPanel();
-            _uiManager.ShowLoadCityPanel();
         }
 
         public void LoadCity(string cityFileName)
@@ -77,52 +60,49 @@ namespace MicropolisGame
             _engine.setSpeed(simSpeed);
             _engine.doSimInit();
             _engine.setEnableDisasters(false);
-            _uiManager.HideLoadCityPanel();
-            _uiManager.ToggleGameElements(true);
-        }
-
-        public void LoadScenario()
-        {
-            _uiManager.HideMainPanel();
-            _uiManager.ShowLoadScenarioPanel();
         }
 
         public void LoadScenario(string scenarioFileName)
         {
             var scenario = _engine.scenarios.First(x => x.filename == scenarioFileName);
             _engine.loadScenario(scenario.id);
-            _uiManager.HideLoadScenarioPanel();
-            _uiManager.ToggleGameElements(true);
         }
 
-        public void Quit()
+        public float GetZoom()
         {
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
+            return _engine.zoom;
         }
 
+        public void SetZoom(float value)
+        {
+            _engine.zoom = value;
+        }
+
+        // TODO move to GuiWindowPause
         public void Pause()
         {
             _engine.pause();
-            _uiManager.ShowPausePanel();
+            GuiWindowManager.Instance.Open(EnumGuiWindow.Pause);
         }
 
+        // TODO move to GuiWindowPause
         public void QuitToMain()
         {
-            _uiManager.HidePausePanel();
+            GuiWindowManager.Instance.Close(EnumGuiWindow.Pause);
             // TODO end the simulator
-            _uiManager.ShowMainPanel();
+            // TODO cleanup the map and other artifacts
+            // TODO ask the user to save or save automatically?
+            GuiWindowManager.Instance.Open(EnumGuiWindow.MainMenu);
         }
 
+        // TODO move to GuiWindowPause
         public void Resume()
         {
-            _uiManager.HidePausePanel();
+            GuiWindowManager.Instance.Close(EnumGuiWindow.Pause);
             _engine.resume();
         }
 
+        // TODO move to GuiWindowPause
         public void LoadGraphics()
         {
             // TODO show a list of graphic tilesets
@@ -133,6 +113,7 @@ namespace MicropolisGame
             Resume();
         }
 
+        // TODO move to GuiWindowInGame
         public void SetSpeed(Dropdown dropdown)
         {
             var speed = dropdown.value;
