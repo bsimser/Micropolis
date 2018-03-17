@@ -116,16 +116,6 @@ namespace MicropolisCore
                          load_shorts(ref moneyHist, HISTORY_LENGTH / sizeof(short), reader) &&
                          load_shorts(ref miscHist, HISTORY_LENGTH / sizeof(short), reader);
 
-//                var buf = new short[WORLD_W * WORLD_H];
-//                load_shorts(ref buf, WORLD_W * WORLD_H, reader);
-//                for (int x = 0; x < WORLD_W; x++)
-//                {
-//                    for (int y = 0; y < WORLD_H; y++)
-//                    {
-//                        map[x, y] = (ushort) buf[y * WORLD_W + x];
-//                    }
-//                }                    
-
                 for (int x = 0; x < WORLD_W; x++)
                 {
                     for (int y = 0; y < WORLD_H; y++)
@@ -199,7 +189,7 @@ namespace MicropolisCore
 
             // Set the scenario id to 0.
             initWillStuff();
-            // scenario = SC_NONE;
+            scenario = ScenarioType.SC_NONE;
             initSimLoad = 1;
             doInitialEval = false;
             doSimInit();
@@ -215,7 +205,90 @@ namespace MicropolisCore
         /// <returns>The game was saved successfully.</returns>
         public bool saveFile(string filename)
         {
-            throw new NotImplementedException();
+            if (!File.Exists(filename))
+            {
+                return false;
+            }
+
+            /* total funds is a long.....    miscHist is array of ints */
+            /* total funds is bien put in the 50th & 51th word of miscHist */
+            /* find the address, cast the ptr to a longPtr, take contents */
+
+            HALF_SWAP_LONGS(miscHist, 50, totalFunds);
+            HALF_SWAP_LONGS(miscHist, 8, cityTime);
+
+            miscHist[52] = (short) (autoBulldoze ? 1 : 0);
+            miscHist[53] = (short) (autoBudget ? 1 : 0);
+            miscHist[54] = (short) (autoGoto ? 1 : 0);
+            miscHist[55] = (short) (enableSound ? 1 : 0);
+            miscHist[57] = simSpeed;
+            miscHist[56] = cityTax;
+
+            /* yayaya */
+
+            HALF_SWAP_LONGS(miscHist, 58, (long) (policePercent * 65536));
+            HALF_SWAP_LONGS(miscHist, 60, (long) (firePercent * 65536));
+            HALF_SWAP_LONGS(miscHist, 62, (long) (roadPercent * 65536));
+
+            bool result = true;
+            using (BinaryWriter f = new BinaryWriter(File.OpenWrite(filename)))
+            {
+                result =
+                    save_short(resHist, HISTORY_LENGTH / 2, f) &&
+                    save_short(comHist, HISTORY_LENGTH / 2, f) &&
+                    save_short(indHist, HISTORY_LENGTH / 2, f) &&
+                    save_short(crimeHist, HISTORY_LENGTH / 2, f) &&
+                    save_short(pollutionHist, HISTORY_LENGTH / 2, f) &&
+                    save_short(moneyHist, HISTORY_LENGTH / 2, f) &&
+                    save_short(miscHist, HISTORY_LENGTH / 2, f);
+
+                for (int x = 0; x < WORLD_W; x++)
+                {
+                    for (int y = 0; y < WORLD_H; y++)
+                    {
+                        result = result && save_short((short) map[x, y], f);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private void HALF_SWAP_LONGS(short[] buf, int offset, long value)
+        {
+            var data = BitConverter.GetBytes(value);
+
+            byte[] short1 = {data[0], data[1]};
+            byte[] short2 = {data[2], data[4]};
+
+            buf[offset] = BitConverter.ToInt16(short1, 0);
+            buf[offset + 1] = BitConverter.ToInt16(short2, 0);
+        }
+
+        /// <summary>
+        /// Save an array of short values from memory to file.
+        /// 
+        /// Convert to the correct endianness first, if necessary.
+        /// </summary>
+        /// <param name="buf">Buffer containing the short values to save.</param>
+        /// <param name="len">Number of short values to save.</param>
+        /// <param name="f">Stream of the file to save to.</param>
+        /// <returns></returns>
+        private bool save_short(short[] buf, int len, BinaryWriter f)
+        {
+            foreach (var s in buf)
+            {
+                save_short(s, f);
+            }
+
+            return true;
+        }
+
+        private bool save_short(short buf, BinaryWriter f)
+        {
+            var value = swap_shorts(BitConverter.GetBytes(buf));
+            f.Write(value);
+            return true;
         }
 
         /// <summary>
@@ -390,9 +463,16 @@ namespace MicropolisCore
         /// </summary>
         public void saveCity()
         {
+            // TEMP
+            cityFileName = "cities/NEWCITY.CTY";
+            using (var stream = File.Create(cityFileName))
+            {
+            }
+
             if (cityFileName.Length > 0)
             {
-                doSaveCityAs();
+                // TODO doSaveCityAs();
+                saveCityAs(cityFileName);
             }
             else
             {
@@ -410,7 +490,7 @@ namespace MicropolisCore
         /// <summary>
         /// Report to the frontend that the city is being saved.
         /// </summary>
-        public void doSaveCityAs()
+        private void doSaveCityAs()
         {
             callback("saveCityAs", "");
         }
@@ -418,7 +498,7 @@ namespace MicropolisCore
         /// <summary>
         /// Report to the frontend that the city was saved successfully.
         /// </summary>
-        public void didSaveCity()
+        private void didSaveCity()
         {
             callback("didSaveCity", "");
         }
@@ -427,7 +507,7 @@ namespace MicropolisCore
         /// Report to the frontend that the city could not be saved.
         /// </summary>
         /// <param name="msg">Name of the file used</param>
-        public void didntSaveCity(string msg)
+        private void didntSaveCity(string msg)
         {
             callback("didntSaveCity", "s", msg);
         }
@@ -439,7 +519,27 @@ namespace MicropolisCore
         /// <param name="filename">Name of the file to use for storing the game.</param>
         public void saveCityAs(string filename)
         {
-            throw new NotImplementedException();
+            cityFileName = filename;
+
+            if (saveFile(cityFileName))
+            {
+                var lastDot = cityFileName.LastIndexOf(".");
+                var lastSlash = cityFileName.LastIndexOf("/");
+
+                var pos = lastSlash == -1 ? 0 : lastSlash + 1;
+                var last = lastDot == -1 ? cityFileName.Length : lastDot;
+                var len = last - pos;
+
+                string newCityName = cityFileName.Substring(pos, len);
+
+                setCityName(newCityName);
+
+                didSaveCity();
+            }
+            else
+            {
+                didntSaveCity(cityFileName);
+            }
         }
     }
 }

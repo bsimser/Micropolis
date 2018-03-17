@@ -85,7 +85,6 @@ namespace MicropolisGame
             GuiWindowManager.Instance.Open(EnumGuiWindow.Pause);
         }
 
-        // TODO move to GuiWindowPause
         public void QuitToMain()
         {
             GuiWindowManager.Instance.Close(EnumGuiWindow.Pause);
@@ -95,10 +94,8 @@ namespace MicropolisGame
             GuiWindowManager.Instance.Open(EnumGuiWindow.MainMenu);
         }
 
-        // TODO move to GuiWindowPause
         public void Resume()
         {
-            GuiWindowManager.Instance.Close(EnumGuiWindow.Pause);
             _engine.resume();
         }
 
@@ -118,6 +115,11 @@ namespace MicropolisGame
         {
             var speed = dropdown.value;
             _engine.setSpeed((short)speed);
+        }
+
+        public void SaveCity()
+        {
+            _engine.saveCity();
         }
     }
 }
