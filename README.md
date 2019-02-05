@@ -18,7 +18,7 @@ For a [list of known issues see GitHub](https://github.com/bsimser/micropolis-un
 
 ## License
 
-This software is free software and licensed under the [Micropolis GPL License](https://github.com/bsimser/micropolis-unity/License.md). 
+This software is free software and licensed under the [Micropolis GPL License](https://github.com/bsimser/Micropolis/blob/master/LICENSE.md). 
 
 ## History
 
