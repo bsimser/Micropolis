@@ -18,7 +18,7 @@ For a [list of known issues see GitHub](https://github.com/bsimser/micropolis-un
 
 ## License
 
-True to the orignal, this game and it's code is licensed under the [MIT License](https://opensource.org/licenses/MIT) for anyone to use. 
+This software is free software and licensed under the [Micropolis GPL License](https://github.com/bsimser/micropolis-unity/License.md). 
 
 ## History
 
