@@ -2,7 +2,7 @@
 
 Micropolis is a ground up C# rewrite of the MicropolisCore system using the Unity engine to create a full blown Micropolis native game that runs on Windows, Mac, and Unix. It includes a fully working city simulation game true to the original along with several new features and improvements.
 
-![screenshot](https://github.com/bsimser/micropolis-unity/blob/develop/images/micropolis.png)
+![screenshot](https://github.com/bsimser/micropolis-unity/blob/master/images/micropolis.png)
 
 ## Installation
 
@@ -15,6 +15,12 @@ Please see our [wiki](https://github.com/bsimser/micropolis-unity/wiki) for ever
 ## Latest News
 
 For a [list of known issues see GitHub](https://github.com/bsimser/micropolis-unity/issues) or take a look at the [roadmap](https://github.com/bsimser/micropolis-unity/wiki/Roadmap) or by watching this repo and subscribing to notifications.
+
+## Git Branches
+
+* `master` branch is the production branch of the latest release
+* `develop` branch is for development and new features; it may be out of date compared to master.
+* `gh-pages` branch is for the website
 
 ## License
 
@@ -39,6 +45,14 @@ This rewrite of Micropolis represents a culmination of sources from the original
 Using both of these codebases as a reference, this project builds a C# 2D game using the Unity engine for graphics and UI. The result is a game that runs on modern hardware as a single stand-alone executable with the ability to port and run on other platforms (iOS, Android, etc.). No special tools are required to run it except a computer. The installation is a single click download (with built-in automatic updates so you always have the latest version).
 
 Going beyond the origina, the plan is to continue to evolve this desktop version with new features that brings the old school gameplay of city building and new ideas together in a modern package.
+
+## Credits
+
+* Don Hopkins (original port)
+
+## Contributing
+
+Please submit all patches as a GitHub pull request.
 
 ## Building
 
