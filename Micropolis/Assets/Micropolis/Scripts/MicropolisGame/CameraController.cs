@@ -1,8 +1,8 @@
 ﻿using System;
-using Cinemachine;
 using MicropolisCore;
 using MicropolisEngine;
 using UnityEngine;
+using Cinemachine;
 
 namespace MicropolisGame
 {

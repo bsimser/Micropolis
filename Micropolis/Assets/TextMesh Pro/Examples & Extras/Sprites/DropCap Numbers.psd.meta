@@ -1,7 +1,7 @@
 fileFormatVersion: 2
-guid: 28b41fef228d6814f90e541deaf9f262
+guid: fd09957580ac4326916010f1f260975b
 timeCreated: 1464163332
-licenseType: Store
+licenseType: Pro
 TextureImporter:
   fileIDToRecycleName:
     21300000: 0
@@ -27,7 +27,7 @@ TextureImporter:
   bumpmap:
     convertToNormalMap: 0
     externalNormalMap: 0
-    heightScale: 0.25
+    heightScale: .25
     normalMapFilter: 0
   isReadable: 0
   grayScaleToAlpha: 0
@@ -43,20 +43,20 @@ TextureImporter:
     aniso: 16
     mipBias: -1
     wrapMode: 1
-  nPOTScale: 0
+  nPOTScale: 1
   lightmap: 0
   rGBM: 0
   compressionQuality: 50
   allowsAlphaSplitting: 0
-  spriteMode: 2
+  spriteMode: 0
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
-  spritePivot: {x: 0.5, y: 0.5}
+  spritePivot: {x: .5, y: .5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
-  alphaIsTransparency: 1
-  textureType: 8
+  alphaIsTransparency: 0
+  textureType: 0
   buildTargetSettings: []
   spriteSheet:
     sprites:
@@ -68,16 +68,8 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -64, y: -61}
-        - {x: -63, y: -64}
-        - {x: 64, y: -64}
-        - {x: 64, y: 61}
-        - {x: 63, y: 64}
-        - {x: -53, y: 64}
-        - {x: -64, y: 57}
     - name: 1
       rect:
         serializedVersion: 2
@@ -86,16 +78,8 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -64, y: -61}
-        - {x: -63, y: -64}
-        - {x: 64, y: -64}
-        - {x: 64, y: 61}
-        - {x: 63, y: 64}
-        - {x: -53, y: 64}
-        - {x: -64, y: 57}
     - name: 2
       rect:
         serializedVersion: 2
@@ -104,16 +88,8 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -64, y: -61}
-        - {x: -63, y: -64}
-        - {x: 64, y: -64}
-        - {x: 64, y: 61}
-        - {x: 63, y: 64}
-        - {x: -53, y: 64}
-        - {x: -64, y: 57}
     - name: 3
       rect:
         serializedVersion: 2
@@ -122,16 +98,8 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -64, y: -61}
-        - {x: -63, y: -64}
-        - {x: 64, y: -64}
-        - {x: 64, y: 61}
-        - {x: 63, y: 64}
-        - {x: -53, y: 64}
-        - {x: -64, y: 57}
     - name: 4
       rect:
         serializedVersion: 2
@@ -140,16 +108,8 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -64, y: -61}
-        - {x: -63, y: -64}
-        - {x: 64, y: -64}
-        - {x: 64, y: 61}
-        - {x: 63, y: 64}
-        - {x: -53, y: 64}
-        - {x: -64, y: 57}
     - name: 5
       rect:
         serializedVersion: 2
@@ -158,16 +118,8 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -64, y: -61}
-        - {x: -63, y: -64}
-        - {x: 64, y: -64}
-        - {x: 64, y: 61}
-        - {x: 63, y: 64}
-        - {x: -53, y: 64}
-        - {x: -64, y: 57}
     - name: 6
       rect:
         serializedVersion: 2
@@ -176,16 +128,8 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -64, y: -61}
-        - {x: -63, y: -64}
-        - {x: 64, y: -64}
-        - {x: 64, y: 61}
-        - {x: 63, y: 64}
-        - {x: -53, y: 64}
-        - {x: -64, y: 57}
     - name: 7
       rect:
         serializedVersion: 2
@@ -194,16 +138,8 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -64, y: -61}
-        - {x: -63, y: -64}
-        - {x: 64, y: -64}
-        - {x: 64, y: 61}
-        - {x: 63, y: 64}
-        - {x: -53, y: 64}
-        - {x: -64, y: 57}
     - name: 8
       rect:
         serializedVersion: 2
@@ -212,16 +148,8 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -64, y: -61}
-        - {x: -63, y: -64}
-        - {x: 64, y: -64}
-        - {x: 64, y: 61}
-        - {x: 63, y: 64}
-        - {x: -53, y: 64}
-        - {x: -64, y: 57}
     - name: 9
       rect:
         serializedVersion: 2
@@ -230,17 +158,8 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -64, y: -61}
-        - {x: -63, y: -64}
-        - {x: 64, y: -64}
-        - {x: 64, y: 61}
-        - {x: 63, y: 64}
-        - {x: -53, y: 64}
-        - {x: -64, y: 57}
-    outline: []
   spritePackingTag: 
   userData: 
   assetBundleName: 
