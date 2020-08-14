@@ -16,7 +16,7 @@ namespace TMPro.Examples
         public FpsCounterAnchorPositions AnchorPosition = FpsCounterAnchorPositions.TopRight;
 
         private string htmlColorTag;
-        private const string fpsLabel = "{0:2}</color> FPS \n{1:2} <#8080ff>MS";
+        private const string fpsLabel = "{0:2}</color> <#8080ff>FPS \n<#FF8000>{1:2} <#8080ff>MS";
 
         private TextMeshProUGUI m_TextMeshPro;
         private RectTransform m_frameCounter_transform;
@@ -28,7 +28,7 @@ namespace TMPro.Examples
             if (!enabled)
                 return;
 
-            Application.targetFrameRate = 120;
+            Application.targetFrameRate = 1000;
 
             GameObject frameCounter = new GameObject("Frame Counter");
             m_frameCounter_transform = frameCounter.AddComponent<RectTransform>();
@@ -36,8 +36,8 @@ namespace TMPro.Examples
             m_frameCounter_transform.SetParent(this.transform, false);
 
             m_TextMeshPro = frameCounter.AddComponent<TextMeshProUGUI>();
-            m_TextMeshPro.font = Resources.Load("Fonts & Materials/LiberationSans SDF", typeof(TMP_FontAsset)) as TMP_FontAsset;
-            m_TextMeshPro.fontSharedMaterial = Resources.Load("Fonts & Materials/LiberationSans SDF - Overlay", typeof(Material)) as Material;
+            m_TextMeshPro.font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
+            m_TextMeshPro.fontSharedMaterial = Resources.Load<Material>("Fonts & Materials/LiberationSans SDF - Overlay");
 
             m_TextMeshPro.enableWordWrapping = false;
             m_TextMeshPro.fontSize = 36;

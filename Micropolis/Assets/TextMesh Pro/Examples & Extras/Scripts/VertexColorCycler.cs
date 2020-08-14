@@ -28,6 +28,9 @@ namespace TMPro.Examples
         /// <returns></returns>
         IEnumerator AnimateVertexColors()
         {
+            // Force the text object to update right away so we can have geometry to modify right from the start.
+            m_TextComponent.ForceMeshUpdate();
+
             TMP_TextInfo textInfo = m_TextComponent.textInfo;
             int currentCharacter = 0;
 

@@ -13,6 +13,7 @@ namespace MicropolisGame
 
         public void StartNewCity()
         {
+            Debug.Log("StartNewCity ButtonClicked");
             _gameManager.StartNewCity();
             GuiWindowManager.Instance.Close(EnumGuiWindow.MainMenu);
             GuiWindowManager.Instance.ToggleGameElements(true);

@@ -44,10 +44,16 @@ namespace MicropolisGame
 
         public void StartNewCity()
         {
+            Debug.Log("Initing Game");
             _engine.initGame();
+            Debug.Log("Initing Simulation");
             _engine.simInit();
+            Debug.Log("Generating Map");
             _engine.generateMap();
+            Debug.Log("Setting Speed");
             _engine.setSpeed(simSpeed);
+
+            Debug.Log("Etcetera");
             _engine.doSimInit();
             _engine.setEnableDisasters(false);
         }

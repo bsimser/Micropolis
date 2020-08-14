@@ -16,7 +16,7 @@ namespace TMPro.Examples
         public FpsCounterAnchorPositions AnchorPosition = FpsCounterAnchorPositions.TopRight;
 
         private string htmlColorTag;
-        private const string fpsLabel = "{0:2}</color> FPS \n{1:2} <#8080ff>MS";
+        private const string fpsLabel = "{0:2}</color> <#8080ff>FPS \n<#FF8000>{1:2} <#8080ff>MS";
 
         private TextMeshPro m_TextMeshPro;
         private Transform m_frameCounter_transform;
@@ -30,13 +30,13 @@ namespace TMPro.Examples
                 return;
 
             m_camera = Camera.main;
-            Application.targetFrameRate = -1;
+            Application.targetFrameRate = 9999;
 
             GameObject frameCounter = new GameObject("Frame Counter");
 
             m_TextMeshPro = frameCounter.AddComponent<TextMeshPro>();
-            m_TextMeshPro.font = Resources.Load("Fonts & Materials/LiberationSans SDF", typeof(TMP_FontAsset)) as TMP_FontAsset;
-            m_TextMeshPro.fontSharedMaterial = Resources.Load("Fonts & Materials/LiberationSans SDF - Overlay", typeof(Material)) as Material;
+            m_TextMeshPro.font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
+            m_TextMeshPro.fontSharedMaterial = Resources.Load<Material>("Fonts & Materials/LiberationSans SDF - Overlay");
 
 
             m_frameCounter_transform = frameCounter.transform;
@@ -47,7 +47,7 @@ namespace TMPro.Examples
             m_TextMeshPro.fontSize = 24;
             //m_TextMeshPro.FontColor = new Color32(255, 255, 255, 128);
             //m_TextMeshPro.edgeWidth = .15f;
-            m_TextMeshPro.isOverlay = true;
+            //m_TextMeshPro.isOverlay = true;
 
             //m_TextMeshPro.FaceColor = new Color32(255, 128, 0, 0);
             //m_TextMeshPro.EdgeColor = new Color32(0, 255, 0, 255);
@@ -92,6 +92,7 @@ namespace TMPro.Examples
 
                 //string format = System.String.Format(htmlColorTag + "{0:F2} </color>FPS \n{1:F2} <#8080ff>MS",fps, ms);
                 //m_TextMeshPro.text = format;
+
                 m_TextMeshPro.SetText(htmlColorTag + fpsLabel, fps, ms);
 
                 m_Frames = 0;
